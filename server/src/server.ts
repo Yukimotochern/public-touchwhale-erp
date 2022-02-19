@@ -1,12 +1,14 @@
+import path from 'path'
 import express from 'express'
 import dotenv from 'dotenv'
 import api_v1 from './routes/api'
 import connectDB from './utils/mongodb'
+import 'colorts/lib/string'
 
 const app = express()
 
 // Load env vars
-dotenv.config({ path: './config/config.env' })
+dotenv.config({ path: path.join('.', 'src', 'config', 'config.env') })
 
 // Connect to MongoDB
 connectDB()
