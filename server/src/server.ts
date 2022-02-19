@@ -17,4 +17,15 @@ connectDB()
 app.use(express.json({ limit: '999999MB' }))
 app.use('/api/v1', api_v1)
 
-app.listen(5000)
+const server = app.listen(5000)
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err: any, promise) => {
+  if (typeof err.message === 'string') {
+    console.log(`Unhandled Rejection: ${err.message}`)
+  } else {
+    console.error(`Unknown thing thrown: ${err}`)
+  }
+  // Close server & exit process
+  server.close(() => process.exit(1))
+})
