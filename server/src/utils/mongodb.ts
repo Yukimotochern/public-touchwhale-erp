@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import 'colorts/lib/string'
 
 const connectDB = async () => {
   try {

@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = __importDefault(require("mongoose"));
-require("colorts/lib/string");
 var connectDB = function () { return __awaiter(void 0, void 0, void 0, function () {
     var connect, err_1;
     return __generator(this, function (_a) {
@@ -55,7 +54,7 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
             case 2:
                 err_1 = _a.sent();
                 if (typeof err_1.message === 'string') {
-                    console.error(err_1.message);
+                    console.error('Cannot Start MongoDB Connection With the Following Error: ', err_1.message);
                 }
                 else {
                     console.error("Unknown thing thrown: " + err_1);
