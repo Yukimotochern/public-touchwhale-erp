@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "description": "This is the server side of code for ERP system made by Touch  Whale.",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yukimoto",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.10.0",
+    "colorts": "^0.1.63",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.18",
+    "nodemon": "^2.0.15"
+  }
+}

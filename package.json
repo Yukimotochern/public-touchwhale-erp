@@ -1,0 +1,17 @@
+{
+  "name": "touchwhale-erp",
+  "version": "0.0.0",
+  "description": "This is an ERP system made by Touch Whale.",
+  "main": "index.js",
+  "scripts": {
+    "server": "npm start --prefix server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"tsc -w -p ./server\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yukimoto",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
