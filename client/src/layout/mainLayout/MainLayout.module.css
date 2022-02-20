@@ -1,0 +1,7 @@
+.full {
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  margin-top: 0px;
+  padding: 0px;
+}

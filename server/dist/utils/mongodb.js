@@ -49,7 +49,8 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
                 return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
             case 1:
                 connect = _a.sent();
-                console.log(("MongoDB Connected: " + connect.connection.host).cyan.underline.bold);
+                console.log(("[server] MongoDB Connected: " + connect.connection.host).cyan.underline
+                    .bold);
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();

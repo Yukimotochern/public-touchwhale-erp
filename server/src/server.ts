@@ -15,9 +15,19 @@ connectDB()
 
 // Init Middleware
 app.use(express.json({ limit: '999999MB' }))
+
+// Mount API
 app.use('/api/v1', api_v1)
 
-const server = app.listen(5000)
+const PORT = process.env.SERVER_PORT || 5000
+
+const server = app.listen(PORT, () =>
+  console.log(
+    `[server] Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+      .yellow.bold
+  )
+)
+server.setTimeout(999999999)
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: any, promise) => {

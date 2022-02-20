@@ -16,5 +16,22 @@ dotenv_1.default.config({ path: path_1.default.join('.', 'src', 'config', 'confi
 mongodb_1.default();
 // Init Middleware
 app.use(express_1.default.json({ limit: '999999MB' }));
+// Mount API
 app.use('/api/v1', api_1.default);
-app.listen(5000);
+var PORT = process.env.SERVER_PORT || 5000;
+var server = app.listen(PORT, function () {
+    return console.log(("[server] Server running in " + process.env.NODE_ENV + " mode on port " + PORT)
+        .yellow.bold);
+});
+server.setTimeout(999999999);
+// Handle unhandled promise rejections
+process.on('unhandledRejection', function (err, promise) {
+    if (typeof err.message === 'string') {
+        console.log("Unhandled Rejection: " + err.message);
+    }
+    else {
+        console.error("Unknown thing thrown: " + err);
+    }
+    // Close server & exit process
+    server.close(function () { return process.exit(1); });
+});

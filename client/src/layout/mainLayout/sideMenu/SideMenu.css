@@ -1,0 +1,19 @@
+.trigger {
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+a.mynavIcon:hover {
+  color: #17a2b8;
+}
+
+a.mynavIcon {
+  margin: 5 5 5 5px;
+}
