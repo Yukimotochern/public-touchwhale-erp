@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { pureAppRoutes } from '../AppRoutes'
 
-export const mainLayoutRouteState = createSlice({
+export const routeLinkSlice = createSlice({
   name: 'mainLayoutRoute',
   initialState: pureAppRoutes,
   reducers: {},

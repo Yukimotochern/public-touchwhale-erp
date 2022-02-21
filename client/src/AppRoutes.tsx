@@ -142,6 +142,7 @@ const fullRouteSpecification: RouteObjectWithLinkSpecification[] = [
 interface PureRouteObject
   extends Omit<RouteObjectWithLinkSpecification, 'element'> {
   children?: PureRouteObject[]
+  path: string
 }
 
 // Remove all the elements which is not suitable to be part of redux state
@@ -188,6 +189,5 @@ function deleteOtherthanRouteObject(
 // pureAppRoutes will be used by some route-related slices as reference for the whole routing structure
 const pureAppRoutes: PureRouteObject[] = deleteElement(fullRouteSpecification)
 const appRoutes = deleteOtherthanRouteObject(fullRouteSpecification)
-console.log(pureAppRoutes)
 
 export { pureAppRoutes, appRoutes }
