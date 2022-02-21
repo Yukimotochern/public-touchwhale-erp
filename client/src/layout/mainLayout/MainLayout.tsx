@@ -8,17 +8,18 @@ import { Outlet } from 'react-router-dom'
 const { Content } = Layout
 
 interface Props {
-  tabbed: boolean
+  inner?: React.ReactNode
 }
 
-export const MainLayout: React.FC<Props> = ({ tabbed, children }) => {
+export const MainLayout = ({ inner }: Props) => {
+  console.log(inner)
   return (
     <div className={styles.full}>
       <Layout>
         <SideMenu />
         <Layout>
-          <PageHeader tabbed={tabbed} />
-          <Content>{children || <Outlet />}</Content>
+          <PageHeader />
+          <Content>{inner || <Outlet />}</Content>
         </Layout>
       </Layout>
     </div>

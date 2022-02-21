@@ -1,14 +1,9 @@
-import React from 'react'
-
+import { useRoutes } from 'react-router-dom'
 import './App.css'
-import { AppRoutes } from './AppRoutes'
+import { appRoutes } from './AppRoutes'
 
 function App() {
-  return (
-    <>
-      <AppRoutes />
-    </>
-  )
+  return <>{useRoutes(appRoutes)}</>
 }
 
 export default App

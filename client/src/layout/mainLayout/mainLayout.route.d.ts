@@ -1,7 +1,7 @@
 import {
-  // IconLookup,
+  IconLookup,
   IconDefinition,
-  // findIconDefinition
+  findIconDefinition,
 } from '@fortawesome/fontawesome-svg-core'
 
 interface RouteForReactRouterDom {

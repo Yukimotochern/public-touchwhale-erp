@@ -15,5 +15,18 @@ a.mynavIcon:hover {
 }
 
 a.mynavIcon {
-  margin: 5 5 5 5px;
+  margin: 10px 5px 5px 15px;
+  padding: 0.8rem 0 0.6rem 0;
+  display: inline-block;
+  font-size: 1.3rem;
+  color: #fff;
+  opacity: 90%;
+}
+
+/* .side-menu-top-bar {
+  border-bottom: solid 1px #17a3b841;
+} */
+
+.app-logo {
+  margin-right: 3px;
 }

@@ -9,16 +9,19 @@ const { Sider } = Layout
 export const SideMenu = () => {
   return (
     <Sider trigger={null}>
-      <Link className='navbar-brand mynavIcon' to='/'>
-        <img
-          alt=''
-          src='/logo128.png'
-          width='30'
-          height='30'
-          className='d-inline-block mx-2 mb-1'
-        />{' '}
-        Touch Whale
-      </Link>
+      <div className='side-menu-top-bar'>
+        <Link to='/' className='mynavIcon'>
+          <img
+            alt=''
+            src='/logo128.png'
+            width='32'
+            height='32'
+            className='app-logo'
+          />{' '}
+          TWhale ERP
+        </Link>
+      </div>
+
       <Menu theme='dark' mode='inline'>
         <Menu.Item key={1}>
           <NavLink to='/123'>123</NavLink>
