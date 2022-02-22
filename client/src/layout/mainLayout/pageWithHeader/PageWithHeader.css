@@ -1,0 +1,9 @@
+.tw-page-with-header .ant-page-header-footer,
+h1 {
+  margin: 0;
+}
+
+.tw-page-with-header-content {
+  margin-left: 10px;
+  margin-right: 10px;
+}

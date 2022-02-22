@@ -19,15 +19,13 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     path: '/',
     element: <HomePage />,
     text: 'Home',
-    icon: {
-      prefix: 'fas',
-      iconName: 'house-chimney',
-    },
+    icon: { prefix: 'fas', iconName: 'house-chimney' },
   },
   {
     path: '/order',
     text: 'Order',
     element: <Outlet />,
+    icon: { prefix: 'fas', iconName: 'money-check-dollar' },
     children: [
       {
         path: 'process',
@@ -56,6 +54,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     path: '/item',
     element: <Outlet />,
     text: 'Product',
+    icon: { prefix: 'fas', iconName: 'gift' },
     children: [
       { path: 'basic', element: <h1>Basic Tab</h1>, text: 'Basic Info' },
       {
@@ -69,6 +68,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/purchase',
     text: 'Purchasing',
+    icon: { prefix: 'fas', iconName: 'cart-shopping' },
     element: (
       <>
         <h1>Purchase Page</h1>
@@ -79,6 +79,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/datacenter',
     element: <Outlet />,
+    icon: { prefix: 'fas', iconName: 'database' },
     text: 'Data Center',
     children: [
       { path: 'shoppee', element: <h1>Shoppee Tab</h1>, text: 'Shopee' },
@@ -93,6 +94,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/e-invoice',
     text: 'E-invoice',
+    icon: { prefix: 'fas', iconName: 'receipt' },
     element: (
       <>
         <h1>E-invoice Page</h1>
@@ -103,6 +105,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/team',
     element: <Outlet />,
+    icon: { prefix: 'fas', iconName: 'users' },
     text: 'My Team',
     children: [
       { path: 'member', element: <h1>Member Tab</h1>, text: 'Member' },
@@ -113,6 +116,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/account',
     text: 'My Account',
+    icon: { prefix: 'fas', iconName: 'circle-user' },
     element: (
       <>
         <h1>Account Page</h1>
@@ -123,9 +127,20 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/import',
     text: 'Import',
+    icon: { prefix: 'fas', iconName: 'file-import' },
     element: (
       <>
         <h1>Import Page</h1>
+        <Outlet />
+      </>
+    ),
+  },
+  {
+    path: '/aa',
+    text: 'text',
+    element: (
+      <>
+        <h1>aa</h1>
         <Outlet />
       </>
     ),
@@ -146,8 +161,9 @@ interface PureRouteObject
 }
 
 // Remove all the elements which is not suitable to be part of redux state
-// Also Spread routes that don't has path properities
-function deleteElement(
+// Spread routes that don't has path properities
+// Add the default links
+function purifyForRedux(
   routes: RouteObjectWithLinkSpecification[]
 ): PureRouteObject[] {
   return routes.reduce<PureRouteObject[]>((pre, curr): PureRouteObject[] => {
@@ -161,12 +177,12 @@ function deleteElement(
           ...withOutElement,
           path: withOutElement.path || '/',
           children: withOutElement.children
-            ? deleteElement(withOutElement.children)
+            ? purifyForRedux(withOutElement.children)
             : undefined,
         },
       ])
     } else if (!!withOutElement.children) {
-      return pre.concat(deleteElement(withOutElement.children))
+      return pre.concat(purifyForRedux(withOutElement.children))
     } else {
       return pre
     }
@@ -187,7 +203,7 @@ function deleteOtherthanRouteObject(
 }
 
 // pureAppRoutes will be used by some route-related slices as reference for the whole routing structure
-const pureAppRoutes: PureRouteObject[] = deleteElement(fullRouteSpecification)
+const pureAppRoutes: PureRouteObject[] = purifyForRedux(fullRouteSpecification)
 const appRoutes = deleteOtherthanRouteObject(fullRouteSpecification)
 
 export { pureAppRoutes, appRoutes }
