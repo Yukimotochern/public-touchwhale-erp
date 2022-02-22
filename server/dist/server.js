@@ -24,6 +24,9 @@ var server = app.listen(PORT, function () {
         .yellow.bold);
 });
 server.setTimeout(999999999);
+if (process.env.NODE_ENV === 'production') {
+    app.use(express_1.default.static(path_1.default.join(__dirname, '..', '..', 'client', 'build')));
+}
 // Handle unhandled promise rejections
 process.on('unhandledRejection', function (err, promise) {
     if (typeof err.message === 'string') {
