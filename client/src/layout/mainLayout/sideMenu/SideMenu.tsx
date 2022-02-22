@@ -33,7 +33,7 @@ export const SideMenu = () => {
       </div>
 
       <Menu theme='dark' mode='inline' selectedKeys={selectedKeys}>
-        {routeLink.map(({ path, text, icon }) => {
+        {routeLink.map(({ path, text, icon, link }) => {
           // let iconLook = icon || { prefix: 'fas', iconName: 'rocket' }
           return (
             <Menu.Item
@@ -49,7 +49,7 @@ export const SideMenu = () => {
                 />
               }
             >
-              <NavLink key={path} to={path}>
+              <NavLink key={path} to={link.join('/')}>
                 {() => <div>{text}</div>}
               </NavLink>
             </Menu.Item>

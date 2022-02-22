@@ -49,7 +49,7 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
                 return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
             case 1:
                 connect = _a.sent();
-                console.log(("[server] MongoDB Connected: " + connect.connection.host).cyan.underline
+                console.log("[server] MongoDB Connected: ".concat(connect.connection.host).cyan.underline
                     .bold);
                 return [3 /*break*/, 3];
             case 2:
@@ -58,7 +58,7 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
                     console.error('Cannot Start MongoDB Connection With the Following Error: ', err_1.message);
                 }
                 else {
-                    console.error("Unknown thing thrown: " + err_1);
+                    console.error("Unknown thing thrown: ".concat(err_1));
                 }
                 // Exit process with failure
                 process.exit(1);
