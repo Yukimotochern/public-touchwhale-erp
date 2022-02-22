@@ -11,7 +11,8 @@ var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
 var app = (0, express_1.default)();
 // Load env vars
-dotenv_1.default.config({ path: path_1.default.join('.', 'src', 'config', 'config.env') });
+dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
+console.log(path_1.default.join('..', 'config', 'config.env'), process.env.MONGO_URI, process.env.PORT);
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware
@@ -20,7 +21,7 @@ app.use(express_1.default.json({ limit: '999999MB' }));
 app.use('/api/v1', api_1.default);
 var PORT = process.env.SERVER_PORT || 5000;
 var server = app.listen(PORT, function () {
-    return console.log("[server] Server running in ".concat(process.env.NODE_ENV, " mode on port ").concat(PORT)
+    return console.log("[server] Server running in ".concat(process.env.NODE_ENV, " mode on port ").concat(PORT, " ")
         .yellow.bold);
 });
 server.setTimeout(999999999);

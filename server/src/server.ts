@@ -8,7 +8,12 @@ import 'colorts/lib/string'
 const app = express()
 
 // Load env vars
-dotenv.config({ path: path.join('..', 'config', 'config.env') })
+dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
+console.log(
+  path.join('..', 'config', 'config.env'),
+  process.env.MONGO_URI,
+  process.env.PORT
+)
 
 // Connect to MongoDB
 connectDB()
@@ -23,7 +28,7 @@ const PORT = process.env.SERVER_PORT || 5000
 
 const server = app.listen(PORT, () =>
   console.log(
-    `[server] Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+    `[server] Server running in ${process.env.NODE_ENV} mode on port ${PORT} `
       .yellow.bold
   )
 )
