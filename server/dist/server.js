@@ -26,6 +26,10 @@ var server = app.listen(PORT, function () {
 server.setTimeout(999999999);
 if (process.env.NODE_ENV === 'production') {
     app.use(express_1.default.static(path_1.default.join(__dirname, '..', '..', 'client', 'build')));
+    app.get('*', function (req, res) {
+        res.setHeader('Set-Cookie', 'HttpOnly;Secure;SameSite=Strict');
+        res.sendFile(path_1.default.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
+    });
 }
 // Handle unhandled promise rejections
 process.on('unhandledRejection', function (err, promise) {
