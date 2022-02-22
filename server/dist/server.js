@@ -12,7 +12,6 @@ require("colorts/lib/string");
 var app = (0, express_1.default)();
 // Load env vars
 dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
-console.log(path_1.default.join('..', 'config', 'config.env'), process.env.MONGO_URI, process.env.PORT);
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware

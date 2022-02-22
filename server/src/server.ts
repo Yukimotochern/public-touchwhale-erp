@@ -9,11 +9,6 @@ const app = express()
 
 // Load env vars
 dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
-console.log(
-  path.join('..', 'config', 'config.env'),
-  process.env.MONGO_URI,
-  process.env.PORT
-)
 
 // Connect to MongoDB
 connectDB()
@@ -33,6 +28,10 @@ const server = app.listen(PORT, () =>
   )
 )
 server.setTimeout(999999999)
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '..', '..', 'client', 'build')))
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: any, promise) => {
