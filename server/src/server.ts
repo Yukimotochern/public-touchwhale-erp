@@ -8,7 +8,7 @@ import 'colorts/lib/string'
 const app = express()
 
 // Load env vars
-dotenv.config({ path: path.join('.', 'src', 'config', 'config.env') })
+dotenv.config({ path: path.join('..', 'config', 'config.env') })
 
 // Connect to MongoDB
 connectDB()
