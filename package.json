@@ -4,6 +4,7 @@
   "description": "This is an ERP system made by Touch Whale.",
   "main": "index.js",
   "scripts": {
+    "start": "npm start  --prefix server",
     "server-dev": "npm run dev --prefix server",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server-dev\" \"npm run client\" \"tsc -w -p ./server\"",

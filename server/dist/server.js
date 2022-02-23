@@ -15,7 +15,7 @@ require("colorts/lib/string");
 var app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 // Load env vars
-dotenv_1.default.config({ path: path_1.default.join('.', 'src', 'config', 'config.env') });
+dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware
@@ -29,6 +29,13 @@ var server = app.listen(PORT, function () {
         .yellow.bold);
 });
 server.setTimeout(999999999);
+if (process.env.NODE_ENV === 'production') {
+    app.use(express_1.default.static(path_1.default.join(__dirname, '..', '..', 'client', 'build')));
+    app.get('*', function (req, res) {
+        res.setHeader('Set-Cookie', 'HttpOnly;Secure;SameSite=Strict');
+        res.sendFile(path_1.default.resolve(__dirname, '..', '..', 'client', 'build', 'index.html'));
+    });
+}
 // Handle unhandled promise rejections
 process.on('unhandledRejection', function (err, promise) {
     if (typeof err.message === 'string') {

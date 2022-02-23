@@ -3,6 +3,7 @@ import { RouteObject, Outlet } from 'react-router-dom'
 import { MainLayout } from './layout/mainLayout/MainLayout'
 import { HomePage } from './pages/home/HomePage'
 import { IconLookup } from '@fortawesome/fontawesome-svg-core'
+import { PageWithHeader } from './layout/mainLayout/pageWithHeader/PageWithHeader'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -24,7 +25,11 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/order',
     text: 'Order',
-    element: <Outlet />,
+    element: (
+      <PageWithHeader title={<h1>Order Manage Page</h1>}>
+        <Outlet />
+      </PageWithHeader>
+    ),
     icon: { prefix: 'fas', iconName: 'money-check-dollar' },
     children: [
       {
@@ -52,7 +57,11 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   },
   {
     path: '/item',
-    element: <Outlet />,
+    element: (
+      <PageWithHeader title={<h1>Item Manage Page</h1>}>
+        <Outlet />
+      </PageWithHeader>
+    ),
     text: 'Product',
     icon: { prefix: 'fas', iconName: 'gift' },
     children: [
@@ -70,15 +79,18 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'Purchasing',
     icon: { prefix: 'fas', iconName: 'cart-shopping' },
     element: (
-      <>
-        <h1>Purchase Page</h1>
+      <PageWithHeader title={<h1>Purchase Manage Page</h1>}>
         <Outlet />
-      </>
+      </PageWithHeader>
     ),
   },
   {
     path: '/datacenter',
-    element: <Outlet />,
+    element: (
+      <PageWithHeader title={<h1>Data Center Page</h1>}>
+        <Outlet />
+      </PageWithHeader>
+    ),
     icon: { prefix: 'fas', iconName: 'database' },
     text: 'Data Center',
     children: [
@@ -96,15 +108,18 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'E-invoice',
     icon: { prefix: 'fas', iconName: 'receipt' },
     element: (
-      <>
-        <h1>E-invoice Page</h1>
+      <PageWithHeader title={<h1>E-invoice Page</h1>}>
         <Outlet />
-      </>
+      </PageWithHeader>
     ),
   },
   {
     path: '/team',
-    element: <Outlet />,
+    element: (
+      <PageWithHeader title={<h1>Member Page</h1>}>
+        <Outlet />
+      </PageWithHeader>
+    ),
     icon: { prefix: 'fas', iconName: 'users' },
     text: 'My Team',
     children: [
@@ -118,10 +133,9 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'My Account',
     icon: { prefix: 'fas', iconName: 'circle-user' },
     element: (
-      <>
-        <h1>Account Page</h1>
+      <PageWithHeader title={<h1>Account Page</h1>}>
         <Outlet />
-      </>
+      </PageWithHeader>
     ),
   },
   {
@@ -129,20 +143,9 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'Import',
     icon: { prefix: 'fas', iconName: 'file-import' },
     element: (
-      <>
-        <h1>Import Page</h1>
+      <PageWithHeader title={<h1>Import Page</h1>}>
         <Outlet />
-      </>
-    ),
-  },
-  {
-    path: '/aa',
-    text: 'text',
-    element: (
-      <>
-        <h1>aa</h1>
-        <Outlet />
-      </>
+      </PageWithHeader>
     ),
   },
 ]
@@ -159,10 +162,12 @@ interface PureRouteObject
   children?: PureRouteObject[]
   path: string
 }
+export interface PureRouteObjectWithLink extends PureRouteObject {
+  link: string[]
+  children?: PureRouteObjectWithLink[]
+}
 
-// Remove all the elements which is not suitable to be part of redux state
-// Spread routes that don't has path properities
-// Add the default links
+// Remove element, spread layout route and remove redundant
 function purifyForRedux(
   routes: RouteObjectWithLinkSpecification[]
 ): PureRouteObject[] {
@@ -175,7 +180,7 @@ function purifyForRedux(
       return pre.concat([
         {
           ...withOutElement,
-          path: withOutElement.path || '/',
+          path: withOutElement.path || '',
           children: withOutElement.children
             ? purifyForRedux(withOutElement.children)
             : undefined,
@@ -187,6 +192,41 @@ function purifyForRedux(
       return pre
     }
   }, [])
+}
+
+// set default link to link
+function setLink(
+  pRoutes: PureRouteObject[],
+  outterLink: string[]
+): { pureRouteObjectWithLink: PureRouteObjectWithLink[]; innerLink: string[] } {
+  let innerLink: string[] = []
+  if (pRoutes.length === 0) {
+    return {
+      pureRouteObjectWithLink: [],
+      innerLink: [],
+    }
+  } else {
+    const pureRouteObjectWithLink = pRoutes.map<PureRouteObjectWithLink>(
+      (pRoute, ind) => {
+        let { pureRouteObjectWithLink, innerLink: deeperLink } = setLink(
+          pRoute.children || [],
+          outterLink.concat([pRoute.path])
+        )
+        if (ind === 0) {
+          innerLink = [pRoute.path].concat(deeperLink)
+        }
+        return {
+          ...pRoute,
+          link: outterLink.concat([pRoute.path]).concat(deeperLink),
+          children: pureRouteObjectWithLink,
+        }
+      }
+    )
+    return {
+      innerLink,
+      pureRouteObjectWithLink,
+    }
+  }
 }
 
 function deleteOtherthanRouteObject(
@@ -203,7 +243,10 @@ function deleteOtherthanRouteObject(
 }
 
 // pureAppRoutes will be used by some route-related slices as reference for the whole routing structure
-const pureAppRoutes: PureRouteObject[] = purifyForRedux(fullRouteSpecification)
+const { pureRouteObjectWithLink } = setLink(
+  purifyForRedux(fullRouteSpecification),
+  []
+)
 const appRoutes = deleteOtherthanRouteObject(fullRouteSpecification)
 
-export { pureAppRoutes, appRoutes }
+export { pureRouteObjectWithLink, appRoutes }

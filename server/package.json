@@ -4,6 +4,7 @@
   "description": "This is the server side of code for ERP system made by Touch  Whale.",
   "main": "server.js",
   "scripts": {
+    "start": "NODE_ENV=production node dist/server.js",
     "dev": "nodemon dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

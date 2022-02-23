@@ -3,6 +3,7 @@ import { combineReducers } from 'redux'
 import { createReduxHistoryContext } from 'redux-first-history'
 import { createBrowserHistory } from 'history'
 import { routeLinkSlice } from '../layout/routeLink.slice'
+import { mainLayoutSlice } from '../layout/mainLayout/mainLayout.slice'
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
   createReduxHistoryContext({ history: createBrowserHistory() })
@@ -11,6 +12,9 @@ export const store = configureStore({
   reducer: combineReducers({
     router: routerReducer,
     routeLink: routeLinkSlice.reducer,
+    layout: combineReducers({
+      mainLayout: mainLayoutSlice.reducer,
+    }),
   }),
   middleware: [routerMiddleware],
 })

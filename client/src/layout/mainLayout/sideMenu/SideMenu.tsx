@@ -2,12 +2,16 @@ import React from 'react'
 import { Layout, Menu } from 'antd'
 import './SideMenu.css'
 import { NavLink, Link } from 'react-router-dom'
-import { useAppSelector } from '../../../redux/hooks'
+import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { toggle } from '../mainLayout.slice'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 
 const { Sider } = Layout
 
 export const SideMenu = () => {
+  const dispatch = useAppDispatch()
+  const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // Find active keys
   const routeLink = useAppSelector((s) => s.routeLink)
   const path = useAppSelector((s) => s.router.location?.pathname)
@@ -18,7 +22,13 @@ export const SideMenu = () => {
     selectedKeys = []
   }
   return (
-    <Sider trigger={null} collapsedWidth='0' collapsible>
+    <Sider
+      trigger={null}
+      collapsedWidth='0'
+      collapsible
+      className='main-layout-sider'
+      collapsed={!siderOpen}
+    >
       <div className='side-menu-top-bar'>
         <Link to='/' className='mynavIcon'>
           <img
@@ -28,12 +38,24 @@ export const SideMenu = () => {
             height='32'
             className='app-logo'
           />{' '}
-          TWhale ERP
+          <span>TWhale ERP</span>
         </Link>
+        <FontAwesomeIcon
+          icon={faBars}
+          className='trigger'
+          onClick={() => dispatch(toggle())}
+        />
       </div>
 
-      <Menu theme='dark' mode='inline' selectedKeys={selectedKeys}>
-        {routeLink.map(({ path, text, icon }) => {
+      {/* Change to Tab */}
+
+      <Menu
+        theme='dark'
+        mode='inline'
+        selectedKeys={selectedKeys}
+        className='main-layout-menu'
+      >
+        {routeLink.map(({ path, text, icon, link }) => {
           // let iconLook = icon || { prefix: 'fas', iconName: 'rocket' }
           return (
             <Menu.Item
@@ -49,7 +71,7 @@ export const SideMenu = () => {
                 />
               }
             >
-              <NavLink key={path} to={path}>
+              <NavLink key={path} to={link.join('/')}>
                 {() => <div>{text}</div>}
               </NavLink>
             </Menu.Item>
