@@ -11,8 +11,8 @@ import {
 } from './userController'
 
 // Middleware
-import authMiddleware from '../middleware/authMiddleware'
-import validateMiddleware from '../middleware/validateMiddleware'
+import authMiddleware from '../../middleware/authMiddleware'
+import validateMiddleware from '../../middleware/validateMiddleware'
 
 // Ajv Schema
 import {
@@ -22,7 +22,7 @@ import {
 	changepassword_validate,
 	forgetpassword_validate,
 	resetpassword_validate,
-} from '../ajv-schema/User'
+} from './User_validate'
 
 const router = express.Router()
 

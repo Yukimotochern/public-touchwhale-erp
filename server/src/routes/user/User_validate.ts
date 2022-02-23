@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv'
-import ajvInstance from './ajv-instance'
+import ajvInstance from '../../utils/ajv-instance'
 
 // Signup Validator
 interface UserSignup {

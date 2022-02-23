@@ -6,8 +6,9 @@ export default function (ajvValidate: any) {
 
 		if (!valid) {
 			const errors = ajvValidate.errors
-			return res.status(400).json(errors)
+			next(new Error('bad request with validation'))
+		} else {
+			next()
 		}
-		next()
 	}
 }
