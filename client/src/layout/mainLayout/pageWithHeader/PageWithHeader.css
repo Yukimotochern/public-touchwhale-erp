@@ -3,6 +3,14 @@ h1 {
   margin: 0;
 }
 
+.tw-page-with-header .trigger {
+  color: black;
+  padding-top: 2px;
+}
+.tw-page-with-header .trigger:hover {
+  color: rgb(80, 79, 79);
+}
+
 .tw-page-with-header-content {
   margin-left: 10px;
   margin-right: 10px;

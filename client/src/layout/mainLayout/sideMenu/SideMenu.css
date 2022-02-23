@@ -1,32 +1,69 @@
+.side-menu-top-bar .trigger {
+  padding: 0 0 3.5px 0;
+  transition: color 0.3s;
+  color: hsla(0, 0%, 100%, 0.65);
+}
+
 .trigger {
-  padding: 0 24px;
   font-size: 18px;
   line-height: 64px;
   cursor: pointer;
-  transition: color 0.3s;
 }
 
-.trigger:hover {
-  color: #1890ff;
+.ant-layout-sider-collapsed .side-menu-top-bar .trigger {
+  display: none;
+}
+
+.side-menu-top-bar .trigger:hover {
+  color: #fff;
 }
 
 a.mynavIcon:hover {
   color: #17a2b8;
 }
+.mynavIcon {
+  white-space: nowrap;
+}
 
 a.mynavIcon {
-  margin: 10px 5px 5px 15px;
-  padding: 0.8rem 0 0.6rem 0;
+  /* margin: 5px 5px 5px 10px; */
+  /* padding: 1rem 0 0rem 0; */
   display: inline-block;
   font-size: 1.3rem;
   color: #fff;
   opacity: 90%;
 }
 
-/* .side-menu-top-bar {
-  border-bottom: solid 1px #17a3b841;
-} */
+.side-menu-top-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem 0rem 1.2rem;
+  overflow: hidden;
+}
 
 .app-logo {
   margin-right: 3px;
+}
+
+.main-layout-sider .ant-layout-sider-children {
+  display: flex;
+
+  flex-direction: column;
+  height: 100%;
+}
+.main-layout-sider .side-menu-top-bar {
+  flex: 0 0 65.195px;
+}
+
+.main-layout-sider .main-layout-menu {
+  flex: 1 1 0;
+  overflow: scroll;
+}
+
+.main-layout-sider
+  .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal)
+  .ant-menu-item-selected {
+  background-color: #1672c9cc;
 }
