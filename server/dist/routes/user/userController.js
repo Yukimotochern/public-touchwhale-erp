@@ -39,8 +39,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgetpassword = exports.resetpassword = exports.updateUser = exports.getUser = exports.userSignout = exports.userSignin = exports.usersignup = void 0;
+exports.resetpassword = exports.forgetpassword = exports.changepassword = exports.updateUser = exports.getUser = exports.userSignout = exports.userSignin = exports.usersignup = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var crypto_1 = __importDefault(require("crypto"));
+var sendEmail_1 = require("../../utils/sendEmail");
 var User_1 = __importDefault(require("../../model/User"));
 // @route    POST api/user/signup
 // @desc     Signup user
@@ -60,7 +62,6 @@ var usersignup = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 if (user) {
                     return [2 /*return*/, res.status(200).json({ error: 'User already exists.' })];
                 }
-                // @TODO: avatar load
                 user = new User_1.default({
                     company_name: company_name,
                     email: email,
@@ -91,11 +92,6 @@ var userSignin = function (req, res) { return __awaiter(void 0, void 0, void 0, 
             case 0:
                 _b.trys.push([0, 3, , 4]);
                 _a = req.body, email = _a.email, password = _a.password;
-                if (!email || !password) {
-                    return [2 /*return*/, res
-                            .status(400)
-                            .json({ error: 'Please provide an email and password. ' })];
-                }
                 return [4 /*yield*/, User_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
@@ -120,7 +116,7 @@ var userSignin = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.userSignin = userSignin;
-// @route    GET api/user/logout
+// @route    GET api/user/signout
 // @desc     Signout user
 // @access   Private
 var userSignout = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -177,12 +173,12 @@ exports.getUser = getUser;
 // @desc     Update user infomation
 // @access   Private
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, company_name, email, password, fieldsToUpdate, cookie, id, user, err_4;
+    var _a, company_name, email, fieldsToUpdate, cookie, id, user, err_4;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _b.trys.push([0, 2, , 3]);
-                _a = req.body, company_name = _a.company_name, email = _a.email, password = _a.password;
+                _a = req.body, company_name = _a.company_name, email = _a.email;
                 fieldsToUpdate = {
                     company_name: company_name,
                     email: email,
@@ -212,10 +208,10 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.updateUser = updateUser;
-// @route    PUT api/user/resetpassword
+// @route    PUT api/user/changepassword
 // @desc     Update password
 // @access   Private
-var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var changepassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var cookie, id, user, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -252,15 +248,20 @@ var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.resetpassword = resetpassword;
-// @route    PUT api/user/forgetpassword
+exports.changepassword = changepassword;
+// @route    POST api/user/forgetpassword
 // @desc     Forget password
 // @access   Public
 var forgetpassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, token, resetUrl, message, err_6;
+    var cookie, user, token, resetUrl, message, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, User_1.default.findOne({ email: req.body.email })];
+            case 0:
+                cookie = req.cookies.token;
+                if (cookie) {
+                    return [2 /*return*/, res.status(401).send('Something wrong. Maybe user has sign in.')];
+                }
+                return [4 /*yield*/, User_1.default.findOne({ email: req.body.email })];
             case 1:
                 user = _a.sent();
                 if (!user) {
@@ -279,23 +280,64 @@ var forgetpassword = function (req, res) { return __awaiter(void 0, void 0, void
                 message = "Make a PUT request to: \n ".concat(resetUrl);
                 _a.label = 3;
             case 3:
-                _a.trys.push([3, 4, , 6]);
-                return [3 /*break*/, 6];
+                _a.trys.push([3, 5, , 7]);
+                return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
+                        to: user.email,
+                        subject: 'Password reset token',
+                        message: message,
+                    })];
             case 4:
+                _a.sent();
+                res.status(200).json({ data: 'Email sent.' });
+                return [3 /*break*/, 7];
+            case 5:
                 err_6 = _a.sent();
                 console.log(err_6);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
-            case 5:
+            case 6:
                 _a.sent();
                 res.status(500).send('Email could not be sent.');
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
 exports.forgetpassword = forgetpassword;
+// @desc        Reset password
+// @route       PUT /api/v1/user/forgetpassword/:resettoken
+// @access      Public
+var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var forgetPasswordToken, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                forgetPasswordToken = crypto_1.default
+                    .createHash('sha256')
+                    .update(req.params.resettoken)
+                    .digest('hex');
+                return [4 /*yield*/, User_1.default.findOne({
+                        forgetPasswordToken: forgetPasswordToken,
+                        forgetPasswordExpire: { $gt: Date.now() },
+                    })];
+            case 1:
+                user = _a.sent();
+                if (!user) {
+                    return [2 /*return*/, res.status(400).json('Invalid token.')];
+                }
+                user.password = req.body.password;
+                user.forgetPasswordToken = undefined;
+                user.forgetPasswordExpire = undefined;
+                return [4 /*yield*/, user.save()];
+            case 2:
+                _a.sent();
+                res.status(200).json({ data: 'Your password has been set.' });
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.resetpassword = resetpassword;
 // Helper function
 var sendTokenResponse = function (user, statusCode, res) {
     var token = user.getSignedJwtToken();

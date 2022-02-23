@@ -7,6 +7,12 @@ declare global {
 			SERVER_PORT: string
 			JWTSECRET: string
 			JWT_COOKIE_EXPIRE: number
+			SMTP_PASSWORD: string
+			SMTP_USERNAME: string
+			SMTP_HOST: string
+			SMTP_PORT: string
+			FROM_NAME: string
+			FROM_EMAIL: string
 		}
 	}
 }

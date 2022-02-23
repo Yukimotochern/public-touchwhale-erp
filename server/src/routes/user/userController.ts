@@ -1,5 +1,8 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import crypto from 'crypto'
+
+import { sendEmail } from '../../utils/sendEmail'
 
 import UserModel from '../../model/User'
 
@@ -15,8 +18,6 @@ export const usersignup = async (req: Request, res: Response) => {
 		if (user) {
 			return res.status(200).json({ error: 'User already exists.' })
 		}
-
-		// @TODO: avatar load
 
 		user = new UserModel({
 			company_name,
@@ -40,12 +41,6 @@ export const userSignin = async (req: Request, res: Response) => {
 	try {
 		const { email, password } = req.body
 
-		if (!email || !password) {
-			return res
-				.status(400)
-				.json({ error: 'Please provide an email and password. ' })
-		}
-
 		const user = await UserModel.findOne({ email }).select('+password')
 
 		if (!user) {
@@ -65,7 +60,7 @@ export const userSignin = async (req: Request, res: Response) => {
 	}
 }
 
-// @route    GET api/user/logout
+// @route    GET api/user/signout
 // @desc     Signout user
 // @access   Private
 export const userSignout = async (req: Request, res: Response) => {
@@ -110,7 +105,7 @@ export const getUser = async (req: Request, res: Response) => {
 // @access   Private
 export const updateUser = async (req: Request, res: Response) => {
 	try {
-		const { company_name, email, password } = req.body
+		const { company_name, email } = req.body
 		const fieldsToUpdate = {
 			company_name,
 			email,
@@ -136,10 +131,10 @@ export const updateUser = async (req: Request, res: Response) => {
 	}
 }
 
-// @route    PUT api/user/resetpassword
+// @route    PUT api/user/changepassword
 // @desc     Update password
 // @access   Private
-export const resetpassword = async (req: Request, res: Response) => {
+export const changepassword = async (req: Request, res: Response) => {
 	try {
 		const cookie = req.cookies.token
 		if (!cookie) {
@@ -166,10 +161,15 @@ export const resetpassword = async (req: Request, res: Response) => {
 	}
 }
 
-// @route    PUT api/user/forgetpassword
+// @route    POST api/user/forgetpassword
 // @desc     Forget password
 // @access   Public
 export const forgetpassword = async (req: Request, res: Response) => {
+	const cookie = req.cookies.token
+	if (cookie) {
+		return res.status(401).send('Something wrong. Maybe user has sign in.')
+	}
+
 	const user = await UserModel.findOne({ email: req.body.email })
 
 	if (!user) {
@@ -191,7 +191,6 @@ export const forgetpassword = async (req: Request, res: Response) => {
 	const message = `Make a PUT request to: \n ${resetUrl}`
 
 	try {
-		// @Question
 		await sendEmail({
 			to: user.email,
 			subject: 'Password reset token',
@@ -208,6 +207,32 @@ export const forgetpassword = async (req: Request, res: Response) => {
 
 		res.status(500).send('Email could not be sent.')
 	}
+}
+
+// @desc        Reset password
+// @route       PUT /api/v1/user/forgetpassword/:resettoken
+// @access      Public
+export const resetpassword = async (req: Request, res: Response) => {
+	const forgetPasswordToken = crypto
+		.createHash('sha256')
+		.update(req.params.resettoken)
+		.digest('hex')
+
+	const user = await UserModel.findOne({
+		forgetPasswordToken,
+		forgetPasswordExpire: { $gt: Date.now() },
+	})
+
+	if (!user) {
+		return res.status(400).json('Invalid token.')
+	}
+
+	user.password = req.body.password
+	user.forgetPasswordToken = undefined
+	user.forgetPasswordExpire = undefined
+	await user.save()
+
+	res.status(200).json({ data: 'Your password has been set.' })
 }
 
 // Helper function

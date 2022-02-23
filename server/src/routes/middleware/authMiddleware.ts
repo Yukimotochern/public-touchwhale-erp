@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 
 interface userRequest extends Request {
-	user: any
+	user?: any
 }
 
 export default function (req: userRequest, res: Response, next: NextFunction) {
