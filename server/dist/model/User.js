@@ -40,31 +40,84 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = __importDefault(require("mongoose"));
-var connectDB = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var connect, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
-            case 1:
-                connect = _a.sent();
-                console.log("[server] MongoDB Connected: ".concat(connect.connection.host).cyan
-                    .underline.bold);
-                return [3 /*break*/, 3];
-            case 2:
-                err_1 = _a.sent();
-                if (typeof err_1.message === 'string') {
-                    console.error('Cannot Start MongoDB Connection With the Following Error: ', err_1.message);
-                }
-                else {
-                    console.error("Unknown thing thrown: ".concat(err_1));
-                }
-                // Exit process with failure
-                process.exit(1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var crypto_1 = __importDefault(require("crypto"));
+var UserSchema = new mongoose_1.default.Schema({
+    company_name: {
+        type: String,
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true,
+        match: [
+            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+            'Please add a valid email.',
+        ],
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 8,
+        select: false,
+    },
+    avatar: {
+        type: String,
+    },
+    forgetPasswordToken: String,
+    forgetPasswordExpire: Date,
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+UserSchema.pre('save', function (next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var salt, _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    if (!this.isModified('password')) {
+                        next();
+                    }
+                    return [4 /*yield*/, bcryptjs_1.default.genSalt(10)];
+                case 1:
+                    salt = _b.sent();
+                    _a = this;
+                    return [4 /*yield*/, bcryptjs_1.default.hash(this.password, salt)];
+                case 2:
+                    _a.password = _b.sent();
+                    return [2 /*return*/];
+            }
+        });
     });
-}); };
-exports.default = connectDB;
+});
+UserSchema.methods.getSignedJwtToken = function () {
+    return jsonwebtoken_1.default.sign({ id: this._id }, process.env.JWTSECRET, {
+        expiresIn: process.env.JWT_EXPIRE,
+    });
+};
+UserSchema.methods.matchPassword = function (enteredPassword) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, bcryptjs_1.default.compare(enteredPassword, this.password)];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+};
+UserSchema.methods.getForgetPasswordToken = function () {
+    var token = crypto_1.default.randomBytes(20).toString('hex');
+    // Set hash token
+    this.forgetPasswordToken = crypto_1.default
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+    // Expire in 10 mins
+    this.forgetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    return token;
+};
+var UserModel = mongoose_1.default.model('User', UserSchema);
+exports.default = UserModel;
