@@ -47,8 +47,6 @@ export const SideMenu = () => {
         />
       </div>
 
-      {/* Change to Tab */}
-
       <Menu
         theme='dark'
         mode='inline'
@@ -56,7 +54,6 @@ export const SideMenu = () => {
         className='main-layout-menu'
       >
         {routeLink.map(({ path, text, icon, link }) => {
-          // let iconLook = icon || { prefix: 'fas', iconName: 'rocket' }
           return (
             <Menu.Item
               key={path}
