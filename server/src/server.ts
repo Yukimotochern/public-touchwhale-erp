@@ -9,6 +9,7 @@ import user from './routes/user/userRoutes'
 
 import connectDB from './utils/mongodb'
 import 'colorts/lib/string'
+import { errorHandler } from './middlewares/errorMiddleware'
 
 const app = express()
 app.use(cookieParser())
@@ -25,6 +26,8 @@ app.use(express.json({ limit: '999999MB' }))
 // Mount API
 app.use('/api/v1', api_v1)
 app.use('/api/v1/user', user)
+
+app.use(errorHandler)
 
 const PORT = process.env.SERVER_PORT || 5000
 

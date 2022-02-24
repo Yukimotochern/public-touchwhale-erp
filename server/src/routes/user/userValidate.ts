@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv'
-import ajvInstance from '../../utils/ajv-instance'
-import { UserType } from '../../model/User'
+import ajvInstance from '../../utils/ajv'
+import { UserType } from '../../models/User'
 
 // This type ensure that the data format between json schema here and mongoose schema are in sync. If not, type error will be thrown. Also, by excluding forgetPasswordToken and other fields, potential database injections that update the token via api call will not happen.
 // by Yuki
@@ -31,6 +31,8 @@ const signUpBodySchema: JSONSchemaType<UserEditableType> = {
 }
 
 const signUpBodyValidator = ajvInstance.compile(signUpBodySchema)
+
+// const signUpBodyValidator =
 
 // SignIn Validator
 // If someone ever changes 'email' to 'Email' in mongoose schema, error will occur here, by Yuki

@@ -2,31 +2,31 @@ import express from 'express'
 import {
   userSignUp,
   userSignIn,
-  userSignout,
+  userSignOut,
   getUser,
   updateUser,
-  changepassword,
-  forgetpassword,
-  resetpassword,
+  changePassword,
+  forgetPassword,
+  resetPassword,
 } from './userController'
 
 // Middleware
-import authMiddleware from '../../middleware/authMiddleware'
+import authMiddleware from '../../middlewares/authMiddleware'
 
 const router = express.Router()
 
-router.route('/signup').post(userSignUp)
+router.route('/signUp').post(userSignUp)
 
-router.route('/signin').post(userSignIn)
+router.route('/signIn').post(userSignIn)
 
-router.route('/signout').get(authMiddleware, userSignout)
+router.route('/signOut').get(authMiddleware, userSignOut)
 
 router.route('/').get(authMiddleware, getUser).put(authMiddleware, updateUser)
 
-router.route('/changepassword').put(authMiddleware, changepassword)
+router.route('/changePassword').put(authMiddleware, changePassword)
 
-router.route('/forgetpassword').post(forgetpassword)
+router.route('/forgetPassword').post(forgetPassword)
 
-router.route('/forgetpassword/:resettoken').put(resetpassword)
+router.route('/forgetPassword/:resetToken').put(resetPassword)
 
 export default router

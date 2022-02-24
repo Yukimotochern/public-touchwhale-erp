@@ -2,13 +2,15 @@ import mongoose from 'mongoose'
 import bcrtpt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { timeStamp } from 'console'
+import { MongooseErrors } from '../utils/errorResponse'
 
 interface UserType {
+  // editable for user
   email: string
   password: string
   avatar?: string
   company_name?: string
+  // non-editable for user
   forgetPasswordToken?: string
   forgetPasswordExpire?: Date
   resetEmailToken?: string
@@ -17,6 +19,10 @@ interface UserType {
   updatedAt: Date
   matchPassword: (password: string) => Promise<boolean>
   getForgetPasswordToken: () => string
+}
+
+interface UserJWTPayload {
+  id: string
 }
 
 const UserSchema = new mongoose.Schema<UserType>(
@@ -85,8 +91,20 @@ UserSchema.methods.getForgetPasswordToken = function () {
   return token
 }
 
+UserSchema.methods.getResetEmailToken = function () {
+  const token = crypto.randomBytes(20).toString('hex')
+
+  // Set hash token
+  this.resetEmailToken = crypto.createHash('sha256').update(token).digest('hex')
+
+  // Expire in 10 mins
+  this.resetEmailExpire = Date.now() + 10 * 60 * 1000
+
+  return token
+}
+
 const UserModel = mongoose.model<UserType>('User', UserSchema)
 
-export { UserType }
+export { UserType, UserJWTPayload }
 
 export default UserModel
