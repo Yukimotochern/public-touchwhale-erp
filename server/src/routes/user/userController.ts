@@ -4,33 +4,32 @@ import crypto from 'crypto'
 
 import { sendEmail } from '../../utils/sendEmail'
 import { avjErrorWrapper } from '../../utils/ajv'
-import ErrorResponse from '../../utils/errorResponse'
+import ErrorResponse, { TWError } from '../../utils/errorResponse'
 
 import {
   signInBodyValidator,
   signUpBodyValidator,
-  updateUserBodyValidator,
-  updateUserEmailBodyValidator,
+  updateRegualrUserBodyValidator,
   changePasswordBodyValidator,
   forgetPasswordBodyValidator,
   resetPasswordBodyValidator,
 } from './userValidate'
 
-import UserModel from '../../models/User'
+import RegualrUserModel from '../../models/User'
 
-// @route    POST api/user/signUp
-// @desc     Signup user
+// @route    POST api/regualruser/signUp
+// @desc     Signup regualruser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
-export const userSignUp: RequestHandler = async (req, res, next) => {
+export const regualrUserSignUp: RequestHandler = async (req, res, next) => {
   if (signUpBodyValidator(req.body)) {
     const { email } = req.body
-    let user = await UserModel.findOne({ email })
+    let user = await RegualrUserModel.findOne({ email })
     if (user) {
       return next(new ErrorResponse('User already exists.', 409))
     }
     // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
-    user = new UserModel(req.body)
+    user = new RegualrUserModel(req.body)
 
     await user.save()
 
@@ -41,13 +40,13 @@ export const userSignUp: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/user/signIn
-// @desc     Sign user in
+// @route    POST api/regualruser/signIn
+// @desc     Sign regualruser in
 // @access   Public
-export const userSignIn: RequestHandler = async (req, res, next) => {
+export const regualrUserSignIn: RequestHandler = async (req, res, next) => {
   if (signInBodyValidator(req.body)) {
     const { email, password } = req.body
-    const user = await UserModel.findOne({ email }).select('+password')
+    const user = await RegualrUserModel.findOne({ email }).select('+password')
     if (!user) {
       return next(new ErrorResponse('Invalid credentials.', 401))
     }
@@ -61,10 +60,14 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    GET api/user/signOut
-// @desc     Sign user out
+// @route    GET api/regualruser/signOut
+// @desc     Sign regualruser out
 // @access   Private
-export const userSignOut: PrivateRequestHandler = async (req, res, next) => {
+export const regualrUserSignOut: PrivateRequestHandler = async (
+  req,
+  res,
+  next
+) => {
   // Using Clear Cookie seems to be a cleaner way
   res.clearCookie('token', {
     httpOnly: true,
@@ -75,14 +78,14 @@ export const userSignOut: PrivateRequestHandler = async (req, res, next) => {
   })
 }
 
-// @route    GET api/user/
-// @desc     Get user infomation
+// @route    GET api/regualruser/
+// @desc     Get regualruser infomation
 // @access   Private
 
-export const getUser: PrivateRequestHandler = async (req, res, next) => {
+export const getRegualrUser: PrivateRequestHandler = async (req, res, next) => {
   // Since this is a private route, the req should have contained the user object.
   if (req.user) {
-    const user = await UserModel.findById(req.user.id)
+    const user = await RegualrUserModel.findById(req.user.id)
     if (user) {
       res.status(200).json({
         data: user,
@@ -92,11 +95,15 @@ export const getUser: PrivateRequestHandler = async (req, res, next) => {
   return next(new ErrorResponse('Server Error'))
 }
 
-// @route    PUT api/user/
-// @desc     Update user infomation
+// @route    PUT api/regualruser/
+// @desc     Update regualruser infomation
 // @access   Private
-export const updateUser: PrivateRequestHandler = async (req, res, next) => {
-  if (updateUserBodyValidator(req.body)) {
+export const updateRegualrUser: PrivateRequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  if (updateRegualrUserBodyValidator(req.body)) {
     const { company_name } = req.body
     const fieldsToUpdate = {
       company_name,
@@ -104,7 +111,7 @@ export const updateUser: PrivateRequestHandler = async (req, res, next) => {
     // When updating email, the user should receive the reset-email-token sendding to the new email address.
     // That is to ensure that the user does not have typo in the email and really own that email address. by Yuki
     if (req.user) {
-      const user = await UserModel.findByIdAndUpdate(
+      const user = await RegualrUserModel.findByIdAndUpdate(
         req.user.id,
         fieldsToUpdate,
         {
@@ -118,17 +125,19 @@ export const updateUser: PrivateRequestHandler = async (req, res, next) => {
     }
     return next(new ErrorResponse('Server Error'))
   } else {
-    return next(avjErrorWrapper(updateUserBodyValidator.errors))
+    return next(avjErrorWrapper(updateRegualrUserBodyValidator.errors))
   }
 }
 
-// @route    PUT api/user/changePassword
+// @route    PUT api/regualruser/changePassword
 // @desc     Update password
 // @access   Private
 export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   if (changePasswordBodyValidator(req.body) && req.user) {
     if (req.user) {
-      const user = await UserModel.findById(req.user.id).select('+password')
+      const user = await RegualrUserModel.findById(req.user.id).select(
+        '+password'
+      )
       if (user) {
         if (!(await user.matchPassword(req.body.currentPassword))) {
           return next(new ErrorResponse('Password is incorrect.', 400))
@@ -144,12 +153,12 @@ export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/user/forgetPassword
+// @route    POST api/regualruser/forgetPassword
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {
   if (forgetPasswordBodyValidator(req.body)) {
-    const user = await UserModel.findOne({ email: req.body.email })
+    const user = await RegualrUserModel.findOne({ email: req.body.email })
     if (!user) {
       return next(new ErrorResponse('There is no user with that email.', 404))
     }
@@ -174,7 +183,6 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
       user.forgetPasswordExpire = undefined
 
       await user.save({ validateBeforeSave: false })
-
       return next(new ErrorResponse('Email could not be sent.', 500, err))
     }
   } else {
@@ -183,7 +191,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 }
 
 // @desc        Reset password
-// @route       PUT /api/v1/user/forgetPassword/:resetToken
+// @route       PUT /api/v1/regualruser/forgetPassword/:resetToken
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
   if (resetPasswordBodyValidator(req.body)) {
@@ -192,7 +200,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
       .update(req.params.resetToken)
       .digest('hex')
 
-    const user = await UserModel.findOne({
+    const user = await RegualrUserModel.findOne({
       forgetPasswordToken,
       forgetPasswordExpire: { $gt: Date.now() },
     })
@@ -218,7 +226,7 @@ const sendTokenResponse = (
   statusCode: number,
   res: Response
 ): any => {
-  const token = user.getSignedJwtToken()
+  const token = user.getSignedJWTToken()
 
   const options = {
     expires: new Date(

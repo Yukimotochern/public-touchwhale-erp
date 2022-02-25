@@ -1,31 +1,35 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Request, NextFunction, Response } from 'express'
-import { UserJWTPayload } from '../models/User'
+import { RegualrUserJWTPayload } from '../models/User'
 
-interface RequestWithUser extends Request {
-  user?: UserJWTPayload
+interface RequestWithRegualrUser extends Request {
+	user?: RegualrUserJWTPayload
 }
 
 interface PrivateRequestHandler {
-  (req: RequestWithUser, res: Response, next: NextFunction): void
+	(req: RequestWithRegualrUser, res: Response, next: NextFunction): void
 }
 
 const authMiddleware: PrivateRequestHandler = (req, res, next) => {
-  const token = req.cookies.token
+	const token = req.cookies.token
 
-  if (!token) {
-    return res.status(401).json({ error: 'No token, authorization denied.' })
-  }
+	if (!token) {
+		return res.status(401).json({ error: 'No token, authorization denied.' })
+	}
+	// console.log(token)
+	try {
+		const decode = jwt.verify(
+			token,
+			process.env.JWTSECRET
+		) as RegualrUserJWTPayload
 
-  try {
-    const decode = jwt.verify(token, process.env.JWTSECRET) as JwtPayload
-    req.user = decode.user
-    next()
-  } catch (err) {
-    res.status(400).json({ error: 'Token is invalid.' })
-  }
+		req.user = decode
+		next()
+	} catch (err) {
+		res.status(400).json({ error: 'Token is invalid.' })
+	}
 }
 
-export { RequestWithUser, PrivateRequestHandler }
+export { RequestWithRegualrUser, PrivateRequestHandler }
 
 export default authMiddleware
