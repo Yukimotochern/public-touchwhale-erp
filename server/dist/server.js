@@ -12,10 +12,12 @@ var api_1 = __importDefault(require("./routes/api"));
 var userRoutes_1 = __importDefault(require("./routes/user/userRoutes"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
+var errorMiddleware_1 = require("./middlewares/errorMiddleware");
 var app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 // Load env vars
 dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
+console.log(__dirname, path_1.default.join(__dirname, '..', 'config', 'config.env'));
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware
@@ -23,6 +25,7 @@ app.use(express_1.default.json({ limit: '999999MB' }));
 // Mount API
 app.use('/api/v1', api_1.default);
 app.use('/api/v1/user', userRoutes_1.default);
+app.use(errorMiddleware_1.errorHandler);
 var PORT = process.env.SERVER_PORT || 5000;
 var server = app.listen(PORT, function () {
     return console.log("[server] Server running in ".concat(process.env.NODE_ENV, " mode on port ").concat(PORT)

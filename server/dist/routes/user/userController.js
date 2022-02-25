@@ -39,238 +39,187 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetpassword = exports.forgetpassword = exports.changepassword = exports.updateUser = exports.getUser = exports.userSignout = exports.userSignin = exports.usersignup = void 0;
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegualrUser = exports.getRegualrUser = exports.regualrUserSignOut = exports.regualrUserSignIn = exports.regualrUserSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
-var User_1 = __importDefault(require("../../model/User"));
-// @route    POST api/user/signup
-// @desc     Signup user
+var ajv_1 = require("../../utils/ajv");
+var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
+var userValidate_1 = require("./userValidate");
+var User_1 = __importDefault(require("../../models/User"));
+// @route    POST api/regualruser/signUp
+// @desc     Signup regualruser
 // @access   Public
-var usersignup = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, company_name, password, user, err_1;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+// RequestHandler is an easier way to set types, by Yuki
+var regualrUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var email, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _a = req.body, email = _a.email, company_name = _a.company_name, password = _a.password;
-                _b.label = 1;
-            case 1:
-                _b.trys.push([1, 4, , 5]);
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 3];
+                email = req.body.email;
                 return [4 /*yield*/, User_1.default.findOne({ email: email })];
-            case 2:
-                user = _b.sent();
+            case 1:
+                user = _a.sent();
                 if (user) {
-                    return [2 /*return*/, res.status(200).json({ error: 'User already exists.' })];
+                    return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
                 }
-                user = new User_1.default({
-                    company_name: company_name,
-                    email: email,
-                    password: password,
-                });
-                return [4 /*yield*/, user.save()];
-            case 3:
-                _b.sent();
-                sendTokenResponse(user, 200, res);
-                return [3 /*break*/, 5];
-            case 4:
-                err_1 = _b.sent();
-                console.log(err_1);
-                res.status(500).send('Server error.');
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
+                user = new User_1.default(req.body);
+                return [4 /*yield*/, user.save()
+                    // Return to avoid potentially latter execution, by Yuki
+                ];
+            case 2:
+                _a.sent();
+                // Return to avoid potentially latter execution, by Yuki
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
         }
     });
 }); };
-exports.usersignup = usersignup;
-// @route    POST api/user/signin
-// @desc     Signin user
+exports.regualrUserSignUp = regualrUserSignUp;
+// @route    POST api/regualruser/signIn
+// @desc     Sign regualruser in
 // @access   Public
-var userSignin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, password, user, isMatch, err_2;
+var regualrUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, email, password, user, isMatch;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 3, , 4]);
+                if (!(0, userValidate_1.signInBodyValidator)(req.body)) return [3 /*break*/, 3];
                 _a = req.body, email = _a.email, password = _a.password;
                 return [4 /*yield*/, User_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
                 if (!user) {
-                    return [2 /*return*/, res.status(400).json({ error: 'Invalid credentials.' })];
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
                 return [4 /*yield*/, user.matchPassword(password)];
             case 2:
                 isMatch = _b.sent();
                 if (!isMatch) {
-                    return [2 /*return*/, res.status(400).json({ error: 'Invalid credentials.' })];
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                sendTokenResponse(user, 200, res);
-                return [3 /*break*/, 4];
-            case 3:
-                err_2 = _b.sent();
-                console.log(err_2);
-                res.status(500).send('Server error.');
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signInBodyValidator.errors))];
         }
     });
 }); };
-exports.userSignin = userSignin;
-// @route    GET api/user/signout
-// @desc     Signout user
+exports.regualrUserSignIn = regualrUserSignIn;
+// @route    GET api/regualruser/signOut
+// @desc     Sign regualruser out
 // @access   Private
-var userSignout = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var regualrUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        try {
-            res.cookie('token', 'none', {
-                expires: new Date(Date.now() + 10 * 1000),
-                httpOnly: true,
-            });
-            res.status(200).json({
-                data: {},
-            });
-        }
-        catch (err) {
-            console.log(err);
-            res.status(500).send('Server error.');
-        }
+        // Using Clear Cookie seems to be a cleaner way
+        res.clearCookie('token', {
+            httpOnly: true,
+        });
+        res.status(200).json({
+            data: {},
+        });
         return [2 /*return*/];
     });
 }); };
-exports.userSignout = userSignout;
-// @route    GET api/user/
-// @desc     Get user infomation
+exports.regualrUserSignOut = regualrUserSignOut;
+// @route    GET api/regualruser/
+// @desc     Get regualruser infomation
 // @access   Private
-var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cookie, id, user, err_3;
+var getRegualrUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                cookie = req.cookies.token;
-                if (!cookie) {
-                    return [2 /*return*/, res.status(401).send('Something wrong.')];
-                }
-                id = jsonwebtoken_1.default.decode(cookie).id;
-                return [4 /*yield*/, User_1.default.findById(id)];
+                if (!req.user) return [3 /*break*/, 2];
+                return [4 /*yield*/, User_1.default.findById(req.user.id)];
             case 1:
                 user = _a.sent();
-                res.status(200).json({
-                    data: user,
-                });
-                return [3 /*break*/, 3];
-            case 2:
-                err_3 = _a.sent();
-                console.log(err_3);
-                res.status(500).send('Server error.');
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                if (user) {
+                    res.status(200).json({
+                        data: user,
+                    });
+                }
+                _a.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
         }
     });
 }); };
-exports.getUser = getUser;
-// @route    PUT api/user/
-// @desc     Update user infomation
+exports.getRegualrUser = getRegualrUser;
+// @route    PUT api/regualruser/
+// @desc     Update regualruser infomation
 // @access   Private
-var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, company_name, email, fieldsToUpdate, cookie, id, user, err_4;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+var updateRegualrUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var company_name, fieldsToUpdate, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
-                _a = req.body, company_name = _a.company_name, email = _a.email;
+                if (!(0, userValidate_1.updateRegualrUserBodyValidator)(req.body)) return [3 /*break*/, 3];
+                company_name = req.body.company_name;
                 fieldsToUpdate = {
                     company_name: company_name,
-                    email: email,
                 };
-                cookie = req.cookies.token;
-                if (!cookie) {
-                    return [2 /*return*/, res.status(401).send('Something wrong.')];
-                }
-                id = jsonwebtoken_1.default.decode(cookie).id;
-                return [4 /*yield*/, User_1.default.findByIdAndUpdate(id, fieldsToUpdate, {
+                if (!req.user) return [3 /*break*/, 2];
+                return [4 /*yield*/, User_1.default.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
                         new: true,
                         runValidators: true,
                     })];
             case 1:
-                user = _b.sent();
+                user = _a.sent();
                 res.status(200).json({
                     data: user,
                 });
-                return [3 /*break*/, 3];
-            case 2:
-                err_4 = _b.sent();
-                console.log(err_4);
-                res.status(500).send('Server error.');
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                _a.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.updateRegualrUserBodyValidator.errors))];
         }
     });
 }); };
-exports.updateUser = updateUser;
-// @route    PUT api/user/changepassword
+exports.updateRegualrUser = updateRegualrUser;
+// @route    PUT api/regualruser/changePassword
 // @desc     Update password
 // @access   Private
-var changepassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cookie, id, user, err_5;
+var changePassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 4, , 5]);
-                cookie = req.cookies.token;
-                if (!cookie) {
-                    return [2 /*return*/, res.status(401).send('Something wrong.')];
-                }
-                id = jsonwebtoken_1.default.decode(cookie).id;
-                return [4 /*yield*/, User_1.default.findById(id).select('+password')];
+                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.user)) return [3 /*break*/, 5];
+                if (!req.user) return [3 /*break*/, 4];
+                return [4 /*yield*/, User_1.default.findById(req.user.id).select('+password')];
             case 1:
                 user = _a.sent();
-                if (!user) {
-                    return [2 /*return*/, res.status(500).send('Server error.')];
-                }
-                return [4 /*yield*/, (user === null || user === void 0 ? void 0 : user.matchPassword(req.body.currentPassword))];
+                if (!user) return [3 /*break*/, 4];
+                return [4 /*yield*/, user.matchPassword(req.body.currentPassword)];
             case 2:
                 if (!(_a.sent())) {
-                    return [2 /*return*/, res.status(400).json({ error: 'Password is incorrect.' })];
+                    return [2 /*return*/, next(new errorResponse_1.default('Password is incorrect.', 400))];
                 }
                 user.password = req.body.newPassword;
                 return [4 /*yield*/, user.save()];
             case 3:
                 _a.sent();
-                sendTokenResponse(user, 200, res);
-                return [3 /*break*/, 5];
-            case 4:
-                err_5 = _a.sent();
-                console.log(err_5);
-                res.status(500).send('Server error.');
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 4: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
+            case 5: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
         }
     });
 }); };
-exports.changepassword = changepassword;
-// @route    POST api/user/forgetpassword
+exports.changePassword = changePassword;
+// @route    POST api/regualruser/forgetPassword
 // @desc     Forget password
 // @access   Public
-var forgetpassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cookie, user, token, resetUrl, message, err_6;
+var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, token, resetUrl, message, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                cookie = req.cookies.token;
-                if (cookie) {
-                    return [2 /*return*/, res.status(401).send('Something wrong. Maybe user has sign in.')];
-                }
+                if (!(0, userValidate_1.forgetPasswordBodyValidator)(req.body)) return [3 /*break*/, 8];
                 return [4 /*yield*/, User_1.default.findOne({ email: req.body.email })];
             case 1:
                 user = _a.sent();
                 if (!user) {
-                    return [2 /*return*/, res
-                            .status(404)
-                            .json({ error: 'There is no user with that email.' })];
+                    return [2 /*return*/, next(new errorResponse_1.default('There is no user with that email.', 404))];
                 }
                 token = user.getForgetPasswordToken();
-                console.log(token);
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })
                     // Create url
                 ];
@@ -291,31 +240,33 @@ var forgetpassword = function (req, res) { return __awaiter(void 0, void 0, void
                 res.status(200).json({ data: 'Email sent.' });
                 return [3 /*break*/, 7];
             case 5:
-                err_6 = _a.sent();
-                console.log(err_6);
+                err_1 = _a.sent();
+                console.log(err_1);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 6:
                 _a.sent();
-                res.status(500).send('Email could not be sent.');
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_1))];
+            case 7: return [3 /*break*/, 9];
+            case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.forgetPasswordBodyValidator.errors))];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
-exports.forgetpassword = forgetpassword;
+exports.forgetPassword = forgetPassword;
 // @desc        Reset password
-// @route       PUT /api/v1/user/forgetpassword/:resettoken
+// @route       PUT /api/v1/regualruser/forgetPassword/:resetToken
 // @access      Public
-var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var forgetPasswordToken, user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                if (!(0, userValidate_1.resetPasswordBodyValidator)(req.body)) return [3 /*break*/, 3];
                 forgetPasswordToken = crypto_1.default
                     .createHash('sha256')
-                    .update(req.params.resettoken)
+                    .update(req.params.resetToken)
                     .digest('hex');
                 return [4 /*yield*/, User_1.default.findOne({
                         forgetPasswordToken: forgetPasswordToken,
@@ -324,7 +275,7 @@ var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 
             case 1:
                 user = _a.sent();
                 if (!user) {
-                    return [2 /*return*/, res.status(400).json('Invalid token.')];
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid token.', 400))];
                 }
                 user.password = req.body.password;
                 user.forgetPasswordToken = undefined;
@@ -333,14 +284,16 @@ var resetpassword = function (req, res) { return __awaiter(void 0, void 0, void 
             case 2:
                 _a.sent();
                 res.status(200).json({ data: 'Your password has been set.' });
-                return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.resetPasswordBodyValidator.errors))];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.resetpassword = resetpassword;
+exports.resetPassword = resetPassword;
 // Helper function
 var sendTokenResponse = function (user, statusCode, res) {
-    var token = user.getSignedJwtToken();
+    var token = user.getSignedJWTToken();
     var options = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000),
         httpOnly: true,

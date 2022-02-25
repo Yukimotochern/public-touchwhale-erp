@@ -1,13 +1,13 @@
 import express from 'express'
 import {
-  userSignUp,
-  userSignIn,
-  userSignOut,
-  getUser,
-  updateUser,
-  changePassword,
-  forgetPassword,
-  resetPassword,
+	regualrUserSignUp,
+	regualrUserSignIn,
+	regualrUserSignOut,
+	getRegualrUser,
+	updateRegualrUser,
+	changePassword,
+	forgetPassword,
+	resetPassword,
 } from './userController'
 
 // Middleware
@@ -15,13 +15,16 @@ import authMiddleware from '../../middlewares/authMiddleware'
 
 const router = express.Router()
 
-router.route('/signUp').post(userSignUp)
+router.route('/signUp').post(regualrUserSignUp)
 
-router.route('/signIn').post(userSignIn)
+router.route('/signIn').post(regualrUserSignIn)
 
-router.route('/signOut').get(authMiddleware, userSignOut)
+router.route('/signOut').get(authMiddleware, regualrUserSignOut)
 
-router.route('/').get(authMiddleware, getUser).put(authMiddleware, updateUser)
+router
+	.route('/')
+	.get(authMiddleware, getRegualrUser)
+	.put(authMiddleware, updateRegualrUser)
 
 router.route('/changePassword').put(authMiddleware, changePassword)
 
