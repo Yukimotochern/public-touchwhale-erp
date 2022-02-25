@@ -46,7 +46,6 @@ export const SideMenu = () => {
           onClick={() => dispatch(toggle())}
         />
       </div>
-
       <Menu
         theme='dark'
         mode='inline'

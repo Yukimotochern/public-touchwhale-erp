@@ -4,9 +4,11 @@
   "description": "This is an ERP system made by Touch Whale.",
   "main": "index.js",
   "scripts": {
-    "start": "npm start  --prefix server",
+    "start": "npm start --prefix server",
     "server-dev": "npm run dev --prefix server",
+    "server": "concurrently \"npm run server-dev\" \"tsc -w -p ./server\"",
     "client": "npm start --prefix client",
+    "build": "npm run build --prefix client",
     "dev": "concurrently \"npm run server-dev\" \"npm run client\" \"tsc -w -p ./server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
