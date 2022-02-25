@@ -5,7 +5,7 @@ export default class ErrorResponse extends Error {
   constructor(
     public message: string,
     public statusCode: number = 500,
-    public errorData?: TWError | DefinedError[],
+    public errorData?: any,
     public messageArray?: string[]
   ) {
     super(message)

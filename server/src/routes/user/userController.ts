@@ -168,12 +168,13 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
       })
 
       res.status(200).json({ data: 'Email sent.' })
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
       user.forgetPasswordToken = undefined
       user.forgetPasswordExpire = undefined
 
       await user.save({ validateBeforeSave: false })
+
       return next(new ErrorResponse('Email could not be sent.', 500, err))
     }
   } else {
