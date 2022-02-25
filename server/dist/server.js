@@ -9,7 +9,7 @@ var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var dotenv_1 = __importDefault(require("dotenv"));
 // routes
 var api_1 = __importDefault(require("./routes/api"));
-var userRoutes_1 = __importDefault(require("./routes/user/userRoutes"));
+var userRoutes_1 = __importDefault(require("./routes/regularUser/userRoutes"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");
@@ -23,7 +23,7 @@ dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', '
 app.use(express_1.default.json({ limit: '999999MB' }));
 // Mount API
 app.use('/api/v1', api_1.default);
-app.use('/api/v1/user', userRoutes_1.default);
+app.use('/api/v1/regularuser', userRoutes_1.default);
 app.use(errorMiddleware_1.errorHandler);
 var PORT = process.env.SERVER_PORT || 5000;
 var server = app.listen(PORT, function () {

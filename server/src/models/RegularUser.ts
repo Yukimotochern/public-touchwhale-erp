@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import crypto from 'crypto'
 import { MongooseErrors } from '../utils/errorResponse'
 
-interface RegualrUserType {
+interface RegularUserType {
 	// editable for user
 	email: string
 	password: string
@@ -22,13 +22,13 @@ interface RegualrUserType {
 	getSignedJWTToken: () => string
 }
 
-interface RegualrUserJWTPayload extends JwtPayload {
+interface RegularUserJWTPayload extends JwtPayload {
 	id: string
 	iat: number
 	exp: number
 }
 
-const RegualrUserSchema = new mongoose.Schema<RegualrUserType>(
+const RegularUserSchema = new mongoose.Schema<RegularUserType>(
 	{
 		company_name: {
 			type: String,
@@ -60,7 +60,7 @@ const RegualrUserSchema = new mongoose.Schema<RegualrUserType>(
 	{ timestamps: true }
 )
 
-RegualrUserSchema.pre('save', async function (next) {
+RegularUserSchema.pre('save', async function (next) {
 	if (!this.isModified('password')) {
 		next()
 	}
@@ -69,19 +69,19 @@ RegualrUserSchema.pre('save', async function (next) {
 	this.password = await bcrtpt.hash(this.password, salt)
 })
 
-RegualrUserSchema.methods.getSignedJWTToken = function (): string {
+RegularUserSchema.methods.getSignedJWTToken = function (): string {
 	return jwt.sign({ id: this._id }, process.env.JWTSECRET, {
 		expiresIn: process.env.JWT_EXPIRE,
 	})
 }
 
-RegualrUserSchema.methods.matchPassword = async function (
+RegularUserSchema.methods.matchPassword = async function (
 	enteredPassword: string
 ) {
 	return await bcrtpt.compare(enteredPassword, this.password)
 }
 
-RegualrUserSchema.methods.getForgetPasswordToken = function () {
+RegularUserSchema.methods.getForgetPasswordToken = function () {
 	const token = crypto.randomBytes(20).toString('hex')
 
 	// Set hash token
@@ -96,7 +96,7 @@ RegualrUserSchema.methods.getForgetPasswordToken = function () {
 	return token
 }
 
-RegualrUserSchema.methods.getResetEmailToken = function () {
+RegularUserSchema.methods.getResetEmailToken = function () {
 	const token = crypto.randomBytes(20).toString('hex')
 
 	// Set hash token
@@ -108,11 +108,11 @@ RegualrUserSchema.methods.getResetEmailToken = function () {
 	return token
 }
 
-const RegualrUserModel = mongoose.model<RegualrUserType>(
-	'RegualrUser',
-	RegualrUserSchema
+const RegularUserModel = mongoose.model<RegularUserType>(
+	'RegularUser',
+	RegularUserSchema
 )
 
-export { RegualrUserType, RegualrUserJWTPayload }
+export { RegularUserType, RegularUserJWTPayload }
 
-export default RegualrUserModel
+export default RegularUserModel

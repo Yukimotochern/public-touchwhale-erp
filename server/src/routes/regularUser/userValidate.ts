@@ -1,12 +1,12 @@
 import { JSONSchemaType } from 'ajv'
 import ajvInstance from '../../utils/ajv'
-import { RegualrUserType } from '../../models/User'
+import { RegularUserType } from '../../models/RegularUser'
 
 // This type ensure that the data format between json schema here and mongoose schema are in sync. If not, type error will be thrown. Also, by excluding forgetPasswordToken and other fields, potential database injections that update the token via api call will not happen.
 // by Yuki
-interface RegualrUserEditableType
+interface RegularUserEditableType
 	extends Omit<
-		RegualrUserType,
+		RegularUserType,
 		| 'createdAt'
 		| 'updatedAt'
 		| 'matchPassword'
@@ -19,7 +19,7 @@ interface RegualrUserEditableType
 	> {}
 
 // Bellow, the purpose of variable is more explicit. by Yuki
-const signUpBodySchema: JSONSchemaType<RegualrUserEditableType> = {
+const signUpBodySchema: JSONSchemaType<RegularUserEditableType> = {
 	type: 'object',
 	properties: {
 		email: { type: 'string', format: 'email' },
@@ -37,10 +37,10 @@ const signUpBodyValidator = ajvInstance.compile(signUpBodySchema)
 
 // SignIn Validator
 // If someone ever changes 'email' to 'Email' in mongoose schema, error will occur here, by Yuki
-interface RegualrUserSignInBodyType
-	extends Pick<RegualrUserEditableType, 'email' | 'password'> {}
+interface RegularUserSignInBodyType
+	extends Pick<RegularUserEditableType, 'email' | 'password'> {}
 
-const signInBodySchema: JSONSchemaType<RegualrUserSignInBodyType> = {
+const signInBodySchema: JSONSchemaType<RegularUserSignInBodyType> = {
 	type: 'object',
 	properties: {
 		email: { type: 'string', format: 'email' },
@@ -56,10 +56,10 @@ const signInBodyValidator = ajvInstance.compile(signInBodySchema)
 // 'avatar' needs another route implementing cloud storage, which will be done latter
 // When updating email, the user should receive the reset-email-token sendding to the new email address.
 // That is to ensure that the user does not have typo in the email and really own that email address. by Yuki
-interface UpdateRegualrUserBodyType
-	extends Omit<RegualrUserEditableType, 'email' | 'password' | 'avatar'> {}
+interface UpdateRegularUserBodyType
+	extends Omit<RegularUserEditableType, 'email' | 'password' | 'avatar'> {}
 
-const updateRegualrUserBodySchema: JSONSchemaType<UpdateRegualrUserBodyType> = {
+const updateRegularUserBodySchema: JSONSchemaType<UpdateRegularUserBodyType> = {
 	type: 'object',
 	properties: {
 		company_name: { type: 'string', nullable: true },
@@ -68,14 +68,14 @@ const updateRegualrUserBodySchema: JSONSchemaType<UpdateRegualrUserBodyType> = {
 	additionalProperties: false,
 }
 
-const updateRegualrUserBodyValidator = ajvInstance.compile(
-	updateRegualrUserBodySchema
+const updateRegularUserBodyValidator = ajvInstance.compile(
+	updateRegularUserBodySchema
 )
 
-interface UpdateRegualrUserEmailBodyType
-	extends Pick<RegualrUserEditableType, 'email'> {}
+interface UpdateRegularUserEmailBodyType
+	extends Pick<RegularUserEditableType, 'email'> {}
 
-const updateRegualrUserEmailBodySchema: JSONSchemaType<UpdateRegualrUserEmailBodyType> =
+const updateRegularUserEmailBodySchema: JSONSchemaType<UpdateRegularUserEmailBodyType> =
 	{
 		type: 'object',
 		properties: {
@@ -85,8 +85,8 @@ const updateRegualrUserEmailBodySchema: JSONSchemaType<UpdateRegualrUserEmailBod
 		additionalProperties: false,
 	}
 
-const updateRegualrUserEmailBodyValidator = ajvInstance.compile(
-	updateRegualrUserEmailBodySchema
+const updateRegularUserEmailBodyValidator = ajvInstance.compile(
+	updateRegularUserEmailBodySchema
 )
 
 // Change User Password Validator
@@ -111,7 +111,7 @@ const changePasswordBodyValidator = ajvInstance.compile(
 
 // User Forget Password Validator
 interface ForgetPasswordBodyType
-	extends Pick<RegualrUserEditableType, 'email'> {}
+	extends Pick<RegularUserEditableType, 'email'> {}
 
 const forgetPasswordBodySchema: JSONSchemaType<ForgetPasswordBodyType> = {
 	type: 'object',
@@ -128,7 +128,7 @@ const forgetPasswordBodyValidator = ajvInstance.compile(
 
 // User reset password Validator
 interface ResetPasswordBodyType
-	extends Pick<RegualrUserEditableType, 'password'> {}
+	extends Pick<RegularUserEditableType, 'password'> {}
 
 const resetPasswordBodySchema: JSONSchemaType<ResetPasswordBodyType> = {
 	type: 'object',
@@ -144,8 +144,8 @@ const resetPasswordBodyValidator = ajvInstance.compile(resetPasswordBodySchema)
 export {
 	signInBodyValidator,
 	signUpBodyValidator,
-	updateRegualrUserBodyValidator,
-	updateRegualrUserEmailBodyValidator,
+	updateRegularUserBodyValidator,
+	updateRegularUserEmailBodyValidator,
 	changePasswordBodyValidator,
 	forgetPasswordBodyValidator,
 	resetPasswordBodyValidator,

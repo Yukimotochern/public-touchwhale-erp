@@ -4,10 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var authMiddleware = function (req, res, next) {
     var token = req.cookies.token;
     if (!token) {
-        return res.status(401).json({ error: 'No token, authorization denied.' });
+        return next(new errorResponse_1.default('No token, authorization denied.', 401));
     }
     // console.log(token)
     try {
@@ -16,7 +17,7 @@ var authMiddleware = function (req, res, next) {
         next();
     }
     catch (err) {
-        res.status(400).json({ error: 'Token is invalid.' });
+        return next(new errorResponse_1.default('Token is invalid.', 401));
     }
 };
 exports.default = authMiddleware;
