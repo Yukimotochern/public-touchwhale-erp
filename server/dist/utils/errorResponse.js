@@ -17,15 +17,16 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var ErrorResponse = /** @class */ (function (_super) {
     __extends(ErrorResponse, _super);
-    function ErrorResponse(message, statusCode, errorData, messageArray) {
+    function ErrorResponse(msg, statusCode, errorData, messageArray) {
+        if (msg === void 0) { msg = 'Unspecified Error Message'; }
         if (statusCode === void 0) { statusCode = 500; }
-        var _this = _super.call(this, message) || this;
-        _this.message = message;
+        var _this = _super.call(this, msg) || this;
         _this.statusCode = statusCode;
         _this.errorData = errorData;
         _this.messageArray = messageArray;
         _this.name = 'CustomError';
         return _this;
+        // Object.setPrototypeOf(this, ErrorResponse.prototype)
     }
     return ErrorResponse;
 }(Error));

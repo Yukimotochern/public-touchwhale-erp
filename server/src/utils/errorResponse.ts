@@ -1,15 +1,15 @@
 import { DefinedError } from 'ajv'
 import { Error as mgError } from 'mongoose'
 export default class ErrorResponse extends Error {
-  name: 'CustomError'
+  public name: 'CustomError' = 'CustomError'
   constructor(
-    public message: string,
+    msg: string = 'Unspecified Error Message',
     public statusCode: number = 500,
     public errorData?: any,
     public messageArray?: string[]
   ) {
-    super(message)
-    this.name = 'CustomError'
+    super(msg)
+    // Object.setPrototypeOf(this, ErrorResponse.prototype)
   }
 }
 

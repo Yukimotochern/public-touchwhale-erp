@@ -17,7 +17,6 @@ var app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 // Load env vars
 dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
-console.log(__dirname, path_1.default.join(__dirname, '..', 'config', 'config.env'));
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware
