@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer')
+import nodemailer from 'nodemailer'
 
 interface options {
   to: string
@@ -9,7 +9,7 @@ interface options {
 export const sendEmail = async (options: options) => {
   const mailer = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    port: +process.env.SMTP_PORT,
     auth: {
       user: process.env.SMTP_USERNAME,
       pass: process.env.SMTP_PASSWORD,
