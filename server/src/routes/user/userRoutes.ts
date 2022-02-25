@@ -1,13 +1,13 @@
 import express from 'express'
 import {
-	regualrUserSignUp,
-	regualrUserSignIn,
-	regualrUserSignOut,
-	getRegualrUser,
-	updateRegualrUser,
-	changePassword,
-	forgetPassword,
-	resetPassword,
+  regualrUserSignUp,
+  regualrUserSignIn,
+  regualrUserSignOut,
+  getRegualrUser,
+  updateRegualrUser,
+  changePassword,
+  forgetPassword,
+  resetPassword,
 } from './userController'
 
 // Middleware
@@ -22,9 +22,9 @@ router.route('/signIn').post(regualrUserSignIn)
 router.route('/signOut').get(authMiddleware, regualrUserSignOut)
 
 router
-	.route('/')
-	.get(authMiddleware, getRegualrUser)
-	.put(authMiddleware, updateRegualrUser)
+  .route('/')
+  .get(authMiddleware, getRegualrUser)
+  .put(authMiddleware, updateRegualrUser)
 
 router.route('/changePassword').put(authMiddleware, changePassword)
 

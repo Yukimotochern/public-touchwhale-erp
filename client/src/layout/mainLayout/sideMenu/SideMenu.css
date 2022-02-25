@@ -44,7 +44,7 @@ a.mynavIcon {
   /* margin: 5px 5px 5px 10px; */
   /* padding: 1rem 0 0rem 0; */
   display: inline-block;
-  font-size: 17px;
+  font-size: 18px;
   color: #fff;
   opacity: 90%;
 }
@@ -54,7 +54,7 @@ a.mynavIcon {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.2rem 0rem 1rem;
+  padding: 10px 16px 0rem 16px;
   overflow: hidden;
 }
 
