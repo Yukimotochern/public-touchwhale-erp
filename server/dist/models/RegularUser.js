@@ -62,6 +62,7 @@ var RegularUserSchema = new mongoose_1.default.Schema({
         minlength: 8,
         select: false,
     },
+    provider: { type: String, enum: ['TouchWhale', 'Google'], required: true },
     avatar: {
         type: String,
     },

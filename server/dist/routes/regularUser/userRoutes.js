@@ -4,12 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var passport_1 = __importDefault(require("passport"));
 var userController_1 = require("./userController");
 // Middleware
 var authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 var errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
 var router = express_1.default.Router();
 router.route('/signUp').post((0, errorCatcher_1.default)(userController_1.regularUserSignUp));
+router
+    .route('/googleOAuth')
+    .get(passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
+router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', { failureRedirect: '/login' }), //failureRedirect need to be changed
+userController_1.OAuthCallback);
 router.route('/signIn').post((0, errorCatcher_1.default)(userController_1.regularUserSignIn));
 router.route('/signOut').get(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.regularUserSignOut));
 router

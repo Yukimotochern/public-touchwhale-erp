@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.regularUserSignIn = exports.regularUserSignUp = void 0;
+exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.OAuthCallback = exports.regularUserSignIn = exports.regularUserSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
@@ -65,6 +65,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 }
                 // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
                 user = new RegularUser_1.default(req.body);
+                user.provider = 'TouchWhale';
                 return [4 /*yield*/, user.save()
                     // Return to avoid potentially latter execution, by Yuki
                 ];
@@ -105,6 +106,28 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.regularUserSignIn = regularUserSignIn;
+// @route    Google OAuth callback
+// @desc     Call back function for google OAuth
+// @access   Public
+var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var email, user, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                email = req.user._json.email;
+                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
+            case 1:
+                user = _a.sent();
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 2:
+                err_1 = _a.sent();
+                return [2 /*return*/, new errorResponse_1.default('Google Bad Request', 500)];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.OAuthCallback = OAuthCallback;
 // @route    GET api/v1/regularUser/signOut
 // @desc     Sign regularuser out
 // @access   Private
@@ -211,7 +234,7 @@ exports.changePassword = changePassword;
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, token, resetUrl, message, err_1;
+    var user, token, resetUrl, message, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -243,14 +266,14 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 res.status(200).json({ data: 'Email sent.' });
                 return [3 /*break*/, 7];
             case 5:
-                err_1 = _a.sent();
-                console.log(err_1);
+                err_2 = _a.sent();
+                console.log(err_2);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 6:
                 _a.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_1))];
+                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_2))];
             case 7: return [3 /*break*/, 9];
             case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.forgetPasswordBodyValidator.errors))];
             case 9: return [2 /*return*/];

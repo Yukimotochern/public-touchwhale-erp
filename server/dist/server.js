@@ -7,11 +7,13 @@ var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var dotenv_1 = __importDefault(require("dotenv"));
+var passport_1 = __importDefault(require("passport"));
 // routes
 var api_1 = __importDefault(require("./routes/api"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");
+var passportOAuth_1 = __importDefault(require("./utils/passportOAuth"));
 var app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 // Load env vars
@@ -20,6 +22,13 @@ dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', '
 (0, mongodb_1.default)();
 // Init Middleware
 app.use(express_1.default.json({ limit: '999999MB' }));
+passport_1.default.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+passport_1.default.deserializeUser(function (user, done) {
+    done(null, user);
+});
+(0, passportOAuth_1.default)(passport_1.default);
 // Mount API
 app.use('/api/v1', api_1.default);
 app.use(errorMiddleware_1.errorHandler);
