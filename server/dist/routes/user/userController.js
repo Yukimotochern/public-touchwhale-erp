@@ -39,18 +39,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.regularUserSignIn = exports.regularUserSignUp = void 0;
+exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegualrUser = exports.getRegualrUser = exports.regualrUserSignOut = exports.regualrUserSignIn = exports.regualrUserSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
 var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
-// @route    POST api/v1/regularuser/signUp
-// @desc     Signup regularuser
+// @route    POST api/regualruser/signUp
+// @desc     Signup regualruser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
-var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+var regualrUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var email, user;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -76,11 +76,11 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
         }
     });
 }); };
-exports.regularUserSignUp = regularUserSignUp;
-// @route    POST api/v1/regularuser/signIn
-// @desc     Sign regularuser in
+exports.regualrUserSignUp = regualrUserSignUp;
+// @route    POST api/regualruser/signIn
+// @desc     Sign regualruser in
 // @access   Public
-var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+var regualrUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, email, password, user, isMatch;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -104,11 +104,11 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
         }
     });
 }); };
-exports.regularUserSignIn = regularUserSignIn;
-// @route    GET api/v1/regularuser/signOut
-// @desc     Sign regularuser out
+exports.regualrUserSignIn = regualrUserSignIn;
+// @route    GET api/regualruser/signOut
+// @desc     Sign regualruser out
 // @access   Private
-var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+var regualrUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // Using Clear Cookie seems to be a cleaner way
         res.clearCookie('token', {
@@ -120,11 +120,11 @@ var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, vo
         return [2 /*return*/];
     });
 }); };
-exports.regularUserSignOut = regularUserSignOut;
-// @route    GET api/v1/regularuser/
-// @desc     Get regularuser infomation
+exports.regualrUserSignOut = regualrUserSignOut;
+// @route    GET api/regualruser/
+// @desc     Get regualruser infomation
 // @access   Private
-var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+var getRegualrUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var user;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -138,22 +138,21 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
                         data: user,
                     });
                 }
-                return [3 /*break*/, 3];
+                _a.label = 2;
             case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getRegularUser = getRegularUser;
-// @route    PUT api/v1/regularuser/
-// @desc     Update regularuser infomation
+exports.getRegualrUser = getRegualrUser;
+// @route    PUT api/regualruser/
+// @desc     Update regualruser infomation
 // @access   Private
-var updateRegularUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+var updateRegualrUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var company_name, fieldsToUpdate, user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.updateRegularUserBodyValidator)(req.body)) return [3 /*break*/, 4];
+                if (!(0, userValidate_1.updateRegualrUserBodyValidator)(req.body)) return [3 /*break*/, 3];
                 company_name = req.body.company_name;
                 fieldsToUpdate = {
                     company_name: company_name,
@@ -168,16 +167,14 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
                 res.status(200).json({
                     data: user,
                 });
-                return [3 /*break*/, 3];
+                _a.label = 2;
             case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 3: return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.updateRegularUserBodyValidator.errors))];
-            case 5: return [2 /*return*/];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.updateRegualrUserBodyValidator.errors))];
         }
     });
 }); };
-exports.updateRegularUser = updateRegularUser;
-// @route    PUT api/v1/regularuser/changePassword
+exports.updateRegualrUser = updateRegualrUser;
+// @route    PUT api/regualruser/changePassword
 // @desc     Update password
 // @access   Private
 var changePassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -207,7 +204,7 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     });
 }); };
 exports.changePassword = changePassword;
-// @route    POST api/v1/regularuser/forgetPassword
+// @route    POST api/regualruser/forgetPassword
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -259,7 +256,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
 }); };
 exports.forgetPassword = forgetPassword;
 // @desc        Reset password
-// @route       PUT /api/v1/regularuser/forgetPassword/:resetToken
+// @route       PUT /api/v1/regualruser/forgetPassword/:resetToken
 // @access      Public
 var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var forgetPasswordToken, user;

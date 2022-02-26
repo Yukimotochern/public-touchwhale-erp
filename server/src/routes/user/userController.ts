@@ -9,27 +9,27 @@ import ErrorResponse, { TWError } from '../../utils/errorResponse'
 import {
   signInBodyValidator,
   signUpBodyValidator,
-  updateRegularUserBodyValidator,
+  updateRegualrUserBodyValidator,
   changePasswordBodyValidator,
   forgetPasswordBodyValidator,
   resetPasswordBodyValidator,
 } from './userValidate'
 
-import RegularUserModel from '../../models/RegularUser'
+import RegualrUserModel from '../../models/RegularUser'
 
-// @route    POST api/v1/regularuser/signUp
-// @desc     Signup regularuser
+// @route    POST api/regualruser/signUp
+// @desc     Signup regualruser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
-export const regularUserSignUp: RequestHandler = async (req, res, next) => {
+export const regualrUserSignUp: RequestHandler = async (req, res, next) => {
   if (signUpBodyValidator(req.body)) {
     const { email } = req.body
-    let user = await RegularUserModel.findOne({ email })
+    let user = await RegualrUserModel.findOne({ email })
     if (user) {
       return next(new ErrorResponse('User already exists.', 409))
     }
     // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
-    user = new RegularUserModel(req.body)
+    user = new RegualrUserModel(req.body)
 
     await user.save()
 
@@ -40,13 +40,13 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/v1/regularuser/signIn
-// @desc     Sign regularuser in
+// @route    POST api/regualruser/signIn
+// @desc     Sign regualruser in
 // @access   Public
-export const regularUserSignIn: RequestHandler = async (req, res, next) => {
+export const regualrUserSignIn: RequestHandler = async (req, res, next) => {
   if (signInBodyValidator(req.body)) {
     const { email, password } = req.body
-    const user = await RegularUserModel.findOne({ email }).select('+password')
+    const user = await RegualrUserModel.findOne({ email }).select('+password')
     if (!user) {
       return next(new ErrorResponse('Invalid credentials.', 401))
     }
@@ -60,10 +60,10 @@ export const regularUserSignIn: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    GET api/v1/regularuser/signOut
-// @desc     Sign regularuser out
+// @route    GET api/regualruser/signOut
+// @desc     Sign regualruser out
 // @access   Private
-export const regularUserSignOut: PrivateRequestHandler = async (
+export const regualrUserSignOut: PrivateRequestHandler = async (
   req,
   res,
   next
@@ -78,33 +78,32 @@ export const regularUserSignOut: PrivateRequestHandler = async (
   })
 }
 
-// @route    GET api/v1/regularuser/
-// @desc     Get regularuser infomation
+// @route    GET api/regualruser/
+// @desc     Get regualruser infomation
 // @access   Private
 
-export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
+export const getRegualrUser: PrivateRequestHandler = async (req, res, next) => {
   // Since this is a private route, the req should have contained the user object.
   if (req.user) {
-    const user = await RegularUserModel.findById(req.user.id)
+    const user = await RegualrUserModel.findById(req.user.id)
     if (user) {
       res.status(200).json({
         data: user,
       })
     }
-  } else {
-    return next(new ErrorResponse('Server Error'))
   }
+  return next(new ErrorResponse('Server Error'))
 }
 
-// @route    PUT api/v1/regularuser/
-// @desc     Update regularuser infomation
+// @route    PUT api/regualruser/
+// @desc     Update regualruser infomation
 // @access   Private
-export const updateRegularUser: PrivateRequestHandler = async (
+export const updateRegualrUser: PrivateRequestHandler = async (
   req,
   res,
   next
 ) => {
-  if (updateRegularUserBodyValidator(req.body)) {
+  if (updateRegualrUserBodyValidator(req.body)) {
     const { company_name } = req.body
     const fieldsToUpdate = {
       company_name,
@@ -112,7 +111,7 @@ export const updateRegularUser: PrivateRequestHandler = async (
     // When updating email, the user should receive the reset-email-token sendding to the new email address.
     // That is to ensure that the user does not have typo in the email and really own that email address. by Yuki
     if (req.user) {
-      const user = await RegularUserModel.findByIdAndUpdate(
+      const user = await RegualrUserModel.findByIdAndUpdate(
         req.user.id,
         fieldsToUpdate,
         {
@@ -123,21 +122,20 @@ export const updateRegularUser: PrivateRequestHandler = async (
       res.status(200).json({
         data: user,
       })
-    } else {
-      return next(new ErrorResponse('Server Error'))
     }
+    return next(new ErrorResponse('Server Error'))
   } else {
-    return next(avjErrorWrapper(updateRegularUserBodyValidator.errors))
+    return next(avjErrorWrapper(updateRegualrUserBodyValidator.errors))
   }
 }
 
-// @route    PUT api/v1/regularuser/changePassword
+// @route    PUT api/regualruser/changePassword
 // @desc     Update password
 // @access   Private
 export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   if (changePasswordBodyValidator(req.body) && req.user) {
     if (req.user) {
-      const user = await RegularUserModel.findById(req.user.id).select(
+      const user = await RegualrUserModel.findById(req.user.id).select(
         '+password'
       )
       if (user) {
@@ -155,12 +153,12 @@ export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/v1/regularuser/forgetPassword
+// @route    POST api/regualruser/forgetPassword
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {
   if (forgetPasswordBodyValidator(req.body)) {
-    const user = await RegularUserModel.findOne({ email: req.body.email })
+    const user = await RegualrUserModel.findOne({ email: req.body.email })
     if (!user) {
       return next(new ErrorResponse('There is no user with that email.', 404))
     }
@@ -193,7 +191,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 }
 
 // @desc        Reset password
-// @route       PUT /api/v1/regularuser/forgetPassword/:resetToken
+// @route       PUT /api/v1/regualruser/forgetPassword/:resetToken
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
   if (resetPasswordBodyValidator(req.body)) {
@@ -202,7 +200,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
       .update(req.params.resetToken)
       .digest('hex')
 
-    const user = await RegularUserModel.findOne({
+    const user = await RegualrUserModel.findOne({
       forgetPasswordToken,
       forgetPasswordExpire: { $gt: Date.now() },
     })

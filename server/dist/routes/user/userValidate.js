@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPasswordBodyValidator = exports.forgetPasswordBodyValidator = exports.changePasswordBodyValidator = exports.updateRegularUserEmailBodyValidator = exports.updateRegularUserBodyValidator = exports.signUpBodyValidator = exports.signInBodyValidator = void 0;
+exports.resetPasswordBodyValidator = exports.forgetPasswordBodyValidator = exports.changePasswordBodyValidator = exports.updateRegualrUserEmailBodyValidator = exports.updateRegualrUserBodyValidator = exports.signUpBodyValidator = exports.signInBodyValidator = void 0;
 var ajv_1 = __importDefault(require("../../utils/ajv"));
 // Bellow, the purpose of variable is more explicit. by Yuki
 var signUpBodySchema = {
@@ -30,7 +30,7 @@ var signInBodySchema = {
 };
 var signInBodyValidator = ajv_1.default.compile(signInBodySchema);
 exports.signInBodyValidator = signInBodyValidator;
-var updateRegularUserBodySchema = {
+var updateRegualrUserBodySchema = {
     type: 'object',
     properties: {
         company_name: { type: 'string', nullable: true },
@@ -38,9 +38,9 @@ var updateRegularUserBodySchema = {
     required: [],
     additionalProperties: false,
 };
-var updateRegularUserBodyValidator = ajv_1.default.compile(updateRegularUserBodySchema);
-exports.updateRegularUserBodyValidator = updateRegularUserBodyValidator;
-var updateRegularUserEmailBodySchema = {
+var updateRegualrUserBodyValidator = ajv_1.default.compile(updateRegualrUserBodySchema);
+exports.updateRegualrUserBodyValidator = updateRegualrUserBodyValidator;
+var updateRegualrUserEmailBodySchema = {
     type: 'object',
     properties: {
         email: { type: 'string', format: 'email' },
@@ -48,8 +48,8 @@ var updateRegularUserEmailBodySchema = {
     required: ['email'],
     additionalProperties: false,
 };
-var updateRegularUserEmailBodyValidator = ajv_1.default.compile(updateRegularUserEmailBodySchema);
-exports.updateRegularUserEmailBodyValidator = updateRegularUserEmailBodyValidator;
+var updateRegualrUserEmailBodyValidator = ajv_1.default.compile(updateRegualrUserEmailBodySchema);
+exports.updateRegualrUserEmailBodyValidator = updateRegualrUserEmailBodyValidator;
 var changePasswordBodySchema = {
     type: 'object',
     properties: {
