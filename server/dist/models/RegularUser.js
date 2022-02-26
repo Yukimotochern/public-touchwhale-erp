@@ -127,5 +127,5 @@ RegularUserSchema.methods.getResetEmailToken = function () {
     this.resetEmailExpire = Date.now() + 10 * 60 * 1000;
     return token;
 };
-var RegularUserModel = mongoose_1.default.model('RegularUser', RegularUserSchema);
+var RegularUserModel = mongoose_1.default.model('regular_user', RegularUserSchema);
 exports.default = RegularUserModel;

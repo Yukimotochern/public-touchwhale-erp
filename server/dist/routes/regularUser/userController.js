@@ -46,7 +46,7 @@ var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
 var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
-// @route    POST api/v1/regularuser/signUp
+// @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
@@ -77,7 +77,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.regularUserSignUp = regularUserSignUp;
-// @route    POST api/v1/regularuser/signIn
+// @route    POST api/v1/regularUser/signIn
 // @desc     Sign regularuser in
 // @access   Public
 var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -105,7 +105,7 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.regularUserSignIn = regularUserSignIn;
-// @route    GET api/v1/regularuser/signOut
+// @route    GET api/v1/regularUser/signOut
 // @desc     Sign regularuser out
 // @access   Private
 var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -121,7 +121,7 @@ var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, vo
     });
 }); };
 exports.regularUserSignOut = regularUserSignOut;
-// @route    GET api/v1/regularuser/
+// @route    GET api/v1/regularUser/
 // @desc     Get regularuser infomation
 // @access   Private
 var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -145,8 +145,8 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
     });
 }); };
 exports.getRegularUser = getRegularUser;
-// @route    PUT api/v1/regularuser/
-// @desc     Update regularuser infomation
+// @route    PUT api/v1/regularUser/
+// @desc     Update regularUser infomation
 // @access   Private
 var updateRegularUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var company_name, fieldsToUpdate, user;
@@ -177,7 +177,7 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.updateRegularUser = updateRegularUser;
-// @route    PUT api/v1/regularuser/changePassword
+// @route    PUT api/v1/regularUser/changePassword
 // @desc     Update password
 // @access   Private
 var changePassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -207,7 +207,7 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     });
 }); };
 exports.changePassword = changePassword;
-// @route    POST api/v1/regularuser/forgetPassword
+// @route    POST api/v1/regularUser/forgetPassword
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -259,7 +259,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
 }); };
 exports.forgetPassword = forgetPassword;
 // @desc        Reset password
-// @route       PUT /api/v1/regularuser/forgetPassword/:resetToken
+// @route       PUT /api/v1/regularUser/forgetPassword/:resetToken
 // @access      Public
 var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var forgetPasswordToken, user;

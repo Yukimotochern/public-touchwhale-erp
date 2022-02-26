@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 import { sendEmail } from '../../utils/sendEmail'
 import { avjErrorWrapper } from '../../utils/ajv'
-import ErrorResponse, { TWError } from '../../utils/errorResponse'
+import ErrorResponse from '../../utils/errorResponse'
 
 import {
   signInBodyValidator,
@@ -17,23 +17,20 @@ import {
 
 import RegualrUserModel from '../../models/RegularUser'
 
-// @route    POST api/regualruser/signUp
-// @desc     Signup regualruser
+// @route    POST api/regualrUser/signUp
+// @desc     Sign up regular user
 // @access   Public
-// RequestHandler is an easier way to set types, by Yuki
-export const regualrUserSignUp: RequestHandler = async (req, res, next) => {
+export const userSignUp: RequestHandler = async (req, res, next) => {
   if (signUpBodyValidator(req.body)) {
     const { email } = req.body
     let user = await RegualrUserModel.findOne({ email })
     if (user) {
       return next(new ErrorResponse('User already exists.', 409))
     }
-    // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
     user = new RegualrUserModel(req.body)
 
     await user.save()
 
-    // Return to avoid potentially latter execution, by Yuki
     return sendTokenResponse(user, 200, res)
   } else {
     return next(avjErrorWrapper(signUpBodyValidator.errors))
@@ -43,7 +40,7 @@ export const regualrUserSignUp: RequestHandler = async (req, res, next) => {
 // @route    POST api/regualruser/signIn
 // @desc     Sign regualruser in
 // @access   Public
-export const regualrUserSignIn: RequestHandler = async (req, res, next) => {
+export const userSignIn: RequestHandler = async (req, res, next) => {
   if (signInBodyValidator(req.body)) {
     const { email, password } = req.body
     const user = await RegualrUserModel.findOne({ email }).select('+password')
@@ -63,11 +60,7 @@ export const regualrUserSignIn: RequestHandler = async (req, res, next) => {
 // @route    GET api/regualruser/signOut
 // @desc     Sign regualruser out
 // @access   Private
-export const regualrUserSignOut: PrivateRequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const userSignOut: PrivateRequestHandler = async (req, res, next) => {
   // Using Clear Cookie seems to be a cleaner way
   res.clearCookie('token', {
     httpOnly: true,
@@ -82,7 +75,7 @@ export const regualrUserSignOut: PrivateRequestHandler = async (
 // @desc     Get regualruser infomation
 // @access   Private
 
-export const getRegualrUser: PrivateRequestHandler = async (req, res, next) => {
+export const getUser: PrivateRequestHandler = async (req, res, next) => {
   // Since this is a private route, the req should have contained the user object.
   if (req.user) {
     const user = await RegualrUserModel.findById(req.user.id)
@@ -98,11 +91,7 @@ export const getRegualrUser: PrivateRequestHandler = async (req, res, next) => {
 // @route    PUT api/regualruser/
 // @desc     Update regualruser infomation
 // @access   Private
-export const updateRegualrUser: PrivateRequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const updateUser: PrivateRequestHandler = async (req, res, next) => {
   if (updateRegualrUserBodyValidator(req.body)) {
     const { company_name } = req.body
     const fieldsToUpdate = {

@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 import { sendEmail } from '../../utils/sendEmail'
 import { avjErrorWrapper } from '../../utils/ajv'
-import ErrorResponse, { TWError } from '../../utils/errorResponse'
+import ErrorResponse from '../../utils/errorResponse'
 
 import {
   signInBodyValidator,
@@ -17,7 +17,7 @@ import {
 
 import RegularUserModel from '../../models/RegularUser'
 
-// @route    POST api/v1/regularuser/signUp
+// @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
@@ -40,7 +40,7 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/v1/regularuser/signIn
+// @route    POST api/v1/regularUser/signIn
 // @desc     Sign regularuser in
 // @access   Public
 export const regularUserSignIn: RequestHandler = async (req, res, next) => {
@@ -60,7 +60,7 @@ export const regularUserSignIn: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    GET api/v1/regularuser/signOut
+// @route    GET api/v1/regularUser/signOut
 // @desc     Sign regularuser out
 // @access   Private
 export const regularUserSignOut: PrivateRequestHandler = async (
@@ -78,7 +78,7 @@ export const regularUserSignOut: PrivateRequestHandler = async (
   })
 }
 
-// @route    GET api/v1/regularuser/
+// @route    GET api/v1/regularUser/
 // @desc     Get regularuser infomation
 // @access   Private
 
@@ -96,8 +96,8 @@ export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    PUT api/v1/regularuser/
-// @desc     Update regularuser infomation
+// @route    PUT api/v1/regularUser/
+// @desc     Update regularUser infomation
 // @access   Private
 export const updateRegularUser: PrivateRequestHandler = async (
   req,
@@ -131,7 +131,7 @@ export const updateRegularUser: PrivateRequestHandler = async (
   }
 }
 
-// @route    PUT api/v1/regularuser/changePassword
+// @route    PUT api/v1/regularUser/changePassword
 // @desc     Update password
 // @access   Private
 export const changePassword: PrivateRequestHandler = async (req, res, next) => {
@@ -155,7 +155,7 @@ export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/v1/regularuser/forgetPassword
+// @route    POST api/v1/regularUser/forgetPassword
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {
@@ -193,7 +193,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 }
 
 // @desc        Reset password
-// @route       PUT /api/v1/regularuser/forgetPassword/:resetToken
+// @route       PUT /api/v1/regularUser/forgetPassword/:resetToken
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
   if (resetPasswordBodyValidator(req.body)) {

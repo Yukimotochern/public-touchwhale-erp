@@ -23,7 +23,7 @@ var errorHandler = function (err, req, res, next) {
         messageArray = Object.values(err.errors).map(function (val) { return val.message; });
         error = new errorResponse_1.default(message, 400, err, messageArray);
     }
-    res.status(error.statusCode || 500).json({
+    return res.status(error.statusCode || 500).json({
         success: false,
         error: {
             message: error.message,
