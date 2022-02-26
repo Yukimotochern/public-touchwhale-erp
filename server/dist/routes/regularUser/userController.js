@@ -110,20 +110,33 @@ exports.regularUserSignIn = regularUserSignIn;
 // @desc     Call back function for google OAuth
 // @access   Public
 var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, user, err_1;
+    var profile, email, user, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                email = req.user._json.email;
+                _a.trys.push([0, 5, , 6]);
+                profile = req.user._json;
+                email = profile.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+                if (!!user) return [3 /*break*/, 4];
+                return [4 /*yield*/, new RegularUser_1.default({
+                        email: profile.email,
+                        password: crypto_1.default.randomBytes(10).toString('hex'),
+                        provider: 'Google',
+                    })];
             case 2:
+                user = _a.sent();
+                return [4 /*yield*/, user.save()];
+            case 3:
+                _a.sent();
+                _a.label = 4;
+            case 4: return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 5:
                 err_1 = _a.sent();
                 return [2 /*return*/, new errorResponse_1.default('Google Bad Request', 500)];
-            case 3: return [2 /*return*/];
+            case 6: return [2 /*return*/];
         }
     });
 }); };

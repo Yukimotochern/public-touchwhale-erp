@@ -1,7 +1,8 @@
-import RegularUserModel from '../models/RegularUser'
-import GoogleStrategy from 'passport-google-oauth20'
-import ErrorResponse from './errorResponse'
-import crypto from 'crypto'
+import GoogleStrategy, { Profile } from 'passport-google-oauth20'
+
+export interface RequestWithGoogleProfile extends Express.Request {
+	user?: Profile
+}
 
 const passportOAuth = (passport: any) => {
 	passport.use(
@@ -14,26 +15,7 @@ const passportOAuth = (passport: any) => {
 					'http://localhost:5000/api/v1/regularUser/googleOAuth/callback',
 			},
 			async function (accessToken, refreshToken, profile, cb) {
-				try {
-					cb(null, profile)
-
-					const { picture, email } = profile._json
-
-					const user = await RegularUserModel.findOne({ email })
-
-					if (!user) {
-						const user = new RegularUserModel({
-							email,
-							avatar: picture,
-							provider: 'Google',
-							password: crypto.randomBytes(10).toString('hex'),
-						})
-
-						await user.save()
-					}
-				} catch (err) {
-					return new ErrorResponse('BBBBBBBBBB')
-				}
+				cb(null, profile)
 			}
 		)
 	)

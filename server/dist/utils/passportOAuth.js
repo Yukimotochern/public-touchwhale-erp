@@ -39,10 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RegularUser_1 = __importDefault(require("../models/RegularUser"));
 var passport_google_oauth20_1 = __importDefault(require("passport-google-oauth20"));
-var errorResponse_1 = __importDefault(require("./errorResponse"));
-var crypto_1 = __importDefault(require("crypto"));
 var passportOAuth = function (passport) {
     passport.use(new passport_google_oauth20_1.default.Strategy({
         clientID: '854772499634-6dpb25lhg30eh5b77f83pq3uufgjau0q.apps.googleusercontent.com',
@@ -50,33 +47,9 @@ var passportOAuth = function (passport) {
         callbackURL: 'http://localhost:5000/api/v1/regularUser/googleOAuth/callback',
     }, function (accessToken, refreshToken, profile, cb) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, picture, email, user, user_1, err_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 4, , 5]);
-                        cb(null, profile);
-                        _a = profile._json, picture = _a.picture, email = _a.email;
-                        return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
-                    case 1:
-                        user = _b.sent();
-                        if (!!user) return [3 /*break*/, 3];
-                        user_1 = new RegularUser_1.default({
-                            email: email,
-                            avatar: picture,
-                            provider: 'Google',
-                            password: crypto_1.default.randomBytes(10).toString('hex'),
-                        });
-                        return [4 /*yield*/, user_1.save()];
-                    case 2:
-                        _b.sent();
-                        _b.label = 3;
-                    case 3: return [3 /*break*/, 5];
-                    case 4:
-                        err_1 = _b.sent();
-                        return [2 /*return*/, new errorResponse_1.default('BBBBBBBBBB')];
-                    case 5: return [2 /*return*/];
-                }
+            return __generator(this, function (_a) {
+                cb(null, profile);
+                return [2 /*return*/];
             });
         });
     }));

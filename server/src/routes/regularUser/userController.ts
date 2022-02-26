@@ -1,4 +1,5 @@
-import { RequestHandler, Response } from 'express'
+import { NextFunction, RequestHandler, Response } from 'express'
+import { RequestWithGoogleProfile } from '../../utils/passportOAuth'
 import { PrivateRequestHandler } from '../../middlewares/authMiddleware'
 import crypto from 'crypto'
 
@@ -65,12 +66,34 @@ export const regularUserSignIn: RequestHandler = async (req, res, next) => {
 // @route    Google OAuth callback
 // @desc     Call back function for google OAuth
 // @access   Public
-export const OAuthCallback: RequestHandler = async (req: any, res, next) => {
+export const OAuthCallback = async (
+	req: RequestWithGoogleProfile,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
-		const email = req.user._json.email
-		const user = await RegularUserModel.findOne({ email })
+		if (req.user) {
+			const profile = req.user._json
+			const email = profile.email
 
-		return sendTokenResponse(user, 200, res)
+			let user = await RegularUserModel.findOne({ email })
+
+			if (!user) {
+				user = await new RegularUserModel({
+					email: profile.email,
+					password: crypto.randomBytes(10).toString('hex'),
+					provider: 'Google',
+				})
+
+				await user.save()
+			} else {
+				if (user.provider !== 'Google') {
+					user.provider = 'Google'
+					await user.save()
+				}
+			}
+			return sendTokenResponse(user, 200, res)
+		}
 	} catch (err) {
 		return new ErrorResponse('Google Bad Request', 500)
 	}
