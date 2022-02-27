@@ -7,6 +7,8 @@ import {
 	regularUserSignOut,
 	getRegularUser,
 	updateRegularUser,
+	getB2URL,
+	setAvatar,
 	changePassword,
 	forgetPassword,
 	resetPassword,
@@ -44,6 +46,8 @@ router
 	.route('/')
 	.get(authMiddleware, errorCatcher(getRegularUser))
 	.put(authMiddleware, updateRegularUser)
+
+router.route('/uploadAvatar').get(authMiddleware, getB2URL).post(setAvatar)
 
 router
 	.route('/changePassword')

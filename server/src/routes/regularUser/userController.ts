@@ -24,6 +24,7 @@ import {
 	forgetPasswordMessage,
 	sixDigitsMessage,
 } from '../../utils/emailMessage'
+import uploadImage from '../../utils/AWS/uploadImage'
 
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
@@ -89,7 +90,7 @@ export const regularUserSignIn: RequestHandler = async (req, res, next) => {
 		if (!user || !user.active) {
 			return next(
 				new ErrorResponse(
-					'User not found or maybe you have not been verify.',
+					'User not found or maybe you have not been verified.',
 					404
 				)
 			)
@@ -165,7 +166,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 // @route    GET api/v1/regularUser/
 // @desc     Get regularuser infomation
 // @access   Private
-
 export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
 	// Since this is a private route, the req should have contained the user object.
 	if (req.userJWT) {
@@ -212,6 +212,37 @@ export const updateRegularUser: PrivateRequestHandler = async (
 		}
 	} else {
 		return next(avjErrorWrapper(updateRegularUserBodyValidator.errors))
+	}
+}
+
+// @route    GET api/v1/regularUser/uploadAvatar
+// @desc     Get B2 url for frontend to make a put request
+// @access   Private
+export const getB2URL: PrivateRequestHandler = async (req, res, next) => {
+	if (!req.userJWT?.id) {
+		return next(new ErrorResponse('Invalid credentials.'))
+	}
+	const { id } = req.userJWT
+	res.status(200).send(await uploadImage(id))
+}
+
+// @route    POST api/v1/regularUser/uploadAvatar
+// @desc     Set imageKey in RegularUser
+// @access   Private
+export const setAvatar: PrivateRequestHandler = async (req, res, next) => {
+	try {
+		const { id, imgKey } = req.body
+
+		const user = await RegularUserModel.findById(id)
+		if (!user) {
+			return next(new ErrorResponse('Server Error.'))
+		}
+		user.avatar = imgKey
+		user.save()
+
+		res.status(200).json({ id: user.id, imgKey })
+	} catch (err) {
+		return next(new ErrorResponse('Server Error', 500, err))
 	}
 }
 

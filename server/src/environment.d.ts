@@ -13,6 +13,8 @@ declare global {
 			SMTP_PORT: string
 			FROM_NAME: string
 			FROM_EMAIL: string
+			B2_KEY_ID: string
+			B2_SECRET_KEY: string
 		}
 	}
 }

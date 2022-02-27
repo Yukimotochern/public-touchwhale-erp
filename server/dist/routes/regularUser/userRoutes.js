@@ -26,6 +26,7 @@ router
     .route('/')
     .get(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.getRegularUser))
     .put(authMiddleware_1.default, userController_1.updateRegularUser);
+router.route('/uploadAvatar').get(authMiddleware_1.default, userController_1.getB2URL).post(userController_1.setAvatar);
 router
     .route('/changePassword')
     .put(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.changePassword));
