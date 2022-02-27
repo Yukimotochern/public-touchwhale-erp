@@ -1,15 +1,15 @@
 import express from 'express'
 import passport from 'passport'
 import {
-	regularUserSignUp,
-	regularUserSignIn,
-	regularUserSignOut,
-	getRegularUser,
-	updateRegularUser,
-	changePassword,
-	forgetPassword,
-	resetPassword,
-	OAuthCallback,
+  regularUserSignUp,
+  regularUserSignIn,
+  regularUserSignOut,
+  getRegularUser,
+  updateRegularUser,
+  changePassword,
+  forgetPassword,
+  resetPassword,
+  OAuthCallback,
 } from './userController'
 
 // Middleware
@@ -21,12 +21,12 @@ const router = express.Router()
 router.route('/signUp').post(errorCatcher(regularUserSignUp))
 
 router
-	.route('/googleOAuth')
-	.get(passport.authenticate('google', { scope: ['profile', 'email'] }))
+  .route('/googleOAuth')
+  .get(passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 router.route('/googleOAuth/callback').get(
-	passport.authenticate('google', { failureRedirect: '/login' }), //failureRedirect need to be changed
-	OAuthCallback
+  passport.authenticate('google', { failureRedirect: '/login' }), //failureRedirect need to be changed
+  OAuthCallback
 )
 
 router.route('/signIn').post(errorCatcher(regularUserSignIn))
@@ -34,13 +34,13 @@ router.route('/signIn').post(errorCatcher(regularUserSignIn))
 router.route('/signOut').get(authMiddleware, errorCatcher(regularUserSignOut))
 
 router
-	.route('/')
-	.get(authMiddleware, errorCatcher(getRegularUser))
-	.put(authMiddleware, updateRegularUser)
+  .route('/')
+  .get(authMiddleware, errorCatcher(getRegularUser))
+  .put(authMiddleware, updateRegularUser)
 
 router
-	.route('/changePassword')
-	.put(authMiddleware, errorCatcher(changePassword))
+  .route('/changePassword')
+  .put(authMiddleware, errorCatcher(changePassword))
 
 router.route('/forgetPassword').post(errorCatcher(forgetPassword))
 

@@ -1,10 +1,10 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { Request, NextFunction, Response } from 'express'
 import { RegularUserJWTPayload } from '../models/RegularUser'
 import ErrorResponse from '../utils/errorResponse'
 
 interface RequestWithRegularUser extends Request {
-  user?: RegularUserJWTPayload
+  userJWT?: RegularUserJWTPayload
 }
 
 interface PrivateRequestHandler {
@@ -28,7 +28,7 @@ const authMiddleware: PrivateRequestHandler = (req, res, next) => {
       process.env.JWTSECRET
     ) as RegularUserJWTPayload
 
-    req.user = decode
+    req.userJWT = decode
     next()
   } catch (err) {
     return next(new ErrorResponse('Token is invalid.', 401))

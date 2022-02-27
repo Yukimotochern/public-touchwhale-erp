@@ -114,29 +114,39 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
+                _a.trys.push([0, 8, , 9]);
+                if (!req.user) return [3 /*break*/, 6];
                 profile = req.user._json;
                 email = profile.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                if (!!user) return [3 /*break*/, 4];
-                return [4 /*yield*/, new RegularUser_1.default({
-                        email: profile.email,
-                        password: crypto_1.default.randomBytes(10).toString('hex'),
-                        provider: 'Google',
-                    })];
-            case 2:
-                user = _a.sent();
+                if (!!user) return [3 /*break*/, 3];
+                user = new RegularUser_1.default({
+                    email: profile === null || profile === void 0 ? void 0 : profile.email,
+                    password: crypto_1.default.randomBytes(10).toString('hex'),
+                    provider: 'Google',
+                });
                 return [4 /*yield*/, user.save()];
-            case 3:
+            case 2:
                 _a.sent();
-                _a.label = 4;
-            case 4: return [2 /*return*/, sendTokenResponse(user, 200, res)];
+                return [3 /*break*/, 5];
+            case 3:
+                if (!(user.provider !== 'Google')) return [3 /*break*/, 5];
+                user.provider = 'Google';
+                return [4 /*yield*/, user.save()];
+            case 4:
+                _a.sent();
+                _a.label = 5;
             case 5:
+                setToken(user, 200, res);
+                return [2 /*return*/, res.redirect('/')];
+            case 6: return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500))];
+            case 7: return [3 /*break*/, 9];
+            case 8:
                 err_1 = _a.sent();
-                return [2 /*return*/, new errorResponse_1.default('Google Bad Request', 500)];
-            case 6: return [2 /*return*/];
+                return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500, err_1))];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
@@ -165,8 +175,8 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!req.user) return [3 /*break*/, 2];
-                return [4 /*yield*/, RegularUser_1.default.findById(req.user.id)];
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id)];
             case 1:
                 user = _a.sent();
                 if (user) {
@@ -194,8 +204,8 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
                 fieldsToUpdate = {
                     company_name: company_name,
                 };
-                if (!req.user) return [3 /*break*/, 2];
-                return [4 /*yield*/, RegularUser_1.default.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, RegularUser_1.default.findByIdAndUpdate(req.userJWT.id, fieldsToUpdate, {
                         new: true,
                         runValidators: true,
                     })];
@@ -221,9 +231,9 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.user)) return [3 /*break*/, 5];
-                if (!req.user) return [3 /*break*/, 4];
-                return [4 /*yield*/, RegularUser_1.default.findById(req.user.id).select('+password')];
+                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 5];
+                if (!req.userJWT) return [3 /*break*/, 4];
+                return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id).select('+password')];
             case 1:
                 user = _a.sent();
                 if (!user) return [3 /*break*/, 4];
@@ -330,12 +340,17 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.resetPassword = resetPassword;
-// Helper function
-var sendTokenResponse = function (user, statusCode, res) {
+// Helper functions
+var setToken = function (user, statusCode, res) {
     var token = user.getSignedJWTToken();
     var options = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000),
         httpOnly: true,
     };
-    res.status(statusCode).cookie('token', token, options).json({ token: token });
+    res.status(statusCode).cookie('token', token, options);
+    return token;
+};
+var sendTokenResponse = function (user, statusCode, res) {
+    var token = setToken(user, statusCode, res);
+    res.json({ token: token });
 };

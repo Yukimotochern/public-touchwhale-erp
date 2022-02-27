@@ -13,7 +13,7 @@ var authMiddleware = function (req, res, next) {
     // console.log(token)
     try {
         var decode = jsonwebtoken_1.default.verify(token, process.env.JWTSECRET);
-        req.user = decode;
+        req.userJWT = decode;
         next();
     }
     catch (err) {
