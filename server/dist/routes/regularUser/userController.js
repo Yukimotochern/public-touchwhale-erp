@@ -39,46 +39,85 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.OAuthCallback = exports.regularUserSignIn = exports.regularUserSignUp = void 0;
+exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.OAuthCallback = exports.regularUserSignIn = exports.regularUserVerify = exports.regularUserSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
 var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
+var emailMessage_1 = require("../../utils/emailMessage");
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
 // RequestHandler is an easier way to set types, by Yuki
 var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, user;
+    var email, user, sixDigits, message;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 3];
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                if (user) {
+                if (user && user.active) {
                     return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
                 }
-                // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
-                user = new RegularUser_1.default(req.body);
-                user.provider = 'TouchWhale';
-                return [4 /*yield*/, user.save()
-                    // Return to avoid potentially latter execution, by Yuki
-                ];
+                sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
+                user = new RegularUser_1.default({
+                    email: email,
+                    password: sixDigits,
+                    provider: 'TouchWhale',
+                });
+                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 2:
                 _a.sent();
-                // Return to avoid potentially latter execution, by Yuki
-                return [2 /*return*/, sendTokenResponse(user, 200, res)];
-            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+                message = (0, emailMessage_1.sixDigitsMessage)({ sixDigits: sixDigits });
+                return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
+                        to: email,
+                        subject: 'Your verificatiom code',
+                        message: message,
+                    })];
+            case 3:
+                _a.sent();
+                res
+                    .status(200)
+                    .json({ data: "Verification code has been send to ".concat(email) });
+                return [3 /*break*/, 5];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
 exports.regularUserSignUp = regularUserSignUp;
-// @route    POST api/v1/regularUser/signIn
+// @route    POST api/v1/regularUser/signUp/verify
+// @desc     New regularuser enter verification code
+// @access   Public
+var regularUserVerify = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, email, password, user, isMatch;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, email = _a.email, password = _a.password;
+                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
+            case 1:
+                user = _b.sent();
+                if (!user || user.active) {
+                    return [2 /*return*/, next(new errorResponse_1.default('User email is invalid.', 401))];
+                }
+                return [4 /*yield*/, user.matchPassword(password)];
+            case 2:
+                isMatch = _b.sent();
+                if (!isMatch) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
+                }
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+        }
+    });
+}); };
+exports.regularUserVerify = regularUserVerify;
+// @route    POST api/v1/regularUser/signIn or POST api/v1/regularUser/signUp/verify
 // @desc     Sign regularuser in
 // @access   Public
 var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -91,8 +130,8 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
-                if (!user) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
+                if (!user || !user.active) {
+                    return [2 /*return*/, next(new errorResponse_1.default('User not found or maybe you have not been verify.', 404))];
                 }
                 return [4 /*yield*/, user.matchPassword(password)];
             case 2:
@@ -125,6 +164,7 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 user = new RegularUser_1.default({
                     email: profile === null || profile === void 0 ? void 0 : profile.email,
                     password: crypto_1.default.randomBytes(10).toString('hex'),
+                    avatar: profile === null || profile === void 0 ? void 0 : profile.picture,
                     provider: 'Google',
                 });
                 return [4 /*yield*/, user.save()];
@@ -231,12 +271,11 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 5];
-                if (!req.userJWT) return [3 /*break*/, 4];
+                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 7];
                 return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id).select('+password')];
             case 1:
                 user = _a.sent();
-                if (!user) return [3 /*break*/, 4];
+                if (!(user && user.active)) return [3 /*break*/, 4];
                 return [4 /*yield*/, user.matchPassword(req.body.currentPassword)];
             case 2:
                 if (!(_a.sent())) {
@@ -247,8 +286,16 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
             case 3:
                 _a.sent();
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
-            case 4: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 5: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
+            case 4:
+                if (!(user && !user.active)) return [3 /*break*/, 6];
+                user.password = req.body.newPassword;
+                user.active = true;
+                return [4 /*yield*/, user.save()];
+            case 5:
+                _a.sent();
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 6: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
+            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
         }
     });
 }); };
@@ -257,7 +304,7 @@ exports.changePassword = changePassword;
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, token, resetUrl, message, err_2;
+    var user, token, option, message, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -274,8 +321,12 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 ];
             case 2:
                 _a.sent();
-                resetUrl = "".concat(req.protocol, "://").concat(req.get('host'), "/api/v1/user/forgetpassword/").concat(token);
-                message = "Make a PUT request to: \n ".concat(resetUrl);
+                option = {
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    token: token,
+                };
+                message = (0, emailMessage_1.forgetPasswordMessage)(option);
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 7]);

@@ -11,6 +11,7 @@ interface RegualrUserEditableType
 		| 'updatedAt'
 		| 'matchPassword'
 		| 'provider'
+		| 'active'
 		| 'getForgetPasswordToken'
 		| 'forgetPasswordToken'
 		| 'forgetPasswordExpire'
