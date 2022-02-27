@@ -11,7 +11,7 @@ interface RegularUserType {
   avatar?: string
   company_name?: string
   // non-editable for user
-  provider: string
+  provider: 'TouchWhale' | 'Google'
   forgetPasswordToken?: string
   forgetPasswordExpire?: Date
   resetEmailToken?: string
