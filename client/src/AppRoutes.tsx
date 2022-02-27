@@ -4,6 +4,8 @@ import { MainLayout } from './layout/mainLayout/MainLayout'
 import { HomePage } from './pages/home/HomePage'
 import { IconLookup } from '@fortawesome/fontawesome-svg-core'
 import { PageWithHeader } from './layout/mainLayout/pageWithHeader/PageWithHeader'
+import { FullLayout } from './layout/fullLayout/FullLayout'
+import { SignUpPage } from './pages/signUp/SignUpPage'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -149,11 +151,21 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     ),
   },
 ]
+const fullLayoutRoutes: RouteObjectWithLinkSpecification[] = [
+  {
+    path: 'signUp',
+    element: <SignUpPage />,
+  },
+]
 
 const fullRouteSpecification: RouteObjectWithLinkSpecification[] = [
   {
     element: <MainLayout />,
     children: mainLayoutRoutes,
+  },
+  {
+    element: <FullLayout />,
+    children: fullLayoutRoutes,
   },
 ]
 
