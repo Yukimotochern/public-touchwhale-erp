@@ -39,29 +39,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.OAuthCallback = exports.regularUserSignIn = exports.regularUserSignUp = void 0;
+exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.setAvatar = exports.getB2URL = exports.updateRegularUser = exports.getRegularUser = exports.regularUserSignOut = exports.OAuthCallback = exports.regularUserSignIn = exports.regularUserVerify = exports.regularUserSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
 var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
+var emailMessage_1 = require("../../utils/emailMessage");
+var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
 var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, user;
+    var email, user, sixDigits, message;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 3];
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                if (user) {
+                if (user && user.active) {
                     return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
                 }
+<<<<<<< HEAD
                 user = new RegularUser_1.default(req.body);
                 user.provider = 'TouchWhale';
                 return [4 /*yield*/, user.save()];
@@ -69,11 +72,62 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 _a.sent();
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
             case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+=======
+                sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
+                user = new RegularUser_1.default({
+                    email: email,
+                    password: sixDigits,
+                    provider: 'TouchWhale',
+                });
+                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
+            case 2:
+                _a.sent();
+                message = (0, emailMessage_1.sixDigitsMessage)({ sixDigits: sixDigits });
+                return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
+                        to: email,
+                        subject: 'Your verificatiom code',
+                        message: message,
+                    })];
+            case 3:
+                _a.sent();
+                res
+                    .status(200)
+                    .json({ data: "Verification code has been send to ".concat(email) });
+                return [3 /*break*/, 5];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 5: return [2 /*return*/];
+>>>>>>> 8a90078725c307427672e1b07e02f37f50cef14f
         }
     });
 }); };
 exports.regularUserSignUp = regularUserSignUp;
-// @route    POST api/v1/regularUser/signIn
+// @route    POST api/v1/regularUser/signUp/verify
+// @desc     New regularuser enter verification code
+// @access   Public
+var regularUserVerify = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, email, password, user, isMatch;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, email = _a.email, password = _a.password;
+                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
+            case 1:
+                user = _b.sent();
+                if (!user || user.active) {
+                    return [2 /*return*/, next(new errorResponse_1.default('User email is invalid.', 401))];
+                }
+                return [4 /*yield*/, user.matchPassword(password)];
+            case 2:
+                isMatch = _b.sent();
+                if (!isMatch) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
+                }
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+        }
+    });
+}); };
+exports.regularUserVerify = regularUserVerify;
+// @route    POST api/v1/regularUser/signIn or POST api/v1/regularUser/signUp/verify
 // @desc     Sign regularuser in
 // @access   Public
 var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -86,8 +140,8 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
-                if (!user) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
+                if (!user || !user.active) {
+                    return [2 /*return*/, next(new errorResponse_1.default('User not found or maybe you have not been verified.', 404))];
                 }
                 return [4 /*yield*/, user.matchPassword(password)];
             case 2:
@@ -120,6 +174,7 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 user = new RegularUser_1.default({
                     email: profile === null || profile === void 0 ? void 0 : profile.email,
                     password: crypto_1.default.randomBytes(10).toString('hex'),
+                    avatar: profile === null || profile === void 0 ? void 0 : profile.picture,
                     provider: 'Google',
                 });
                 return [4 /*yield*/, user.save()];
@@ -217,6 +272,56 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.updateRegularUser = updateRegularUser;
+// @route    GET api/v1/regularUser/uploadAvatar
+// @desc     Get B2 url for frontend to make a put request
+// @access   Private
+var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var id, _a, _b;
+    var _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
+            case 0:
+                if (!((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id)) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.'))];
+                }
+                id = req.userJWT.id;
+                _b = (_a = res.status(200)).send;
+                return [4 /*yield*/, (0, uploadImage_1.default)(id)];
+            case 1:
+                _b.apply(_a, [_d.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.getB2URL = getB2URL;
+// @route    POST api/v1/regularUser/uploadAvatar
+// @desc     Set imageKey in RegularUser
+// @access   Private
+var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, id, imgKey, user, err_2;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                _a = req.body, id = _a.id, imgKey = _a.imgKey;
+                return [4 /*yield*/, RegularUser_1.default.findById(id)];
+            case 1:
+                user = _b.sent();
+                if (!user) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Server Error.'))];
+                }
+                user.avatar = imgKey;
+                user.save();
+                res.status(200).json({ id: user.id, imgKey: imgKey });
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _b.sent();
+                return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500, err_2))];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.setAvatar = setAvatar;
 // @route    PUT api/v1/regularUser/changePassword
 // @desc     Update password
 // @access   Private
@@ -225,12 +330,11 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 5];
-                if (!req.userJWT) return [3 /*break*/, 4];
+                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 7];
                 return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id).select('+password')];
             case 1:
                 user = _a.sent();
-                if (!user) return [3 /*break*/, 4];
+                if (!(user && user.active)) return [3 /*break*/, 4];
                 return [4 /*yield*/, user.matchPassword(req.body.currentPassword)];
             case 2:
                 if (!(_a.sent())) {
@@ -241,8 +345,16 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
             case 3:
                 _a.sent();
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
-            case 4: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 5: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
+            case 4:
+                if (!(user && !user.active)) return [3 /*break*/, 6];
+                user.password = req.body.newPassword;
+                user.active = true;
+                return [4 /*yield*/, user.save()];
+            case 5:
+                _a.sent();
+                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+            case 6: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
+            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
         }
     });
 }); };
@@ -251,7 +363,7 @@ exports.changePassword = changePassword;
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, token, resetUrl, message, err_2;
+    var user, token, option, message, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -268,8 +380,12 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 ];
             case 2:
                 _a.sent();
-                resetUrl = "".concat(req.protocol, "://").concat(req.get('host'), "/api/v1/user/forgetpassword/").concat(token);
-                message = "Make a PUT request to: \n ".concat(resetUrl);
+                option = {
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    token: token,
+                };
+                message = (0, emailMessage_1.forgetPasswordMessage)(option);
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 7]);
@@ -283,14 +399,14 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 res.status(200).json({ data: 'Email sent.' });
                 return [3 /*break*/, 7];
             case 5:
-                err_2 = _a.sent();
-                console.log(err_2);
+                err_3 = _a.sent();
+                console.log(err_3);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 6:
                 _a.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_2))];
+                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_3))];
             case 7: return [3 /*break*/, 9];
             case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.forgetPasswordBodyValidator.errors))];
             case 9: return [2 /*return*/];

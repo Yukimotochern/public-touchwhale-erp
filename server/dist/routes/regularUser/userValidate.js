@@ -10,11 +10,8 @@ var signUpBodySchema = {
     type: 'object',
     properties: {
         email: { type: 'string', format: 'email' },
-        password: { type: 'string' },
-        company_name: { type: 'string', nullable: true },
-        avatar: { type: 'string', nullable: true },
     },
-    required: ['email', 'password'],
+    required: ['email'],
     additionalProperties: false,
 };
 var signUpBodyValidator = ajv_1.default.compile(signUpBodySchema);
@@ -56,7 +53,7 @@ var changePasswordBodySchema = {
         currentPassword: { type: 'string' },
         newPassword: { type: 'string' },
     },
-    required: ['currentPassword', 'newPassword'],
+    required: ['newPassword'],
     additionalProperties: false,
 };
 var changePasswordBodyValidator = ajv_1.default.compile(changePasswordBodySchema);

@@ -3,11 +3,9 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import passport from 'passport'
-import GoogleStrategy from 'passport-google-oauth20'
 
 // routes
 import api_v1 from './routes/api'
-import regularUser from './routes/regularUser/userRoutes'
 
 import connectDB from './utils/mongodb'
 import 'colorts/lib/string'

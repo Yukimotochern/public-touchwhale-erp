@@ -20,6 +20,11 @@ import {
 } from './userValidate'
 
 import RegularUserModel from '../../models/RegularUser'
+import {
+  forgetPasswordMessage,
+  sixDigitsMessage,
+} from '../../utils/emailMessage'
+import uploadImage from '../../utils/AWS/uploadImage'
 
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
@@ -28,29 +33,66 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
   if (signUpBodyValidator(req.body)) {
     const { email } = req.body
     let user = await RegularUserModel.findOne({ email })
-    if (user) {
+    if (user && user.active) {
       return next(new ErrorResponse('User already exists.', 409))
     }
+    // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
+    const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
+    user = new RegularUserModel({
+      email,
+      password: sixDigits, //Generate 6 digits number
+      provider: 'TouchWhale',
+    })
 
-    user = new RegularUserModel(req.body)
-    user.provider = 'TouchWhale'
-    await user.save()
+    await user.save({ validateBeforeSave: false })
 
-    return sendTokenResponse(user, 200, res)
+    const message = sixDigitsMessage({ sixDigits })
+    await sendEmail({
+      to: email,
+      subject: 'Your verificatiom code',
+      message: message,
+    })
+
+    res
+      .status(200)
+      .json({ data: `Verification code has been send to ${email}` })
   } else {
     return next(avjErrorWrapper(signUpBodyValidator.errors))
   }
 }
 
-// @route    POST api/v1/regularUser/signIn
+// @route    POST api/v1/regularUser/signUp/verify
+// @desc     New regularuser enter verification code
+// @access   Public
+export const regularUserVerify: RequestHandler = async (req, res, next) => {
+  const { email, password } = req.body
+  const user = await RegularUserModel.findOne({ email }).select('+password')
+  if (!user || user.active) {
+    return next(new ErrorResponse('User email is invalid.', 401))
+  }
+
+  const isMatch = await user.matchPassword(password)
+  if (!isMatch) {
+    return next(new ErrorResponse('Invalid credentials.', 401))
+  }
+
+  return sendTokenResponse(user, 200, res)
+}
+
+// @route    POST api/v1/regularUser/signIn or POST api/v1/regularUser/signUp/verify
 // @desc     Sign regularuser in
 // @access   Public
 export const regularUserSignIn: RequestHandler = async (req, res, next) => {
   if (signInBodyValidator(req.body)) {
     const { email, password } = req.body
     const user = await RegularUserModel.findOne({ email }).select('+password')
-    if (!user) {
-      return next(new ErrorResponse('Invalid credentials.', 401))
+    if (!user || !user.active) {
+      return next(
+        new ErrorResponse(
+          'User not found or maybe you have not been verified.',
+          404
+        )
+      )
     }
     const isMatch = await user.matchPassword(password)
     if (!isMatch) {
@@ -81,6 +123,7 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
         user = new RegularUserModel({
           email: profile?.email,
           password: crypto.randomBytes(10).toString('hex'),
+          avatar: profile?.picture,
           provider: 'Google',
         })
 
@@ -167,23 +210,57 @@ export const updateRegularUser: PrivateRequestHandler = async (
   }
 }
 
+// @route    GET api/v1/regularUser/uploadAvatar
+// @desc     Get B2 url for frontend to make a put request
+// @access   Private
+export const getB2URL: PrivateRequestHandler = async (req, res, next) => {
+  if (!req.userJWT?.id) {
+    return next(new ErrorResponse('Invalid credentials.'))
+  }
+  const { id } = req.userJWT
+  res.status(200).send(await uploadImage(id))
+}
+
+// @route    POST api/v1/regularUser/uploadAvatar
+// @desc     Set imageKey in RegularUser
+// @access   Private
+export const setAvatar: PrivateRequestHandler = async (req, res, next) => {
+  try {
+    const { id, imgKey } = req.body
+
+    const user = await RegularUserModel.findById(id)
+    if (!user) {
+      return next(new ErrorResponse('Server Error.'))
+    }
+    user.avatar = imgKey
+    user.save()
+
+    res.status(200).json({ id: user.id, imgKey })
+  } catch (err) {
+    return next(new ErrorResponse('Server Error', 500, err))
+  }
+}
+
 // @route    PUT api/v1/regularUser/changePassword
 // @desc     Update password
 // @access   Private
 export const changePassword: PrivateRequestHandler = async (req, res, next) => {
   if (changePasswordBodyValidator(req.body) && req.userJWT) {
-    if (req.userJWT) {
-      const user = await RegularUserModel.findById(req.userJWT.id).select(
-        '+password'
-      )
-      if (user) {
-        if (!(await user.matchPassword(req.body.currentPassword))) {
-          return next(new ErrorResponse('Password is incorrect.', 400))
-        }
-        user.password = req.body.newPassword
-        await user.save()
-        return sendTokenResponse(user, 200, res)
+    const user = await RegularUserModel.findById(req.userJWT.id).select(
+      '+password'
+    )
+    if (user && user.active) {
+      if (!(await user.matchPassword(req.body.currentPassword))) {
+        return next(new ErrorResponse('Password is incorrect.', 400))
       }
+      user.password = req.body.newPassword
+      await user.save()
+      return sendTokenResponse(user, 200, res)
+    } else if (user && !user.active) {
+      user.password = req.body.newPassword
+      user.active = true
+      await user.save()
+      return sendTokenResponse(user, 200, res)
     }
     return next(new ErrorResponse('Server Error'))
   } else {
@@ -203,10 +280,12 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
     const token = user.getForgetPasswordToken()
     await user.save({ validateBeforeSave: false })
     // Create url
-    const resetUrl = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/user/forgetpassword/${token}`
-    const message = `Make a PUT request to: \n ${resetUrl}`
+    const option = {
+      protocol: req.protocol,
+      host: req.get('host'),
+      token,
+    }
+    const message = forgetPasswordMessage(option)
     try {
       await sendEmail({
         to: user.email,

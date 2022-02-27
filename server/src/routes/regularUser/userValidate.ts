@@ -11,6 +11,7 @@ interface RegularUserEditableType
 		| 'updatedAt'
 		| 'matchPassword'
 		| 'provider'
+		| 'active'
 		| 'getForgetPasswordToken'
 		| 'forgetPasswordToken'
 		| 'forgetPasswordExpire'
@@ -19,16 +20,16 @@ interface RegularUserEditableType
 		| 'getSignedJWTToken'
 	> {}
 
+interface RegularUserSignUpBodyType
+	extends Pick<RegularUserEditableType, 'email'> {}
+
 // Bellow, the purpose of variable is more explicit. by Yuki
-const signUpBodySchema: JSONSchemaType<RegularUserEditableType> = {
+const signUpBodySchema: JSONSchemaType<RegularUserSignUpBodyType> = {
 	type: 'object',
 	properties: {
 		email: { type: 'string', format: 'email' },
-		password: { type: 'string' },
-		company_name: { type: 'string', nullable: true },
-		avatar: { type: 'string', nullable: true },
 	},
-	required: ['email', 'password'],
+	required: ['email'],
 	additionalProperties: false,
 }
 
@@ -102,7 +103,7 @@ const changePasswordBodySchema: JSONSchemaType<ChangePasswordBodyType> = {
 		currentPassword: { type: 'string' },
 		newPassword: { type: 'string' },
 	},
-	required: ['currentPassword', 'newPassword'],
+	required: ['newPassword'],
 	additionalProperties: false,
 }
 

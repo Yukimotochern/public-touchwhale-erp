@@ -12,6 +12,7 @@ interface RegularUserType {
   company_name?: string
   // non-editable for user
   provider: 'TouchWhale' | 'Google'
+  active: boolean
   forgetPasswordToken?: string
   forgetPasswordExpire?: Date
   resetEmailToken?: string
@@ -50,6 +51,7 @@ const RegularUserSchema = new mongoose.Schema<RegularUserType>(
       select: false,
     },
     provider: { type: String, enum: ['TouchWhale', 'Google'], required: true },
+    active: { type: Boolean, required: true, default: false },
     avatar: {
       type: String,
     },

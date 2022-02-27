@@ -15,6 +15,7 @@
     "@types/cookie-parser": "^1.4.2",
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
+    "aws-sdk": "^2.1082.0",
     "bcryptjs": "^2.4.3",
     "colorts": "^0.1.63",
     "cookie-parser": "^1.4.6",
