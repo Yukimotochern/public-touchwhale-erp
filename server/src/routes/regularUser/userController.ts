@@ -33,18 +33,25 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
 	if (signUpBodyValidator(req.body)) {
 		const { email } = req.body
 		let user = await RegularUserModel.findOne({ email })
-		if (user && user.active) {
-			return next(new ErrorResponse('User already exists.', 409))
-		}
-		// Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
 		const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
-		user = new RegularUserModel({
-			email,
-			password: sixDigits, //Generate 6 digits number
-			provider: 'TouchWhale',
-		})
+		if (user) {
+			if (user.active) {
+				// User already register and has been activated
+				return next(new ErrorResponse('User already exists.', 409))
+			} else {
+				// User already register but not be activated
+				user.password = sixDigits
+				await user.save({ validateBeforeSave: false })
+			}
+		} else {
+			user = new RegularUserModel({
+				email,
+				password: sixDigits, //Generate 6 digits number
+				provider: 'TouchWhale',
+			})
 
-		await user.save({ validateBeforeSave: false })
+			await user.save({ validateBeforeSave: false })
+		}
 
 		const message = sixDigitsMessage({ sixDigits })
 		await sendEmail({
