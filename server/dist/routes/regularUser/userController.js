@@ -57,37 +57,49 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 9];
                 email = req.body.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-                if (user && user.active) {
-                    return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
-                }
                 sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
+                if (!user) return [3 /*break*/, 5];
+                if (!user.active) return [3 /*break*/, 2];
+                // User already register and has been activated
+                return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
+            case 2:
+                // User already register but not be activated
+                user.password = sixDigits;
+                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
+            case 3:
+                _a.sent();
+                _a.label = 4;
+            case 4: return [3 /*break*/, 7];
+            case 5:
                 user = new RegularUser_1.default({
                     email: email,
                     password: sixDigits,
                     provider: 'TouchWhale',
                 });
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
-            case 2:
+            case 6:
                 _a.sent();
+                _a.label = 7;
+            case 7:
                 message = (0, emailMessage_1.sixDigitsMessage)({ sixDigits: sixDigits });
                 return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
                         to: email,
                         subject: 'Your verificatiom code',
                         message: message,
                     })];
-            case 3:
+            case 8:
                 _a.sent();
                 res
                     .status(200)
                     .json({ data: "Verification code has been send to ".concat(email) });
-                return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 10];
+            case 9: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 10: return [2 /*return*/];
         }
     });
 }); };
