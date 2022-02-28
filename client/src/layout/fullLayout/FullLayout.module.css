@@ -1,33 +1,33 @@
 .tw-full-layout {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
 }
 
 .tw-auth-left-panel {
-  flex: 0 0 auto;
-  width: 385px;
+	flex: 0 0 auto;
+	width: 385px;
 }
 .tw-auth-left-panel-inner-set {
-  padding: 75px 40px 20px 40px;
-  width: 100%;
-  height: 100%;
-  overflow: scroll;
+	padding: 100px 40px 20px 40px;
+	width: 100%;
+	height: 200%;
+	overflow: scroll;
 }
 .tw-auth-marketing-background {
-  background-image: url('https://account.mongodb.com/static/images/auth/login_promo_desktop.png');
-  background-size: cover; /* <------ */
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: calc(100vw - 385px);
-  height: 100%;
-  order: 2;
-  position: absolute;
-  display: block;
-  left: 385px;
-  align-items: inherit;
-  -webkit-box-align: inherit;
-  box-sizing: border-box;
+	background-image: url('https://account.mongodb.com/static/images/auth/login_promo_desktop.png');
+	background-size: cover; /* <------ */
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: calc(100vw - 385px);
+	height: 100%;
+	order: 2;
+	position: absolute;
+	display: block;
+	left: 385px;
+	align-items: inherit;
+	-webkit-box-align: inherit;
+	box-sizing: border-box;
 }

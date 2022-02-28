@@ -64,15 +64,6 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 if (user && user.active) {
                     return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
                 }
-<<<<<<< HEAD
-                user = new RegularUser_1.default(req.body);
-                user.provider = 'TouchWhale';
-                return [4 /*yield*/, user.save()];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, sendTokenResponse(user, 200, res)];
-            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
-=======
                 sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
                 user = new RegularUser_1.default({
                     email: email,
@@ -96,7 +87,6 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 return [3 /*break*/, 5];
             case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
->>>>>>> 8a90078725c307427672e1b07e02f37f50cef14f
         }
     });
 }); };
