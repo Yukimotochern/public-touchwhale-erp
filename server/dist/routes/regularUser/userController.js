@@ -44,7 +44,6 @@ var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
-var mongoose_1 = require("mongoose");
 var userValidate_1 = require("./userValidate");
 var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
 var emailMessage_1 = require("../../utils/emailMessage");
@@ -53,55 +52,46 @@ var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @desc     Signup regularuser
 // @access   Public
 var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, user, sixDigits, err_1, message;
+    var email, user, sixDigits, message;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 7];
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
                 if (user && user.active) {
-                    return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
+                    return [2 /*return*/, next(new errorResponse_1.default('Email has been taken.', 409))];
                 }
                 sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
-                user = new RegularUser_1.default({
-                    email: email,
-                    password: sixDigits,
-                    provider: 'TouchWhale',
-                });
-                _a.label = 2;
-            case 2:
-                _a.trys.push([2, 4, , 5]);
-                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
-            case 3:
-                _a.sent();
-                return [3 /*break*/, 5];
-            case 4:
-                err_1 = _a.sent();
-                if (err_1 instanceof mongoose_1.mongo.MongoServerError) {
-                    if (err_1.code === 11000) {
-                        console.log(err_1.message);
-                        return [2 /*return*/, next(new errorResponse_1.default('Email has been taken.', 400))];
-                    }
+                if (!user) {
+                    user = new RegularUser_1.default({
+                        email: email,
+                        password: sixDigits,
+                        provider: 'TouchWhale',
+                    });
                 }
-                throw err_1;
-            case 5:
+                else {
+                    user.password = sixDigits;
+                }
+                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
+            case 2:
+                _a.sent();
                 message = (0, emailMessage_1.sixDigitsMessage)({ sixDigits: sixDigits });
                 return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
                         to: email,
                         subject: 'Your verificatiom code',
                         message: message,
                     })];
-            case 6:
+            case 3:
                 _a.sent();
                 res
                     .status(200)
                     .json({ data: "Verification code has been send to ".concat(email) });
-                return [3 /*break*/, 8];
-            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
@@ -127,7 +117,7 @@ var regularUserVerify = function (req, res, next) { return __awaiter(void 0, voi
                 if (!isMatch) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                return [2 /*return*/, sendTokenResponse(user, 200, res)];
+                return [2 /*return*/, res.status(200).json({ token: user.getSignedJWTToken() })];
         }
     });
 }); };
@@ -164,7 +154,7 @@ exports.regularUserSignIn = regularUserSignIn;
 // @desc     Call back function for google OAuth
 // @access   Public
 var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var profile, email, user, err_2;
+    var profile, email, user, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -199,8 +189,8 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500))];
             case 7: return [3 /*break*/, 9];
             case 8:
-                err_2 = _a.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500, err_2))];
+                err_1 = _a.sent();
+                return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500, err_1))];
             case 9: return [2 /*return*/];
         }
     });
@@ -303,7 +293,7 @@ exports.getB2URL = getB2URL;
 // @desc     Set imageKey in RegularUser
 // @access   Private
 var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, id, imgKey, user, err_3;
+    var _a, id, imgKey, user, err_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -320,8 +310,8 @@ var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, voi
                 res.status(200).json({ id: user.id, imgKey: imgKey });
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _b.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500, err_3))];
+                err_2 = _b.sent();
+                return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500, err_2))];
             case 3: return [2 /*return*/];
         }
     });
@@ -368,7 +358,7 @@ exports.changePassword = changePassword;
 // @desc     Forget password
 // @access   Public
 var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, token, option, message, err_4;
+    var user, token, option, message, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -404,14 +394,14 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 res.status(200).json({ data: 'Email sent.' });
                 return [3 /*break*/, 7];
             case 5:
-                err_4 = _a.sent();
-                console.log(err_4);
+                err_3 = _a.sent();
+                console.log(err_3);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 6:
                 _a.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_4))];
+                return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_3))];
             case 7: return [3 /*break*/, 9];
             case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.forgetPasswordBodyValidator.errors))];
             case 9: return [2 /*return*/];

@@ -35,26 +35,20 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
     const { email } = req.body
     let user = await RegularUserModel.findOne({ email })
     if (user && user.active) {
-      return next(new ErrorResponse('User already exists.', 409))
+      return next(new ErrorResponse('Email has been taken.', 409))
     }
     // Since req.body has been strictly validate by ajv, we can plug it into query, by Yuki
     const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
-    user = new RegularUserModel({
-      email,
-      password: sixDigits, //Generate 6 digits number
-      provider: 'TouchWhale',
-    })
-    try {
-      await user.save({ validateBeforeSave: false })
-    } catch (err) {
-      if (err instanceof mongo.MongoServerError) {
-        if (err.code === 11000) {
-          console.log(err.message)
-          return next(new ErrorResponse('Email has been taken.', 400))
-        }
-      }
-      throw err
+    if (!user) {
+      user = new RegularUserModel({
+        email,
+        password: sixDigits, //Generate 6 digits number
+        provider: 'TouchWhale',
+      })
+    } else {
+      user.password = sixDigits
     }
+    await user.save({ validateBeforeSave: false })
 
     const message = sixDigitsMessage({ sixDigits })
     await sendEmail({
@@ -85,8 +79,7 @@ export const regularUserVerify: RequestHandler = async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorResponse('Invalid credentials.', 401))
   }
-
-  return sendTokenResponse(user, 200, res)
+  return res.status(200).json({ token: user.getSignedJWTToken() })
 }
 
 // @route    POST api/v1/regularUser/signIn or POST api/v1/regularUser/signUp/verify

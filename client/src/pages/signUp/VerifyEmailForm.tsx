@@ -70,11 +70,28 @@ export const VerifyEmailForm = ({
       }))
     }
   }
-  const onFinish = () => {
+  const onFinish = async () => {
     setSignUpProcessState((state) => ({
       ...state,
-      stage: 'password',
+      loading: true,
     }))
+    try {
+      const { data } = await api.post('/regularUser/signUp/verify', {
+        email,
+        password: form.getFieldValue('verify'),
+      })
+      // try to decode token
+      setSignUpProcessState((state) => ({
+        ...state,
+        stage: 'password',
+        loading: false,
+      }))
+    } catch (err) {
+      setSignUpProcessState((state) => ({
+        ...state,
+        loading: false,
+      }))
+    }
   }
   return (
     <>
