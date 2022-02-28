@@ -3,7 +3,6 @@ import { DefinedError } from 'ajv'
 
 import { ErrorRequestHandler } from 'express'
 import { Error } from 'mongoose'
-
 const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
   // Log to console for dev
   console.error(err)

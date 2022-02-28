@@ -9,6 +9,7 @@ import crypto from 'crypto'
 import { sendEmail } from '../../utils/sendEmail'
 import { avjErrorWrapper } from '../../utils/ajv'
 import ErrorResponse from '../../utils/errorResponse'
+import { mongo } from 'mongoose'
 
 import {
   signInBodyValidator,
@@ -43,8 +44,17 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
       password: sixDigits, //Generate 6 digits number
       provider: 'TouchWhale',
     })
-
-    await user.save({ validateBeforeSave: false })
+    try {
+      await user.save({ validateBeforeSave: false })
+    } catch (err) {
+      if (err instanceof mongo.MongoServerError) {
+        if (err.code === 11000) {
+          console.log(err.message)
+          return next(new ErrorResponse('Email has been taken.', 400))
+        }
+      }
+      throw err
+    }
 
     const message = sixDigitsMessage({ sixDigits })
     await sendEmail({

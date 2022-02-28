@@ -1,0 +1,13 @@
+.google-button img {
+  /* with: 10%; */
+  height: 60%;
+  object-fit: contain;
+  left: 12px;
+  top: 50%;
+  transform: translate(0%, -50%);
+  border-radius: 3px;
+  position: absolute;
+}
+.google-button {
+  margin: 10px 0px 8px 0px;
+}

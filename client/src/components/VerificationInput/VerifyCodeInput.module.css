@@ -1,0 +1,28 @@
+.container {
+  height: 34px;
+  width: 270px;
+}
+
+.character {
+  line-height: 34px;
+  font-size: 18px;
+  color: rgb(107, 107, 107);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid grey;
+  border-radius: 8px;
+  margin-left: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.character:first-child {
+  margin-left: 0;
+}
+
+.character--inactive {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.character--selected {
+  border: 1px solid black;
+}
