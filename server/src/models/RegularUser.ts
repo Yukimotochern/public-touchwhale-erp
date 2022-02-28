@@ -2,7 +2,6 @@ import mongoose from 'mongoose'
 import bcrtpt from 'bcryptjs'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import crypto from 'crypto'
-import { MongooseErrors } from '../utils/errorResponse'
 
 interface RegularUserType {
 	// editable for user
