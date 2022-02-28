@@ -29,7 +29,6 @@ import uploadImage from '../../utils/AWS/uploadImage'
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
-// RequestHandler is an easier way to set types, by Yuki
 export const regularUserSignUp: RequestHandler = async (req, res, next) => {
 	if (signUpBodyValidator(req.body)) {
 		const { email } = req.body
@@ -160,7 +159,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 	res,
 	next
 ) => {
-	// Using Clear Cookie seems to be a cleaner way
 	res.clearCookie('token', {
 		httpOnly: true,
 	})
@@ -174,7 +172,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 // @desc     Get regularuser infomation
 // @access   Private
 export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
-	// Since this is a private route, the req should have contained the user object.
 	if (req.userJWT) {
 		const user = await RegularUserModel.findById(req.userJWT.id)
 		if (user) {
@@ -200,8 +197,6 @@ export const updateRegularUser: PrivateRequestHandler = async (
 		const fieldsToUpdate = {
 			company_name,
 		}
-		// When updating email, the user should receive the reset-email-token sendding to the new email address.
-		// That is to ensure that the user does not have typo in the email and really own that email address. by Yuki
 		if (req.userJWT) {
 			const user = await RegularUserModel.findByIdAndUpdate(
 				req.userJWT.id,

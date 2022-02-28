@@ -51,7 +51,6 @@ var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @route    POST api/v1/regularUser/signUp
 // @desc     Signup regularuser
 // @access   Public
-// RequestHandler is an easier way to set types, by Yuki
 var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var email, user, sixDigits, message;
     return __generator(this, function (_a) {
@@ -209,7 +208,6 @@ exports.OAuthCallback = OAuthCallback;
 // @access   Private
 var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        // Using Clear Cookie seems to be a cleaner way
         res.clearCookie('token', {
             httpOnly: true,
         });
