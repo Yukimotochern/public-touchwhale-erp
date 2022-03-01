@@ -351,7 +351,7 @@ const setToken = (user: any, res: Response): any => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
     ), //Expires in 1 hr
-    httpOnly: true,
+    // httpOnly: true,
   }
 
   res.cookie('token', token, options)
