@@ -6,14 +6,17 @@ import { store, history } from './redux/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import { HistoryRouter as Router } from 'redux-first-history/rr6'
+import { CookiesProvider } from 'react-cookie'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <Router history={history}>
-        <App />
-      </Router>
-    </Provider>
+    <CookiesProvider>
+      <Provider store={store}>
+        <Router history={history}>
+          <App />
+        </Router>
+      </Provider>
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -1,18 +1,50 @@
 import React from 'react'
-import { Form, Button, Input } from 'antd'
+import { Form, Button, Input, message } from 'antd'
 import { UseStateForSignUpPageProps } from './SignUpPage'
 import styles from './PasswordSetUpForm.module.css'
+import api from '../../utils/api'
+import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { getRegularUser } from '../../redux/auth/authSlice'
 
 export const PasswordSetUpForm = ({
-  signUpProcessState,
+  signUpProcessState: { token, password, loading },
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
   const [form] = Form.useForm()
-  const onFinish = () => {
+  const dispatch = useDispatch()
+  const onFinish = async () => {
     setSignUpProcessState((state) => ({
       ...state,
-      stage: 'password',
+      loading: true,
     }))
+    try {
+      await api.put('/regularUser/changePassword', {
+        currentPassword: password,
+        newPassword: form.getFieldValue('password'),
+        token,
+      })
+      dispatch(getRegularUser())
+    } catch (err) {
+      console.error(err)
+      if (axios.isAxiosError(err)) {
+        if (err.response?.data) {
+          message.error(`Something is wrong: ${err.response.data.message}`)
+        } else {
+          // error without response
+          switch (err.message) {
+            case 'Network Error':
+              message.error('Please check your internet connection.')
+              break
+            default:
+              message.error(`Something is wrong: ${err.message}`)
+              break
+          }
+        }
+      } else {
+        message.error(`Unknown error: ${err}`)
+      }
+    }
   }
   return (
     <>
@@ -22,7 +54,7 @@ export const PasswordSetUpForm = ({
         onFinish={onFinish}
         requiredMark={false}
         style={{
-          marginTop: '0.4em',
+          marginTop: '2.5em',
         }}
       >
         <Form.Item
@@ -44,7 +76,7 @@ export const PasswordSetUpForm = ({
           ]}
           hasFeedback
         >
-          <Input.Password />
+          <Input.Password disabled={loading} />
         </Form.Item>
 
         <Form.Item
@@ -69,7 +101,7 @@ export const PasswordSetUpForm = ({
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password disabled={loading} />
         </Form.Item>
         <Form.Item>
           <Button
@@ -77,6 +109,7 @@ export const PasswordSetUpForm = ({
             type='primary'
             htmlType='submit'
             block
+            loading={loading}
           >
             Join NOW!
           </Button>

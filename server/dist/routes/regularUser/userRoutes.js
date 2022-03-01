@@ -18,15 +18,18 @@ router
 router
     .route('/googleOAuth')
     .get(passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
-router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', { failureRedirect: '/login' }), //failureRedirect need to be changed
-userController_1.OAuthCallback);
+router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', { failureRedirect: '/signIn' }), //failureRedirect need to be changed
+(0, errorCatcher_1.default)(userController_1.OAuthCallback));
 router.route('/signIn').post((0, errorCatcher_1.default)(userController_1.regularUserSignIn));
 router.route('/signOut').get(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.regularUserSignOut));
 router
     .route('/')
     .get(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.getRegularUser))
-    .put(authMiddleware_1.default, userController_1.updateRegularUser);
-router.route('/uploadAvatar').get(authMiddleware_1.default, userController_1.getB2URL).post(userController_1.setAvatar);
+    .put(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.updateRegularUser));
+router
+    .route('/uploadAvatar')
+    .get(authMiddleware_1.default, userController_1.getB2URL)
+    .post((0, errorCatcher_1.default)(userController_1.setAvatar));
 router
     .route('/changePassword')
     .put(authMiddleware_1.default, (0, errorCatcher_1.default)(userController_1.changePassword));

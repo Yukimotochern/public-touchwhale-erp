@@ -8,6 +8,7 @@ var express_1 = __importDefault(require("express"));
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var passport_1 = __importDefault(require("passport"));
+var cors_1 = __importDefault(require("cors"));
 // routes
 var api_1 = __importDefault(require("./routes/api"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
@@ -15,6 +16,19 @@ require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");
 var passportOAuth_1 = __importDefault(require("./utils/passportOAuth"));
 var app = (0, express_1.default)();
+// Add a list of allowed origins.
+// If you have more origins you would like to add, you can add them to the array below.
+var allowedOrigins = [
+    'http://localhost:3000',
+    'https://google.com',
+    'https://accounts.google.com',
+    'https://touchwhale-erp.com',
+];
+var options = {
+    origin: allowedOrigins,
+};
+// Enable CORS
+app.use((0, cors_1.default)(options));
 app.use((0, cookie_parser_1.default)());
 // Load env vars
 dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });

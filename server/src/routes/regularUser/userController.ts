@@ -28,7 +28,7 @@ import {
 import uploadImage from '../../utils/AWS/uploadImage'
 
 // @route    POST api/v1/regularUser/signUp
-// @desc     Signup regularuser
+// @desc     Sign regularUser up
 // @access   Public
 export const regularUserSignUp: RequestHandler = async (req, res, next) => {
   if (signUpBodyValidator(req.body)) {
@@ -51,7 +51,12 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
       })
     }
     await user.save({ validateBeforeSave: false })
-
+    const message = sixDigitsMessage({ sixDigits })
+    await sendEmail({
+      to: email,
+      subject: 'Your verificatiom code',
+      message: message,
+    })
     res
       .status(200)
       .json({ data: `Verification code has been send to ${email}` })
@@ -133,7 +138,11 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
         }
       }
       setToken(user, 200, res)
-      return res.redirect('/')
+      let redirectHome = process.env.APP_URL_PROD
+      if (process.env.NODE_ENV === 'development') {
+        redirectHome = process.env.APP_URL_DEV
+      }
+      // return res.redirect(redirectHome)
     } else {
       return next(new ErrorResponse('Google Bad Request', 500))
     }
@@ -293,7 +302,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 
       res.status(200).json({ data: 'Email sent.' })
     } catch (err: any) {
-      console.log(err)
+      console.error(err)
       user.forgetPasswordToken = undefined
       user.forgetPasswordExpire = undefined
 

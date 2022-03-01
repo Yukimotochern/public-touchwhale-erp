@@ -4,19 +4,22 @@ import styles from './EmailEnterForm.module.css'
 import { UseStateForSignUpPageProps } from './SignUpPage'
 import api from '../../utils/api'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 export const EmailEnterForm = ({
   signUpProcessState,
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
+  const navigate = useNavigate()
   const [form] = Form.useForm()
   const onFinish = async () => {
+    const email = form.getFieldValue('email')
     setSignUpProcessState((state) => ({
       ...state,
       loading: true,
+      email,
     }))
     try {
-      const email = form.getFieldValue('email')
       await api.post('/regularUser/signUp', {
         email,
       })
@@ -70,6 +73,9 @@ export const EmailEnterForm = ({
         block
         icon={<img src='/google_logo.png' alt='Google Logo' />}
         disabled={signUpProcessState.loading}
+        onClick={() => {
+          window.location.href = `${process.env.REACT_APP_URL}/api/v${process.env.REACT_APP_API_VERSION}/`
+        }}
       >
         Sign up with Google
       </Button>
@@ -122,6 +128,7 @@ export const EmailEnterForm = ({
                 padding: '0px',
               }}
               disabled={signUpProcessState.loading}
+              onClick={() => navigate('/signIn')}
             >
               Log In
             </Button>

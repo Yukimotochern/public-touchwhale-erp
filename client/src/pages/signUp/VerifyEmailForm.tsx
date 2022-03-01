@@ -9,6 +9,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import useCountDown from 'react-countdown-hook'
 import api from '../../utils/api'
 import axios from 'axios'
+import jwt_decode from 'jwt-decode'
 const initialTime = 30 * 1000
 const interval = 1000
 
@@ -76,17 +77,66 @@ export const VerifyEmailForm = ({
       loading: true,
     }))
     try {
+      const password = form.getFieldValue('verify')
       const { data } = await api.post('/regularUser/signUp/verify', {
         email,
-        password: form.getFieldValue('verify'),
+        password,
       })
       // try to decode token
+      let token: any
+      try {
+        token = jwt_decode(data.token)
+        if (!token.id) {
+          throw new Error('Invalid credentials.')
+        }
+      } catch (err) {
+        console.error(err)
+        throw new Error('Invalid credentials.')
+      }
       setSignUpProcessState((state) => ({
         ...state,
         stage: 'password',
         loading: false,
+        token: data.token,
+        password,
       }))
     } catch (err) {
+      console.error(err)
+      if (axios.isAxiosError(err)) {
+        if (err.response?.data) {
+          // error with response
+          switch (err.response?.data?.error?.message) {
+            case 'Invalid credentials.':
+              form.setFields([
+                { name: 'verify', errors: ['Incorrect verification code'] },
+              ])
+              message.error('Incorrect verification code')
+              break
+            default:
+              message.error(`Something is wrong: ${err.message}`)
+              break
+          }
+        } else {
+          // error without response
+          switch (err.message) {
+            case 'Invalid credentials.':
+              form.setFields([
+                { name: 'verify', errors: ['Incorrect verification code'] },
+              ])
+              message.error('Incorrect verification code')
+              break
+            case 'Network Error':
+              message.error('Please check your internet connection.')
+              break
+            default:
+              message.error(`Something is wrong: ${err.message}`)
+              break
+          }
+        }
+      } else {
+        message.error(`Unknown error: ${err}`)
+      }
+
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,

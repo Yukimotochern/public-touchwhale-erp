@@ -8,7 +8,8 @@ import {
 } from 'antd'
 import { PureRouteObjectWithLink } from '../../../AppRoutes'
 import { useNavigate } from 'react-router-dom'
-import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
+import { useDispatch } from 'react-redux'
+import { useAppSelector } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
@@ -18,7 +19,7 @@ const { Content } = Layout
 interface Props extends PageHeaderProps {}
 const { TabPane } = Tabs
 export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // First find the current first level route
   const location = useAppSelector((s) => s.router.location)

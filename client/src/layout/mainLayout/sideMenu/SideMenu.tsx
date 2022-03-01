@@ -2,7 +2,8 @@ import React from 'react'
 import { Layout, Menu } from 'antd'
 import './SideMenu.css'
 import { NavLink, Link } from 'react-router-dom'
-import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
+import { useDispatch } from 'react-redux'
+import { useAppSelector } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
@@ -10,12 +11,12 @@ import { faBars } from '@fortawesome/free-solid-svg-icons'
 const { Sider } = Layout
 
 export const SideMenu = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // Find active keys
   const routeLink = useAppSelector((s) => s.routeLink)
   const path = useAppSelector((s) => s.router.location?.pathname)
-  let selectedKeys
+  let selectedKeys: string[]
   if (path) {
     selectedKeys = ['/' + path.split('/')[1]]
   } else {

@@ -4,6 +4,8 @@ import { createReduxHistoryContext } from 'redux-first-history'
 import { createBrowserHistory } from 'history'
 import { routeLinkSlice } from '../layout/routeLink.slice'
 import { mainLayoutSlice } from '../layout/mainLayout/mainLayout.slice'
+import { authSlice } from './auth/authSlice'
+import thunk from 'redux-thunk'
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
   createReduxHistoryContext({ history: createBrowserHistory() })
@@ -15,8 +17,10 @@ export const store = configureStore({
     layout: combineReducers({
       mainLayout: mainLayoutSlice.reducer,
     }),
+    auth: authSlice.reducer,
   }),
-  middleware: [routerMiddleware],
+  middleware: [thunk, routerMiddleware],
+  devTools: true,
 })
 
 export const history = createReduxHistory(store)

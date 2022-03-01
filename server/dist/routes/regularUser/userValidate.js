@@ -52,6 +52,7 @@ var changePasswordBodySchema = {
     properties: {
         currentPassword: { type: 'string' },
         newPassword: { type: 'string' },
+        token: { type: 'string', nullable: true },
     },
     required: ['newPassword'],
     additionalProperties: false,

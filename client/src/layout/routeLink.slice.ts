@@ -1,7 +1,7 @@
 import { createSlice, createAction } from '@reduxjs/toolkit'
 import { pureRouteObjectWithLink, PureRouteObjectWithLink } from '../AppRoutes'
 import { LOCATION_CHANGE } from 'redux-first-history'
-const routeAction = createAction<{
+export const routeAction = createAction<{
   location: Location
 }>(LOCATION_CHANGE)
 

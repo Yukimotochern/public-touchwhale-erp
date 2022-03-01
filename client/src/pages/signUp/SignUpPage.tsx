@@ -10,6 +10,7 @@ export interface SignUpProcess {
   loading: boolean
   email: string
   token: string
+  password: string
 }
 
 export interface SetSignUpProcess
@@ -25,6 +26,7 @@ const initialSignUpState: SignUpProcess = {
   loading: false,
   email: '',
   token: '',
+  password: '',
 }
 
 export const SignUpPage = () => {

@@ -49,73 +49,53 @@ var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @route    POST api/v1/regularUser/signUp
-// @desc     Signup regularuser
+// @desc     Sign regularUser up
 // @access   Public
 var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var email, user, sixDigits, message;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 9];
+                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
                 return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
-<<<<<<< HEAD
-                if (user && user.active) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Email has been taken.', 409))];
-                }
                 sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
-                if (!user) {
+                if (user) {
+                    if (user.active) {
+                        // User already register and has been activated
+                        return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
+                    }
+                    else {
+                        // User already register but not be activated
+                        user.password = sixDigits;
+                    }
+                }
+                else {
                     user = new RegularUser_1.default({
                         email: email,
                         password: sixDigits,
                         provider: 'TouchWhale',
                     });
                 }
-                else {
-                    user.password = sixDigits;
-                }
-=======
-                sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
-                if (!user) return [3 /*break*/, 5];
-                if (!user.active) return [3 /*break*/, 2];
-                // User already register and has been activated
-                return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
+                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
             case 2:
-                // User already register but not be activated
-                user.password = sixDigits;
-                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
-            case 3:
                 _a.sent();
-                _a.label = 4;
-            case 4: return [3 /*break*/, 7];
-            case 5:
-                user = new RegularUser_1.default({
-                    email: email,
-                    password: sixDigits,
-                    provider: 'TouchWhale',
-                });
->>>>>>> ed5f20fcc86034ddafb6ae89eff071baaa0a0fef
-                return [4 /*yield*/, user.save({ validateBeforeSave: false })];
-            case 6:
-                _a.sent();
-                _a.label = 7;
-            case 7:
                 message = (0, emailMessage_1.sixDigitsMessage)({ sixDigits: sixDigits });
                 return [4 /*yield*/, (0, sendEmail_1.sendEmail)({
                         to: email,
                         subject: 'Your verificatiom code',
                         message: message,
                     })];
-            case 8:
+            case 3:
                 _a.sent();
                 res
                     .status(200)
                     .json({ data: "Verification code has been send to ".concat(email) });
-                return [3 /*break*/, 10];
-            case 9: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
-            case 10: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
@@ -178,7 +158,7 @@ exports.regularUserSignIn = regularUserSignIn;
 // @desc     Call back function for google OAuth
 // @access   Public
 var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var profile, email, user, err_1;
+    var profile, email, user, redirectHome, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -209,7 +189,11 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 _a.label = 5;
             case 5:
                 setToken(user, 200, res);
-                return [2 /*return*/, res.redirect('/')];
+                redirectHome = process.env.APP_URL_PROD;
+                if (process.env.NODE_ENV === 'development') {
+                    redirectHome = process.env.APP_URL_DEV;
+                }
+                return [3 /*break*/, 7];
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500))];
             case 7: return [3 /*break*/, 9];
             case 8:
@@ -419,7 +403,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 return [3 /*break*/, 7];
             case 5:
                 err_3 = _a.sent();
-                console.log(err_3);
+                console.error(err_3);
                 user.forgetPasswordToken = undefined;
                 user.forgetPasswordExpire = undefined;
                 return [4 /*yield*/, user.save({ validateBeforeSave: false })];

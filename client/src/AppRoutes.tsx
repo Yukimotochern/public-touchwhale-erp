@@ -6,6 +6,9 @@ import { IconLookup } from '@fortawesome/fontawesome-svg-core'
 import { PageWithHeader } from './layout/mainLayout/pageWithHeader/PageWithHeader'
 import { FullLayout } from './layout/fullLayout/FullLayout'
 import { SignUpPage } from './pages/signUp/SignUpPage'
+import { SignInPage } from './pages/signIn/SignInPage'
+import { PrivateOutlet } from './pages/private/PrivateOutlet'
+import { PublicOutlet } from './pages/public/PublicOutlet'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -156,16 +159,30 @@ const fullLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     path: 'signUp',
     element: <SignUpPage />,
   },
+  {
+    path: 'signIn',
+    element: <SignInPage />,
+  },
 ]
 
 const fullRouteSpecification: RouteObjectWithLinkSpecification[] = [
   {
-    element: <MainLayout />,
-    children: mainLayoutRoutes,
+    element: <PrivateOutlet />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: mainLayoutRoutes,
+      },
+    ],
   },
   {
-    element: <FullLayout />,
-    children: fullLayoutRoutes,
+    element: <PublicOutlet />,
+    children: [
+      {
+        element: <FullLayout />,
+        children: fullLayoutRoutes,
+      },
+    ],
   },
 ]
 
@@ -256,7 +273,7 @@ function deleteOtherthanRouteObject(
 
 // pureAppRoutes will be used by some route-related slices as reference for the whole routing structure
 const { pureRouteObjectWithLink } = setLink(
-  purifyForRedux(fullRouteSpecification),
+  purifyForRedux(mainLayoutRoutes),
   []
 )
 const appRoutes = deleteOtherthanRouteObject(fullRouteSpecification)
