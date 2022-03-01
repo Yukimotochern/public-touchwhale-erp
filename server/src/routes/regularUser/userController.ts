@@ -137,12 +137,12 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
           await user.save()
         }
       }
-      setToken(user, 200, res)
-      let redirectHome = process.env.APP_URL_PROD
+      setToken(user, res)
+      let redirectHome = process.env.BACKEND_PROD_URL
       if (process.env.NODE_ENV === 'development') {
-        redirectHome = process.env.APP_URL_DEV
+        redirectHome = process.env.BACKEND_DEV_URL
       }
-      // return res.redirect(redirectHome)
+      return res.redirect(redirectHome)
     } else {
       return next(new ErrorResponse('Google Bad Request', 500))
     }
@@ -345,7 +345,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
 }
 
 // Helper functions
-const setToken = (user: any, statusCode: number, res: Response): any => {
+const setToken = (user: any, res: Response): any => {
   const token = user.getSignedJWTToken()
   const options = {
     expires: new Date(
@@ -354,7 +354,7 @@ const setToken = (user: any, statusCode: number, res: Response): any => {
     httpOnly: true,
   }
 
-  res.status(statusCode).cookie('token', token, options)
+  res.cookie('token', token, options)
   return token
 }
 
@@ -363,6 +363,6 @@ const sendTokenResponse = (
   statusCode: number,
   res: Response
 ): void => {
-  const token = setToken(user, statusCode, res)
-  res.json({ token })
+  const token = setToken(user, res)
+  res.status(statusCode).json({ token })
 }

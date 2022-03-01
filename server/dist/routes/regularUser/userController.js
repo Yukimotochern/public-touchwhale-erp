@@ -93,15 +93,9 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 res
                     .status(200)
                     .json({ data: "Verification code has been send to ".concat(email) });
-<<<<<<< HEAD
                 return [3 /*break*/, 5];
             case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
-=======
-                return [3 /*break*/, 10];
-            case 9: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
-            case 10: return [2 /*return*/];
->>>>>>> e2f026d0a1c85dce0dd12cf25d75ee6fe2692b81
         }
     });
 }); };
@@ -194,12 +188,12 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 _a.sent();
                 _a.label = 5;
             case 5:
-                setToken(user, 200, res);
-                redirectHome = process.env.APP_URL_PROD;
+                setToken(user, res);
+                redirectHome = process.env.BACKEND_PROD_URL;
                 if (process.env.NODE_ENV === 'development') {
-                    redirectHome = process.env.APP_URL_DEV;
+                    redirectHome = process.env.BACKEND_DEV_URL;
                 }
-                return [3 /*break*/, 7];
+                return [2 /*return*/, res.redirect(redirectHome)];
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500))];
             case 7: return [3 /*break*/, 9];
             case 8:
@@ -460,16 +454,16 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
 }); };
 exports.resetPassword = resetPassword;
 // Helper functions
-var setToken = function (user, statusCode, res) {
+var setToken = function (user, res) {
     var token = user.getSignedJWTToken();
     var options = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000),
         httpOnly: true,
     };
-    res.status(statusCode).cookie('token', token, options);
+    res.cookie('token', token, options);
     return token;
 };
 var sendTokenResponse = function (user, statusCode, res) {
-    var token = setToken(user, statusCode, res);
-    res.json({ token: token });
+    var token = setToken(user, res);
+    res.status(statusCode).json({ token: token });
 };

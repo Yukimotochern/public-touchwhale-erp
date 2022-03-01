@@ -18,17 +18,15 @@ var passportOAuth_1 = __importDefault(require("./utils/passportOAuth"));
 var app = (0, express_1.default)();
 // Add a list of allowed origins.
 // If you have more origins you would like to add, you can add them to the array below.
-var allowedOrigins = [
-    'http://localhost:3000',
-    'https://google.com',
-    'https://accounts.google.com',
-    'https://touchwhale-erp.com',
-];
-var options = {
-    origin: allowedOrigins,
-};
-// Enable CORS
-app.use((0, cors_1.default)(options));
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'https://google.com',
+//   'https://accounts.google.com',
+//   'https://touchwhale-erp.com',
+// ]
+// const options: cors.CorsOptions = {
+//   origin: allowedOrigins,
+// }
 app.use((0, cookie_parser_1.default)());
 // Load env vars
 dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
@@ -43,6 +41,8 @@ passport_1.default.deserializeUser(function (user, done) {
     done(null, user);
 });
 (0, passportOAuth_1.default)(passport_1.default);
+// Enable CORS
+app.use((0, cors_1.default)());
 // Mount API
 app.use('/api/v1', api_1.default);
 app.use(errorMiddleware_1.errorHandler);

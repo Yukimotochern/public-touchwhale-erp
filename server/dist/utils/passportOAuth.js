@@ -44,7 +44,9 @@ var passportOAuth = function (passport) {
     passport.use(new passport_google_oauth20_1.default.Strategy({
         clientID: '854772499634-6dpb25lhg30eh5b77f83pq3uufgjau0q.apps.googleusercontent.com',
         clientSecret: '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',
-        callbackURL: 'http://localhost:5000/api/v1/regularUser/googleOAuth/callback',
+        callbackURL: "".concat(process.env.NODE_ENV === 'development'
+            ? process.env.BACKEND_DEV_URL
+            : process.env.BACKEND_PROD_URL, "/api/v1/regularUser/googleOAuth/callback"),
     }, function (accessToken, refreshToken, profile, cb) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

@@ -17,19 +17,16 @@ const app = express()
 
 // Add a list of allowed origins.
 // If you have more origins you would like to add, you can add them to the array below.
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://google.com',
-  'https://accounts.google.com',
-  'https://touchwhale-erp.com',
-]
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'https://google.com',
+//   'https://accounts.google.com',
+//   'https://touchwhale-erp.com',
+// ]
 
-const options: cors.CorsOptions = {
-  origin: allowedOrigins,
-}
-
-// Enable CORS
-app.use(cors(options))
+// const options: cors.CorsOptions = {
+//   origin: allowedOrigins,
+// }
 
 app.use(cookieParser())
 
@@ -50,6 +47,9 @@ passport.deserializeUser((user: any, done) => {
 })
 
 passportOAuth(passport)
+
+// Enable CORS
+app.use(cors())
 
 // Mount API
 app.use('/api/v1', api_v1)

@@ -47,7 +47,8 @@ export const SignInPage = () => {
         icon={<img src='/google_logo.png' alt='Google Logo' />}
         disabled={loading}
         onClick={() => {
-          api.get(`/regularUser/googleOAuth`)
+          console.log(process.env.REACT_APP_BACKEND_URL)
+          // window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/regularUser/googleOAuth`
         }}
       >
         Log in with Google

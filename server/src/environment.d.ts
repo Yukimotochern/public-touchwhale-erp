@@ -15,8 +15,8 @@ declare global {
       FROM_EMAIL: string
       B2_KEY_ID: string
       B2_SECRET_KEY: string
-      APP_URL_DEV: string
-      APP_URL_PROD: string
+      BACKEND_DEV_URL: string
+      BACKEND_PROD_URL: string
     }
   }
 }
