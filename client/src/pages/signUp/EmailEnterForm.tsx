@@ -74,8 +74,7 @@ export const EmailEnterForm = ({
         icon={<img src='/google_logo.png' alt='Google Logo' />}
         disabled={signUpProcessState.loading}
         onClick={() => {
-          console.log(process.env.REACT_APP_BACKEND_URL)
-          // window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/regularUser/googleOAuth`
+          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/regularUser/googleOAuth`
         }}
       >
         Sign up with Google

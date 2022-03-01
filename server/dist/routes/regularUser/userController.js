@@ -191,7 +191,7 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 setToken(user, res);
                 redirectHome = process.env.BACKEND_PROD_URL;
                 if (process.env.NODE_ENV === 'development') {
-                    redirectHome = process.env.BACKEND_DEV_URL;
+                    redirectHome = "".concat(process.env.FRONTEND_DEV_URL);
                 }
                 return [2 /*return*/, res.redirect(redirectHome)];
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Google Bad Request', 500))];

@@ -17,6 +17,7 @@ declare global {
       B2_SECRET_KEY: string
       BACKEND_DEV_URL: string
       BACKEND_PROD_URL: string
+      FRONTEND_DEV_URL: string
     }
   }
 }

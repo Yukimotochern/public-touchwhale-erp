@@ -140,7 +140,7 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
       setToken(user, res)
       let redirectHome = process.env.BACKEND_PROD_URL
       if (process.env.NODE_ENV === 'development') {
-        redirectHome = process.env.BACKEND_DEV_URL
+        redirectHome = `${process.env.FRONTEND_DEV_URL}`
       }
       return res.redirect(redirectHome)
     } else {
