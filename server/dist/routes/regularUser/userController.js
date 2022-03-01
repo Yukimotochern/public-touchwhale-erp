@@ -93,9 +93,15 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 res
                     .status(200)
                     .json({ data: "Verification code has been send to ".concat(email) });
+<<<<<<< HEAD
                 return [3 /*break*/, 5];
             case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
+=======
+                return [3 /*break*/, 10];
+            case 9: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 10: return [2 /*return*/];
+>>>>>>> e2f026d0a1c85dce0dd12cf25d75ee6fe2692b81
         }
     });
 }); };
