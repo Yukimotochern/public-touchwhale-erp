@@ -31,7 +31,7 @@ class api {
     })
   }
   static apiUrl(url: string) {
-    return `/api/v${process.env.REACT_APP_API_VERSION}/${url}`
+    return `/api/v${process.env.REACT_APP_API_VERSION}${url}`
   }
 }
 
