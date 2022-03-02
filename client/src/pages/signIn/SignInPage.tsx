@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Form, Input, Button, Divider, Typography, message } from 'antd'
+import { Form, Input, Button, Divider, Typography } from 'antd'
 import styles from './SignInPage.module.css'
 import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'

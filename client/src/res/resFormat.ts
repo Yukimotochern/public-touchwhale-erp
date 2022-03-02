@@ -4,7 +4,7 @@ export interface TwApiRes {
   success?: boolean
 }
 
-const twApiSchema: JSONSchemaType<TwApiRes> = {
+export const twApiSchema: JSONSchemaType<TwApiRes> = {
   type: 'object',
   properties: {
     success: { type: 'boolean', nullable: true },

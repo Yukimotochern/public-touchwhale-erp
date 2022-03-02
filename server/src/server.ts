@@ -64,6 +64,7 @@ const server = app.listen(PORT, () =>
       .yellow.bold
   )
 )
+
 server.setTimeout(999999999)
 
 if (process.env.NODE_ENV === 'production') {

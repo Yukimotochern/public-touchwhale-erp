@@ -5,7 +5,6 @@ import {
   IRegularUserRes,
 } from '../../res/regularUserValidate'
 import { message } from 'antd'
-import { NavigateFunction } from 'react-router-dom'
 
 interface AppAuthState {
   user?: IRegularUserRes

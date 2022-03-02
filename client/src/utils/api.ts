@@ -1,8 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios'
-// import { JSONSchemaType } from 'ajv'
-// import ajv from '../utils/ajv'
-// import { message } from 'antd'
-// import { TwApiRes } from '../res/resFormat'
 
 let config: AxiosRequestConfig = {
   timeout: +process.env.REACT_APP_API_TIMEOUT,
