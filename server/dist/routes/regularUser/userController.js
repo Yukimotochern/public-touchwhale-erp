@@ -228,6 +228,7 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
         switch (_a.label) {
             case 0:
                 if (!req.userJWT) return [3 /*break*/, 2];
+                console.log(req.userJWT);
                 return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id)];
             case 1:
                 user = _a.sent();
@@ -235,6 +236,9 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
                     res.status(200).json({
                         data: user,
                     });
+                }
+                else {
+                    return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
                 }
                 return [3 /*break*/, 3];
             case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
