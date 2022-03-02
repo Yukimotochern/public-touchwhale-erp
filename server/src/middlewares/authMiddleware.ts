@@ -4,36 +4,35 @@ import { RegularUserJWTPayload } from '../models/RegularUser'
 import ErrorResponse from '../utils/errorResponse'
 
 interface RequestWithRegularUser extends Request {
-  userJWT?: RegularUserJWTPayload
+	userJWT?: RegularUserJWTPayload
 }
 
 interface PrivateRequestHandler {
-  (
-    req: RequestWithRegularUser,
-    res: Response,
-    next: NextFunction
-  ): void | Promise<void>
+	(
+		req: RequestWithRegularUser,
+		res: Response,
+		next: NextFunction
+	): void | Promise<void>
 }
 
 const authMiddleware: PrivateRequestHandler = (req, res, next) => {
-  let token = req.body.token
-  if (!token) {
-    token = req.cookies.token
-  }
-  if (!token) {
-    return next(new ErrorResponse('No token, authorization denied.', 401))
-  }
-  try {
-    const decode = jwt.verify(
-      token,
-      process.env.JWTSECRET
-    ) as RegularUserJWTPayload
+	const token = req.cookies.token
 
-    req.userJWT = decode
-    next()
-  } catch (err) {
-    return next(new ErrorResponse('Token is invalid.', 401))
-  }
+	if (!token) {
+		return next(new ErrorResponse('No token, authorization denied.', 401))
+	}
+	// console.log(token)
+	try {
+		const decode = jwt.verify(
+			token,
+			process.env.JWTSECRET
+		) as RegularUserJWTPayload
+
+		req.userJWT = decode
+		next()
+	} catch (err) {
+		return next(new ErrorResponse('Token is invalid.', 401))
+	}
 }
 
 export { RequestWithRegularUser, PrivateRequestHandler }
