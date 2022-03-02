@@ -12,7 +12,8 @@ import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
+import Avatar from 'antd/lib/avatar/avatar'
 
 const { Content } = Layout
 
@@ -23,6 +24,7 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // First find the current first level route
   const location = useAppSelector((s) => s.router.location)
+  const auth = useAppSelector((s) => s.auth)
   let firstLevelRoute: string | undefined
   let secondLevelRoute: string | undefined
   if (location) {
@@ -33,6 +35,10 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
     if (pathStrings.length > 2) {
       secondLevelRoute = pathStrings[2]
     }
+  }
+  let authIcon: string | JSX.Element = <FontAwesomeIcon icon={faUser} />
+  if (!auth.loading && auth.user && auth.user.avatar) {
+    authIcon = auth.user.avatar
   }
 
   const navigate = useNavigate()
@@ -78,6 +84,7 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
             </Tabs>
           ) : undefined
         }
+        extra={<Avatar icon={authIcon} />}
       />
       <Content className='tw-page-with-header-content'>{children}</Content>
     </>

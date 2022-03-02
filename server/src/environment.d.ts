@@ -18,6 +18,8 @@ declare global {
       BACKEND_DEV_URL: string
       BACKEND_PROD_URL: string
       FRONTEND_DEV_URL: string
+      GOOGLE_OAUTH_CLIENT_ID: string
+      GOOGLE_OAUTH_CLIENT_SECRET: string
     }
   }
 }

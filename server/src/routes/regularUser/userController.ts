@@ -172,7 +172,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 // @access   Private
 export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
   if (req.userJWT) {
-    console.log(req.userJWT)
     const user = await RegularUserModel.findById(req.userJWT.id)
     if (user) {
       res.status(200).json({

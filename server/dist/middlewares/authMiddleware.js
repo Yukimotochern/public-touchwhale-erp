@@ -10,7 +10,6 @@ var authMiddleware = function (req, res, next) {
     if (!token) {
         token = req.cookies.token;
     }
-    console.log('token got', token);
     if (!token) {
         return next(new errorResponse_1.default('No token, authorization denied.', 401));
     }

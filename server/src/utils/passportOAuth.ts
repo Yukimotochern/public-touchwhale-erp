@@ -16,9 +16,8 @@ const passportOAuth = (passport: any) => {
   passport.use(
     new GoogleStrategy.Strategy(
       {
-        clientID:
-          '854772499634-6dpb25lhg30eh5b77f83pq3uufgjau0q.apps.googleusercontent.com',
-        clientSecret: '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',
+        clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
         callbackURL: `${
           process.env.NODE_ENV === 'development'
             ? process.env.BACKEND_DEV_URL
