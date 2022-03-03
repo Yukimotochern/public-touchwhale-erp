@@ -51,7 +51,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
-var advancedResult = function (model) {
+var advancedResult = function (model, populateStr) {
     return function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
         var id, query, reqQuery, removeFields, queryStr, _a, select, sort, pageNum, limitNum, fields, sortBy, page, limit, startIndex, endIndex, total, results, pagination;
         var _b;
@@ -64,9 +64,10 @@ var advancedResult = function (model) {
                     id = req.userJWT.id;
                     req.query.user = id;
                     reqQuery = __assign({}, req.query);
-                    removeFields = ['select', 'sort', 'page', 'limit'];
+                    removeFields = ['select', 'sort', 'page', 'limit', 'populate'];
                     removeFields.forEach(function (param) { return delete reqQuery[param]; });
                     queryStr = JSON.stringify(reqQuery);
+                    console.log(JSON.parse(queryStr));
                     query = model.find(JSON.parse(queryStr));
                     _a = req.query, select = _a.select, sort = _a.sort, pageNum = _a.pageNum, limitNum = _a.limitNum;
                     // Select fields
@@ -90,6 +91,9 @@ var advancedResult = function (model) {
                 case 1:
                     total = _c.sent();
                     query = query.skip(startIndex).limit(limit);
+                    if (req.query.populate) {
+                        query = query.populate(populateStr);
+                    }
                     return [4 /*yield*/, query
                         // Pagination
                     ];

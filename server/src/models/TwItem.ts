@@ -7,7 +7,7 @@ interface TwItemType {
 	custom_id: string
 	count_stock: boolean
 	item_type: string
-	// set: Types.ObjectId
+	image: string
 }
 
 interface TwItemPayload extends Document {
@@ -16,6 +16,7 @@ interface TwItemPayload extends Document {
 	custom_id: string
 	count_stock: boolean
 	item_type: string
+	image: string
 }
 
 // @todo Maybe this model can remember last update user_id
@@ -45,6 +46,9 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
 			enum: ['set', 'element'],
 			default: 'element',
 		},
+		image: {
+			type: String,
+		},
 	},
 	{
 		timestamps: true,
@@ -55,10 +59,15 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
 
 TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true })
 
+TwItemSchema.pre('remove', async function (next) {
+	await this.model('tw_item_set_detail').deleteMany({ parentItem: this._id })
+	next()
+})
+
 TwItemSchema.virtual('setOfElements', {
 	ref: 'tw_item_set_detail',
 	localField: '_id',
-	foreignField: 'element',
+	foreignField: 'parentItem',
 	justOne: true,
 })
 

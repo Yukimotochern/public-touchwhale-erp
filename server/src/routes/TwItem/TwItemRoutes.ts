@@ -10,6 +10,7 @@ import {
 	getItem,
 	updateItem,
 	deleteItem,
+	getB2URL,
 } from './twItemController'
 import TwItem from '../../models/TwItem'
 
@@ -18,7 +19,10 @@ const router = express.Router()
 // @todo twItem routes supposed to handle diff user access right.
 router
 	.route('/')
-	.get([authMiddleware, advancedResult(TwItem)], errorCatcher(getItems))
+	.get(
+		[authMiddleware, advancedResult(TwItem, 'setOfElements')],
+		errorCatcher(getItems)
+	)
 	.post(authMiddleware, errorCatcher(addItem))
 
 router
@@ -26,5 +30,9 @@ router
 	.get([authMiddleware, itemOwnerMiddleware], errorCatcher(getItem))
 	.put([authMiddleware, itemOwnerMiddleware], errorCatcher(updateItem))
 	.delete([authMiddleware, itemOwnerMiddleware], errorCatcher(deleteItem))
+
+router
+	.route('/uploadImage/:id')
+	.get([authMiddleware, itemOwnerMiddleware], errorCatcher(getB2URL))
 
 export default router

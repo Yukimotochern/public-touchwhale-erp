@@ -14,11 +14,14 @@ var router = express_1.default.Router();
 // @todo twItem routes supposed to handle diff user access right.
 router
     .route('/')
-    .get([authMiddleware_1.default, (0, advancedResult_1.default)(TwItem_1.default)], (0, errorCatcher_1.default)(twItemController_1.getItems))
+    .get([authMiddleware_1.default, (0, advancedResult_1.default)(TwItem_1.default, 'setOfElements')], (0, errorCatcher_1.default)(twItemController_1.getItems))
     .post(authMiddleware_1.default, (0, errorCatcher_1.default)(twItemController_1.addItem));
 router
     .route('/:id')
     .get([authMiddleware_1.default, itemOwnerMiddleware_1.default], (0, errorCatcher_1.default)(twItemController_1.getItem))
     .put([authMiddleware_1.default, itemOwnerMiddleware_1.default], (0, errorCatcher_1.default)(twItemController_1.updateItem))
     .delete([authMiddleware_1.default, itemOwnerMiddleware_1.default], (0, errorCatcher_1.default)(twItemController_1.deleteItem));
+router
+    .route('/uploadImage/:id')
+    .get([authMiddleware_1.default, itemOwnerMiddleware_1.default], (0, errorCatcher_1.default)(twItemController_1.getB2URL));
 exports.default = router;

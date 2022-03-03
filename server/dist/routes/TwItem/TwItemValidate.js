@@ -13,6 +13,17 @@ var addItemBodySchema = {
         custom_id: { type: 'string' },
         count_stock: { type: 'boolean' },
         item_type: { type: 'string' },
+        // element will store in TwItemSetDetail model
+        element: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    quantity: { type: 'number' },
+                    objectId: { type: 'string' },
+                },
+            },
+        },
     },
     required: [],
     additionalProperties: false,

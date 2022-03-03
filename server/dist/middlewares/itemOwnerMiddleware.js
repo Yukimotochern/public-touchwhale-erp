@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var TwItem_1 = __importDefault(require("../models/TwItem"));
 var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var itemId, item, err_1;
+    var itemId, populate, query, item, err_1;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -52,7 +52,12 @@ var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, v
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
                 itemId = req.params.id;
-                return [4 /*yield*/, TwItem_1.default.findById(itemId)
+                populate = req.query.populate;
+                query = TwItem_1.default.findById(itemId);
+                if (populate) {
+                    query = query.populate('setOfElements', 'element');
+                }
+                return [4 /*yield*/, query
                     // Ensure that item must exist and user have ownership with this item
                 ];
             case 1:

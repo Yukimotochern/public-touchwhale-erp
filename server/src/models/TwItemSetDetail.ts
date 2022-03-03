@@ -4,7 +4,7 @@ import mongoose, { Types, Schema } from 'mongoose'
 interface TwItemSetDetailType {
 	user: Types.ObjectId
 	parentItem: Types.ObjectId
-	element: Array<Types.ObjectId>
+	element: Array<Object>
 }
 
 const TwItemSetDetailSchema = new mongoose.Schema<TwItemSetDetailType>({
@@ -18,17 +18,14 @@ const TwItemSetDetailSchema = new mongoose.Schema<TwItemSetDetailType>({
 		ref: 'tw_item',
 		required: true,
 	},
-	element: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: 'tw_item',
-		},
-	],
+	element: [Object],
 })
 
 const TwItemSetDetail = mongoose.model(
 	'tw_item_set_detail',
 	TwItemSetDetailSchema
 )
+
+export { TwItemSetDetailType }
 
 export default TwItemSetDetail

@@ -10,8 +10,8 @@ const s3 = new AWS.S3({
 })
 
 // @todo This function will handle more upload image condition with other routes .
-export default async function (identical: string) {
-	const Key = `RegularUserAvatar/${identical}`
+export default async function (imageContent: string, identical: string) {
+	const Key = `${imageContent}/${identical}`
 	let url = await s3.getSignedUrlPromise('putObject', {
 		Bucket: 'tw-user-data',
 		ContentType: 'image/*',
