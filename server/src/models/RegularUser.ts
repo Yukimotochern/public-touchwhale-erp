@@ -9,6 +9,7 @@ interface RegularUserType {
   password: string
   avatar?: string
   company_name?: string
+  username?: string
   // non-editable for user
   provider: 'TouchWhale' | 'Google'
   active: boolean
@@ -32,6 +33,9 @@ interface RegularUserJWTPayload extends JwtPayload {
 const RegularUserSchema = new mongoose.Schema<RegularUserType>(
   {
     company_name: {
+      type: String,
+    },
+    username: {
       type: String,
     },
     email: {

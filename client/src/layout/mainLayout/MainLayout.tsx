@@ -13,7 +13,7 @@ export const MainLayout = ({ inner }: Props) => {
     <div className={styles.full}>
       <Layout>
         <SideMenu />
-        <Layout>{inner || <Outlet />}</Layout>
+        <Layout> {inner || <Outlet />}</Layout>
       </Layout>
     </div>
   )

@@ -34,7 +34,12 @@ export const getRegularUser = createAsyncThunk(
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    logOut(state) {
+      state.loading = false
+      state.user = undefined
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getRegularUser.fulfilled, (state, action) => {
@@ -47,6 +52,7 @@ export const authSlice = createSlice({
       .addCase(getRegularUser.rejected, (state, action) => {
         state.loading = false
         state.error = action.error
+        state.user = undefined
       })
   },
 })

@@ -1,0 +1,15 @@
+.user-icon:hover {
+  opacity: 90%;
+  /* border: 0px #1672c9cc solid; */
+}
+.user-icon {
+  cursor: pointer;
+  /* border: 1px rgb(184, 181, 181) solid; */
+  background-color: rgba(82, 82, 82, 0.3);
+  outline: 1.2px rgba(110, 110, 110, 0.781) solid;
+  color: white;
+}
+/* .user-icon img {
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+} */

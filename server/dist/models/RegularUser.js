@@ -47,6 +47,9 @@ var RegularUserSchema = new mongoose_1.default.Schema({
     company_name: {
         type: String,
     },
+    username: {
+        type: String,
+    },
     email: {
         type: String,
         unique: true,

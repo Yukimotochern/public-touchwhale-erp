@@ -175,6 +175,7 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                     password: crypto_1.default.randomBytes(10).toString('hex'),
                     avatar: profile === null || profile === void 0 ? void 0 : profile.picture,
                     provider: 'Google',
+                    username: profile === null || profile === void 0 ? void 0 : profile.name,
                 });
                 return [4 /*yield*/, user.save()];
             case 2:
@@ -250,17 +251,13 @@ exports.getRegularUser = getRegularUser;
 // @desc     Update regularUser infomation
 // @access   Private
 var updateRegularUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var company_name, fieldsToUpdate, user;
+    var user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 if (!(0, userValidate_1.updateRegularUserBodyValidator)(req.body)) return [3 /*break*/, 4];
-                company_name = req.body.company_name;
-                fieldsToUpdate = {
-                    company_name: company_name,
-                };
                 if (!req.userJWT) return [3 /*break*/, 2];
-                return [4 /*yield*/, RegularUser_1.default.findByIdAndUpdate(req.userJWT.id, fieldsToUpdate, {
+                return [4 /*yield*/, RegularUser_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
                         new: true,
                         runValidators: true,
                     })];
