@@ -20,43 +20,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = __importStar(require("mongoose"));
-// @todo Maybe this model can remember last update user_id
-var TwItemSchema = new mongoose_1.default.Schema({
+var TwItemSetDetailSchema = new mongoose_1.default.Schema({
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'regular_user',
         required: true,
     },
-    name: {
-        type: String,
-        // unique: true,
-        trim: true,
+    parentItem: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'tw_item',
+        required: true,
     },
-    unit: {
-        type: String,
-        trim: true,
-    },
-    custom_id: { type: String, trim: true, required: true },
-    count_stock: {
-        type: Boolean,
-        default: true,
-    },
-    item_type: {
-        type: String,
-        enum: ['set', 'element'],
-        default: 'element',
-    },
-}, {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    element: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'tw_item',
+        },
+    ],
 });
-TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true });
-TwItemSchema.virtual('setOfElements', {
-    ref: 'tw_item_set_detail',
-    localField: '_id',
-    foreignField: 'element',
-    justOne: true,
-});
-var TwItem = mongoose_1.default.model('tw_item', TwItemSchema);
-exports.default = TwItem;
+var TwItemSetDetail = mongoose_1.default.model('tw_item_set_detail', TwItemSetDetailSchema);
+exports.default = TwItemSetDetail;
