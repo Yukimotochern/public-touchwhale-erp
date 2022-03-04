@@ -1,10 +1,13 @@
 import React from 'react'
 import './PageWithHeader.css'
+import styles from './PageWithHeader.module.css'
 import {
   PageHeader as AntPageHeader,
   Tabs,
   Layout,
   PageHeaderProps,
+  Dropdown,
+  Menu,
 } from 'antd'
 import { PureRouteObjectWithLink } from '../../../AppRoutes'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import Avatar from 'antd/lib/avatar/avatar'
+import api from '../../../utils/api'
+import { getRegularUser } from '../../../redux/auth/authSlice'
 
 const { Content } = Layout
 
@@ -23,12 +28,12 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // First find the current first level route
-  const location = useAppSelector((s) => s.router.location)
+  const curLocation = useAppSelector((s) => s.router.location)
   const auth = useAppSelector((s) => s.auth)
   let firstLevelRoute: string | undefined
   let secondLevelRoute: string | undefined
-  if (location) {
-    let pathStrings = location.pathname.split('/')
+  if (curLocation) {
+    let pathStrings = curLocation.pathname.split('/')
     if (pathStrings.length > 1) {
       firstLevelRoute = pathStrings[1]
     }
@@ -36,7 +41,13 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
       secondLevelRoute = pathStrings[2]
     }
   }
-  let authIcon: string | JSX.Element = <FontAwesomeIcon icon={faUser} />
+  let authIcon: string | JSX.Element = (
+    <FontAwesomeIcon
+      icon={faUser}
+      color='rgba(102, 101, 101, 0.849'
+      size='lg'
+    />
+  )
   if (!auth.loading && auth.user && auth.user.avatar) {
     authIcon = auth.user.avatar
   }
@@ -56,6 +67,26 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
       }
     }
   }
+  const userMenu = (
+    <Menu className='tw-page-with-header-user-menu '>
+      <Menu.ItemGroup title={<div>Hi, {auth.user?.email}</div>}>
+        <Menu.Item
+          key='log_out'
+          onClick={async () => {
+            try {
+              await api.get('/regularUser/signOut')
+              dispatch(getRegularUser())
+            } catch (err) {
+              // refresh
+              navigate(0)
+            }
+          }}
+        >
+          Log out
+        </Menu.Item>
+      </Menu.ItemGroup>
+    </Menu>
+  )
   // Then see if there are children route
   // If do, extract the subroutes and render Tabs accordingly
   return (
@@ -84,7 +115,17 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
             </Tabs>
           ) : undefined
         }
-        extra={<Avatar icon={authIcon} />}
+        extra={
+          <div className='user-icon'>
+            <Dropdown
+              overlay={userMenu}
+              trigger={['click']}
+              className={styles['user-icon']}
+            >
+              <Avatar src={authIcon} />
+            </Dropdown>
+          </div>
+        }
       />
       <Content className='tw-page-with-header-content'>{children}</Content>
     </>

@@ -114,6 +114,7 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
 	res,
 	next
 ) => {
+<<<<<<< HEAD
 	try {
 		if (req.user) {
 			const profile = req.user._json
@@ -128,6 +129,22 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
 					avatar: profile?.picture,
 					provider: 'Google',
 				})
+=======
+  try {
+    if (req.user) {
+      const profile = req.user._json
+      const email = profile.email
+      let user = await RegularUserModel.findOne({ email })
+
+      if (!user) {
+        user = new RegularUserModel({
+          email: profile?.email,
+          password: crypto.randomBytes(10).toString('hex'),
+          avatar: profile?.picture,
+          provider: 'Google',
+          username: profile?.name,
+        })
+>>>>>>> bce9ee7a3f518e3a8b7a70243a84937fddbdae4f
 
 				await user.save()
 			} else {
@@ -158,6 +175,7 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 	res,
 	next
 ) => {
+<<<<<<< HEAD
 	res.clearCookie('token', {
 		httpOnly: true,
 	})
@@ -165,6 +183,14 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 	res.status(200).json({
 		data: {},
 	})
+=======
+  res.clearCookie('token', {
+    httpOnly: true,
+  })
+  res.status(200).json({
+    data: {},
+  })
+>>>>>>> bce9ee7a3f518e3a8b7a70243a84937fddbdae4f
 }
 
 // @route    GET api/v1/regularUser/
@@ -193,6 +219,7 @@ export const updateRegularUser: PrivateRequestHandler = async (
 	res,
 	next
 ) => {
+<<<<<<< HEAD
 	if (updateRegularUserBodyValidator(req.body)) {
 		const { company_name } = req.body
 		const fieldsToUpdate = {
@@ -216,6 +243,27 @@ export const updateRegularUser: PrivateRequestHandler = async (
 	} else {
 		return next(avjErrorWrapper(updateRegularUserBodyValidator.errors))
 	}
+=======
+  if (updateRegularUserBodyValidator(req.body)) {
+    if (req.userJWT) {
+      const user = await RegularUserModel.findByIdAndUpdate(
+        req.userJWT.id,
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
+      res.status(200).json({
+        data: user,
+      })
+    } else {
+      return next(new ErrorResponse('Server Error'))
+    }
+  } else {
+    return next(avjErrorWrapper(updateRegularUserBodyValidator.errors))
+  }
+>>>>>>> bce9ee7a3f518e3a8b7a70243a84937fddbdae4f
 }
 
 // @route    GET api/v1/regularUser/uploadAvatar

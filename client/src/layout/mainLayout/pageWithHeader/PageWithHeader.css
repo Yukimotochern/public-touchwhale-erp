@@ -12,6 +12,11 @@ h1 {
 }
 
 .tw-page-with-header-content {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-top: 20px;
+}
+
+.tw-page-with-header-user-menu .ant-dropdown-menu-item-group-list {
+  margin: 0;
 }
