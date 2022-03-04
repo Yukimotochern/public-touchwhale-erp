@@ -23,11 +23,7 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 	res,
 	next
 ) => {
-	try {
-		if (!req.userJWT?.id) {
-			return next(new ErrorResponse('Invalid credentials.', 401))
-		}
-
+	if (req.userJWT?.id) {
 		const itemId = req.params.id
 		const populate = req.query.populate
 
@@ -47,9 +43,9 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 		res.item = item
 
 		next()
-	} catch (err) {
-		return next(new ErrorResponse('Server Error', 401, err))
 	}
+
+	return next(new ErrorResponse('Server Error', 500))
 }
 
 export { itemOwnerResponseHandler }

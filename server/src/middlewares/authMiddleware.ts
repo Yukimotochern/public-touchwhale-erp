@@ -7,10 +7,10 @@ interface RequestWithRegularUser extends Request {
   userJWT?: RegularUserJWTPayload
 }
 
-interface PrivateRequestHandler<G = any> {
+interface PrivateRequestHandler {
   (
     req: RequestWithRegularUser,
-    res: Response<G>,
+    res: Response,
     next: NextFunction
   ): void | Promise<void>
 }

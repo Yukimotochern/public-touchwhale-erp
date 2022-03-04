@@ -10,7 +10,6 @@ import uploadImage from '../../utils/AWS/uploadImage'
 
 // Validator
 import { addItemValidator } from './twItemValidate'
-import { itemSetValidator } from '../twItemSetDetail/twItemSetValidate'
 
 // @route    GET api/v1/twItem/
 // @desc     Get all items with specific user

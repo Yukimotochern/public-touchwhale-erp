@@ -45,7 +45,7 @@ var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
-var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
+var RegularUser_1 = __importDefault(require("./RegularUser"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @route    POST api/v1/regularUser/signUp

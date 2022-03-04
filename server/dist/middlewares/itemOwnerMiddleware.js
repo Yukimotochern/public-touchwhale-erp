@@ -42,15 +42,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var TwItem_1 = __importDefault(require("../models/TwItem"));
 var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var itemId, populate, query, item, err_1;
+    var itemId, populate, query, item;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
-                if (!((_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.id)) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
-                }
+                if (!((_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 2];
                 itemId = req.params.id;
                 populate = req.query.populate;
                 query = TwItem_1.default.findById(itemId);
@@ -68,11 +65,8 @@ var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, v
                 }
                 res.item = item;
                 next();
-                return [3 /*break*/, 3];
-            case 2:
-                err_1 = _b.sent();
-                return [2 /*return*/, next(new errorResponse_1.default('Server Error', 401, err_1))];
-            case 3: return [2 /*return*/];
+                _b.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500))];
         }
     });
 }); };
