@@ -227,7 +227,10 @@ export const getB2URL: PrivateRequestHandler = async (req, res, next) => {
 // @route    POST api/v1/regularUser/uploadAvatar
 // @desc     Set imageKey in RegularUser
 // @access   Private
-export const setAvatar: PrivateRequestHandler = async (req, res, next) => {
+export const setAvatar: PrivateRequestHandler<{
+  id: any
+  imgKey: any
+}> = async (req, res, next) => {
   try {
     const { id, imgKey } = req.body
 
@@ -236,7 +239,7 @@ export const setAvatar: PrivateRequestHandler = async (req, res, next) => {
       return next(new ErrorResponse('Server Error.'))
     }
     user.avatar = imgKey
-    user.save()
+    await user.save()
 
     res.status(200).json({ id: user.id, imgKey })
   } catch (err) {

@@ -305,7 +305,7 @@ var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, voi
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
+                _b.trys.push([0, 3, , 4]);
                 _a = req.body, id = _a.id, imgKey = _a.imgKey;
                 return [4 /*yield*/, RegularUser_1.default.findById(id)];
             case 1:
@@ -314,13 +314,15 @@ var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, voi
                     return [2 /*return*/, next(new errorResponse_1.default('Server Error.'))];
                 }
                 user.avatar = imgKey;
-                user.save();
-                res.status(200).json({ id: user.id, imgKey: imgKey });
-                return [3 /*break*/, 3];
+                return [4 /*yield*/, user.save()];
             case 2:
+                _b.sent();
+                res.status(200).json({ id: user.id, imgKey: imgKey });
+                return [3 /*break*/, 4];
+            case 3:
                 err_2 = _b.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500, err_2))];
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
