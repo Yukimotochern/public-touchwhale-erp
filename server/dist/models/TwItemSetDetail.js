@@ -31,12 +31,7 @@ var TwItemSetDetailSchema = new mongoose_1.default.Schema({
         ref: 'tw_item',
         required: true,
     },
-    element: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'tw_item',
-        },
-    ],
+    element: [Object],
 });
 var TwItemSetDetail = mongoose_1.default.model('tw_item_set_detail', TwItemSetDetailSchema);
 exports.default = TwItemSetDetail;

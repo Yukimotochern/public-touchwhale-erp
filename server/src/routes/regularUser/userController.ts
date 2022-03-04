@@ -221,7 +221,7 @@ export const getB2URL: PrivateRequestHandler = async (req, res, next) => {
     return next(new ErrorResponse('Invalid credentials.'))
   }
   const { id } = req.userJWT
-  res.status(200).send(await uploadImage(id))
+  res.status(200).send(await uploadImage('RegularUserAvatar', id))
 }
 
 // @route    POST api/v1/regularUser/uploadAvatar

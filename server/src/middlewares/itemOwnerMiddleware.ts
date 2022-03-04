@@ -29,8 +29,15 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 		}
 
 		const itemId = req.params.id
+		const populate = req.query.populate
 
-		const item = await TwItem.findById(itemId)
+		let query = TwItem.findById(itemId)
+
+		if (populate) {
+			query = query.populate('setOfElements', 'element')
+		}
+
+		const item = await query
 
 		// Ensure that item must exist and user have ownership with this item
 		if (!item || item.user.toString() !== req.userJWT.id) {

@@ -289,7 +289,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
                 }
                 id = req.userJWT.id;
                 _b = (_a = res.status(200)).send;
-                return [4 /*yield*/, (0, uploadImage_1.default)(id)];
+                return [4 /*yield*/, (0, uploadImage_1.default)('RegularUserAvatar', id)];
             case 1:
                 _b.apply(_a, [_d.sent()]);
                 return [2 /*return*/];

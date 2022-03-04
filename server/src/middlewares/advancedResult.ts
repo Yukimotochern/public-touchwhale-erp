@@ -17,7 +17,7 @@ interface advancedResultQuery {
 }
 
 const advancedResult =
-	(model: Model<TwItemType>) =>
+	(model: Model<TwItemType>, populateStr?: any) =>
 	async (
 		req: RequestWithRegularUser,
 		res: advancedResultResponse,
@@ -34,11 +34,12 @@ const advancedResult =
 
 		const reqQuery = { ...req.query }
 
-		const removeFields = ['select', 'sort', 'page', 'limit']
+		const removeFields = ['select', 'sort', 'page', 'limit', 'populate']
 
 		removeFields.forEach((param) => delete reqQuery[param])
 
 		let queryStr = JSON.stringify(reqQuery)
+		console.log(JSON.parse(queryStr))
 
 		query = model.find(JSON.parse(queryStr))
 
@@ -66,7 +67,9 @@ const advancedResult =
 
 		query = query.skip(startIndex).limit(limit)
 
-		//@todo if() populate
+		if (req.query.populate) {
+			query = query.populate(populateStr)
+		}
 
 		const results = await query
 

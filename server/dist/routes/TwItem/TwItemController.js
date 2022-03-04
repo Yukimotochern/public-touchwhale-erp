@@ -39,9 +39,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.updateItem = exports.getItem = exports.addItem = exports.getItems = void 0;
+exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
 var TwItem_1 = __importDefault(require("../../models/TwItem"));
+var TwItemSetDetail_1 = __importDefault(require("../../models/TwItemSetDetail"));
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
+var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // Validator
 var twItemValidate_1 = require("./twItemValidate");
 // @route    GET api/v1/twItem/
@@ -58,13 +60,13 @@ exports.getItems = getItems;
 // @desc     Add a item and ref to user
 // @access   Private
 var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_1, unit, custom_id, count_stock, item_type, item_for_user, item;
+    var _a, name_1, unit, custom_id, count_stock, item_type, element, item_for_user, item, set;
     var _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 3];
-                _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type;
+                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 5];
+                _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 return [4 /*yield*/, TwItem_1.default.findOne({
                         user: req.userJWT.id,
                         name: name_1.trim(),
@@ -74,6 +76,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 if (item_for_user) {
                     return [2 /*return*/, next(new errorResponse_1.default("You have a item with same name: '".concat(name_1, "' ")))];
                 }
+                console.log(element);
                 item = new TwItem_1.default({
                     user: req.userJWT.id,
                     name: name_1,
@@ -85,9 +88,20 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, item.save()];
             case 2:
                 _c.sent();
-                res.status(200).json(req.body);
-                _c.label = 3;
-            case 3: return [2 /*return*/];
+                if (!(item_type === 'set')) return [3 /*break*/, 4];
+                set = new TwItemSetDetail_1.default({
+                    user: req.userJWT.id,
+                    parentItem: item._id,
+                    element: element,
+                });
+                return [4 /*yield*/, set.save()];
+            case 3:
+                _c.sent();
+                _c.label = 4;
+            case 4:
+                res.status(200).json(item);
+                _c.label = 5;
+            case 5: return [2 /*return*/];
         }
     });
 }); };
@@ -103,6 +117,31 @@ var getItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getItem = getItem;
+// @route    GET api/v1/twItem/uploadAvatar/:id
+// @desc     Get B2 url for frontend to make a put request
+// @access   Private
+var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var itemId, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                itemId = req.params.id;
+                return [4 /*yield*/, (0, uploadImage_1.default)('TwItemImage', itemId)];
+            case 1:
+                result = _a.sent();
+                if (!res.item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('B2 can not set image to item.', 500))];
+                }
+                res.item.image = result.Key;
+                return [4 /*yield*/, res.item.save()];
+            case 2:
+                _a.sent();
+                res.status(200).send(result);
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.getB2URL = getB2URL;
 // @route    PUT api/v1/twItem/:id
 // @desc     Update item by item's id
 // @access   Private
