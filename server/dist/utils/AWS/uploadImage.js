@@ -47,13 +47,13 @@ var s3 = new aws_sdk_1.default.S3({
     signatureVersion: 'v4',
 });
 // @todo This function will handle more upload image condition with other routes .
-function default_1(imageContent, identical) {
+function default_1(resource, id) {
     return __awaiter(this, void 0, void 0, function () {
         var Key, url;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    Key = "".concat(imageContent, "/").concat(identical);
+                    Key = "".concat(resource, "/").concat(id);
                     return [4 /*yield*/, s3.getSignedUrlPromise('putObject', {
                             Bucket: 'tw-user-data',
                             ContentType: 'image/*',
