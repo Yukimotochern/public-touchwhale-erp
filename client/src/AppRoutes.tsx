@@ -9,6 +9,7 @@ import { SignUpPage } from './pages/signUp/SignUpPage'
 import { SignInPage } from './pages/signIn/SignInPage'
 import { PrivateOutlet } from './pages/private/PrivateOutlet'
 import { PublicOutlet } from './pages/public/PublicOutlet'
+import { ProfilePage } from './pages/profile/ProfilePage'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -135,13 +136,21 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   },
   {
     path: '/account',
-    text: 'My Account',
-    icon: { prefix: 'fas', iconName: 'circle-user' },
+    text: 'Setting',
+    icon: { prefix: 'fas', iconName: 'gear' },
     element: (
       <PageWithHeader title={<h1>Account Page</h1>}>
         <Outlet />
       </PageWithHeader>
     ),
+    children: [
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+        text: 'Profile & Account',
+      },
+      { path: 'plan', element: <h1>Plan Page</h1>, text: 'My Plan' },
+    ],
   },
   {
     path: '/import',
