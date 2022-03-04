@@ -44,7 +44,7 @@ a.mynavIcon {
   /* margin: 5px 5px 5px 10px; */
   /* padding: 1rem 0 0rem 0; */
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   color: #fff;
   opacity: 90%;
 }
@@ -54,12 +54,13 @@ a.mynavIcon {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 0rem 16px;
+  padding: 16px 16px 0rem 16px;
   overflow: hidden;
 }
 
 .app-logo {
   margin-right: 3px;
+  margin-bottom: 5px;
 }
 
 .main-layout-sider .ant-layout-sider-children {
@@ -75,4 +76,8 @@ a.mynavIcon {
   .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal)
   .ant-menu-item-selected {
   background-color: #1672c9cc;
+}
+
+.main-layout-sider .ant-menu-item {
+  font-size: 16px;
 }

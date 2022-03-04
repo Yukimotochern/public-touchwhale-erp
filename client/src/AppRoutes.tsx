@@ -10,6 +10,7 @@ import { SignInPage } from './pages/signIn/SignInPage'
 import { PrivateOutlet } from './pages/private/PrivateOutlet'
 import { PublicOutlet } from './pages/public/PublicOutlet'
 import { ProfilePage } from './pages/profile/ProfilePage'
+import { Typography } from 'antd'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -32,7 +33,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     path: '/order',
     text: 'Order',
     element: (
-      <PageWithHeader title={<h1>Order Manage Page</h1>}>
+      <PageWithHeader title='Order Manage Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -64,7 +65,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/item',
     element: (
-      <PageWithHeader title={<h1>Item Manage Page</h1>}>
+      <PageWithHeader title='Item Manage Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -85,7 +86,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'Purchasing',
     icon: { prefix: 'fas', iconName: 'cart-shopping' },
     element: (
-      <PageWithHeader title={<h1>Purchase Manage Page</h1>}>
+      <PageWithHeader title='Purchase Manage Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -93,7 +94,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/datacenter',
     element: (
-      <PageWithHeader title={<h1>Data Center Page</h1>}>
+      <PageWithHeader title='Data Center Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -114,7 +115,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'E-invoice',
     icon: { prefix: 'fas', iconName: 'receipt' },
     element: (
-      <PageWithHeader title={<h1>E-invoice Page</h1>}>
+      <PageWithHeader title='E-invoice Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -122,7 +123,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: '/team',
     element: (
-      <PageWithHeader title={<h1>Member Page</h1>}>
+      <PageWithHeader title='Member Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -139,7 +140,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'Setting',
     icon: { prefix: 'fas', iconName: 'gear' },
     element: (
-      <PageWithHeader title={<h1>Account Page</h1>}>
+      <PageWithHeader title='Account Page'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -157,7 +158,7 @@ const mainLayoutRoutes: RouteObjectWithLinkSpecification[] = [
     text: 'Import',
     icon: { prefix: 'fas', iconName: 'file-import' },
     element: (
-      <PageWithHeader title={<h1>Import Page</h1>}>
+      <PageWithHeader title='Import Page'>
         <Outlet />
       </PageWithHeader>
     ),

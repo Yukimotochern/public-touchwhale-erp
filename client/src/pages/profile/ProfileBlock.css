@@ -1,0 +1,14 @@
+.tw-profile-block .ant-form-item {
+  margin-bottom: 12px;
+}
+/* 
+.tw-profile-block .ant-form-item:last-child {
+  margin-bottom: 24px;
+} */
+
+.tw-profile-block {
+  margin-bottom: 20px;
+}
+.tw-profile-block input.ant-input {
+  background-color: rgba(230, 230, 230, 0.479);
+}

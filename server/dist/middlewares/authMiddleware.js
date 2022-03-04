@@ -8,9 +8,11 @@ var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var authMiddleware = function (req, res, next) {
     var token = req.cookies.token;
     if (!token) {
+        token = req.body.token;
+    }
+    if (!token) {
         return next(new errorResponse_1.default('No token, authorization denied.', 401));
     }
-    // console.log(token)
     try {
         var decode = jsonwebtoken_1.default.verify(token, process.env.JWTSECRET);
         req.userJWT = decode;

@@ -8,6 +8,7 @@ import {
   PageHeaderProps,
   Dropdown,
   Menu,
+  Typography,
 } from 'antd'
 import { PureRouteObjectWithLink } from '../../../AppRoutes'
 import { useNavigate } from 'react-router-dom'
@@ -22,9 +23,15 @@ import { getRegularUser } from '../../../redux/auth/authSlice'
 
 const { Content } = Layout
 
-interface Props extends PageHeaderProps {}
+interface Props extends PageHeaderProps {
+  title: string
+}
 const { TabPane } = Tabs
-export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
+export const PageWithHeader: React.FC<Props> = ({
+  children,
+  title,
+  ...rest
+}) => {
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // First find the current first level route
@@ -41,17 +48,6 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
       secondLevelRoute = pathStrings[2]
     }
   }
-  let authIcon: string | JSX.Element = (
-    <FontAwesomeIcon
-      icon={faUser}
-      color='rgba(102, 101, 101, 0.849'
-      size='lg'
-    />
-  )
-  if (!auth.loading && auth.user && auth.user.avatar) {
-    authIcon = auth.user.avatar
-  }
-
   const navigate = useNavigate()
   const firstLevelMatch = useAppSelector((s) => s.routeLink).find(
     (route) => route.path === '/' + firstLevelRoute
@@ -93,17 +89,22 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
     <>
       <AntPageHeader
         {...rest}
+        title={<h1>{title}</h1>}
         onBack={() => dispatch(toggle())}
         backIcon={
           siderOpen ? null : (
-            <FontAwesomeIcon icon={faBars} className='trigger' />
+            <FontAwesomeIcon
+              icon={faBars}
+              className='trigger'
+              transform={{ y: -1 }}
+            />
           )
         }
         className='tw-page-with-header'
         footer={
           tabs ? (
             <Tabs
-              size='small'
+              size='middle'
               activeKey={secondLevelRoute}
               onTabClick={(key) => {
                 navigate(key)
@@ -122,7 +123,16 @@ export const PageWithHeader: React.FC<Props> = ({ children, ...rest }) => {
               trigger={['click']}
               className={styles['user-icon']}
             >
-              <Avatar src={authIcon} />
+              <Avatar
+                src={auth.user?.avatar}
+                icon={
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    color='rgba(102, 101, 101, 0.849'
+                    size='sm'
+                  />
+                }
+              />
             </Dropdown>
           </div>
         }

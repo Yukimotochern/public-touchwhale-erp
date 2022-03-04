@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import api from '../../utils/api'
 import {
   getRegularUserResValidator,
@@ -35,9 +35,8 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logOut(state) {
-      state.loading = false
-      state.user = undefined
+    updateRegularUser: (state, action: PayloadAction<IRegularUserRes>) => {
+      state.user = action.payload
     },
   },
   extraReducers: (builder) => {

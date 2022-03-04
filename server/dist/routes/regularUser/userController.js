@@ -457,7 +457,7 @@ exports.resetPassword = resetPassword;
 var setToken = function (user, res) {
     var token = user.getSignedJWTToken();
     var options = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000),
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24),
         httpOnly: true,
     };
     res.cookie('token', token, options);

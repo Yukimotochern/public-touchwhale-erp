@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Menu } from 'antd'
+import { Layout, Menu, Typography } from 'antd'
 import './SideMenu.css'
 import { NavLink, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -29,14 +29,15 @@ export const SideMenu = () => {
       collapsible
       className='main-layout-sider'
       collapsed={!siderOpen}
+      width={225}
     >
       <div className='side-menu-top-bar'>
         <Link to='/' className='mynavIcon'>
           <img
             alt=''
             src='/logo128.png'
-            width='32'
-            height='32'
+            width='36'
+            height='36'
             className='app-logo'
           />{' '}
           <span>TWhale ERP</span>
@@ -45,6 +46,7 @@ export const SideMenu = () => {
           icon={faBars}
           className='trigger'
           onClick={() => dispatch(toggle())}
+          transform={{ y: -1 }}
         />
       </div>
       <Menu

@@ -2,7 +2,9 @@ import ErrorResponse, { TWError } from '../utils/errorResponse'
 import { DefinedError } from 'ajv'
 
 import { ErrorRequestHandler } from 'express'
-import { Error } from 'mongoose'
+import { Error, mongo } from 'mongoose'
+
+mongo.MongoError
 
 const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
   // Log to console for dev
@@ -16,6 +18,7 @@ const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
     error = err
   }
   let message: string, messageArray: string[]
+
   if (err instanceof Error.CastError) {
     message = 'Resource not found'
     error = new ErrorResponse(message, 404, err)

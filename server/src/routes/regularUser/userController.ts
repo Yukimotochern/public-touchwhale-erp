@@ -345,8 +345,8 @@ const setToken = (user: any, res: Response): any => {
   const token = user.getSignedJWTToken()
   const options = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
-    ), //Expires in 1 hr
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24
+    ), //Expires in days
     httpOnly: true,
   }
 
