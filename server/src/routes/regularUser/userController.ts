@@ -118,7 +118,6 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
 		if (req.user) {
 			const profile = req.user._json
 			const email = profile.email
-
 			let user = await RegularUserModel.findOne({ email })
 
 			if (!user) {
@@ -161,7 +160,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
 	res.clearCookie('token', {
 		httpOnly: true,
 	})
-
 	res.status(200).json({
 		data: {},
 	})
@@ -194,14 +192,10 @@ export const updateRegularUser: PrivateRequestHandler = async (
 	next
 ) => {
 	if (updateRegularUserBodyValidator(req.body)) {
-		const { company_name } = req.body
-		const fieldsToUpdate = {
-			company_name,
-		}
 		if (req.userJWT) {
 			const user = await RegularUserModel.findByIdAndUpdate(
 				req.userJWT.id,
-				fieldsToUpdate,
+				req.body,
 				{
 					new: true,
 					runValidators: true,
