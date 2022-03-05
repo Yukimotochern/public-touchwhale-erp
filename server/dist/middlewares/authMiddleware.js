@@ -19,6 +19,7 @@ var authMiddleware = function (req, res, next) {
         next();
     }
     catch (err) {
+        console.error(err);
         return next(new errorResponse_1.default('Token is invalid.', 401));
     }
 };

@@ -129,9 +129,10 @@ export const PageWithHeader: React.FC<Props> = ({
                   <FontAwesomeIcon
                     icon={faUser}
                     color='rgba(102, 101, 101, 0.849'
-                    size='sm'
+                    // size='2x'
                   />
                 }
+                size='default'
               />
             </Dropdown>
           </div>

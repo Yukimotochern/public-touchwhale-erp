@@ -1,6 +1,6 @@
 import express from 'express'
 import regularUser from './regularUser/userRoutes'
-import twItem from './TwItem/twItemRoutes'
+import twItem from './twItem/twItemRoutes'
 
 const api = express.Router()
 

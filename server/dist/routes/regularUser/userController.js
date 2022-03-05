@@ -45,7 +45,7 @@ var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userValidate_1 = require("./userValidate");
-var RegularUser_1 = __importDefault(require("./RegularUser"));
+var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 // @route    POST api/v1/regularUser/signUp
@@ -90,9 +90,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                     })];
             case 3:
                 _a.sent();
-                res
-                    .status(200)
-                    .json({ data: "Verification code has been send to ".concat(email) });
+                res.status(200).json({ msg: "Verification code has been send to ".concat(email) });
                 return [3 /*break*/, 5];
             case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
@@ -305,7 +303,7 @@ var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, voi
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 3, , 4]);
+                _b.trys.push([0, 2, , 3]);
                 _a = req.body, id = _a.id, imgKey = _a.imgKey;
                 return [4 /*yield*/, RegularUser_1.default.findById(id)];
             case 1:
@@ -314,15 +312,13 @@ var setAvatar = function (req, res, next) { return __awaiter(void 0, void 0, voi
                     return [2 /*return*/, next(new errorResponse_1.default('Server Error.'))];
                 }
                 user.avatar = imgKey;
-                return [4 /*yield*/, user.save()];
-            case 2:
-                _b.sent();
+                user.save();
                 res.status(200).json({ id: user.id, imgKey: imgKey });
-                return [3 /*break*/, 4];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 err_2 = _b.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500, err_2))];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

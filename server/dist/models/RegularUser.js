@@ -121,7 +121,7 @@ RegularUserSchema.methods.getForgetPasswordToken = function () {
         .update(token)
         .digest('hex');
     // Expire in 10 mins
-    this.forgetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    this.forgetPasswordExpire = Date.now() + 60 * 60 * 1000;
     return token;
 };
 RegularUserSchema.methods.getResetEmailToken = function () {
@@ -129,7 +129,8 @@ RegularUserSchema.methods.getResetEmailToken = function () {
     // Set hash token
     this.resetEmailToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
     // Expire in 10 mins
-    this.resetEmailExpire = Date.now() + 10 * 60 * 1000;
+    this.resetEmailExpire =
+        Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24;
     return token;
 };
 var RegularUserModel = mongoose_1.default.model('regular_user', RegularUserSchema);
