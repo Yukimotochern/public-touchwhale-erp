@@ -19,7 +19,7 @@ export interface TwItemType {
 export interface TwItemSetDetailType {
 	user: Types.ObjectId
 	parentItem: Types.ObjectId
-	element: Array<Object>
+	element: Array<ElementObjectType>
 }
 
 export interface ElementObjectType {
@@ -68,7 +68,7 @@ export interface TwItemPayload extends Document {
 // For itemOwnerMiddleware res.itemElement
 export interface TwItemSetPayload extends Document {
 	parentItem: Types.ObjectId
-	element: Array<object>
+	element: Array<ElementObjectType>
 }
 
 // For itemOwnerMiddleware res (res.item and res.itemElement)

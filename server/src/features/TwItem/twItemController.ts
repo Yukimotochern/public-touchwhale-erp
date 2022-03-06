@@ -18,10 +18,10 @@ import {
 	itemOwnerResponseHandler,
 	ElementObjectType,
 } from './twItemType'
+import { Types } from 'mongoose'
 
 // Validator
 import { addItemValidator } from './twItemValidate'
-import { nextTick } from 'process'
 
 // @route    GET api/v1/twItem/
 // @desc     Get all items with specific user
