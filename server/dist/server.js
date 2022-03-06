@@ -12,7 +12,7 @@ var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var passport_1 = __importDefault(require("passport"));
 var cors_1 = __importDefault(require("cors"));
 // routes
-var api_1 = __importDefault(require("./routes/api"));
+var api_1 = __importDefault(require("./features/api"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");

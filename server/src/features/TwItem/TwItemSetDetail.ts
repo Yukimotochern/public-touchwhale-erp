@@ -1,11 +1,6 @@
 import { Type } from 'aws-sdk/clients/cloudformation'
 import mongoose, { Types, Schema } from 'mongoose'
-
-interface TwItemSetDetailType {
-	user: Types.ObjectId
-	parentItem: Types.ObjectId
-	element: Array<Object>
-}
+import { TwItemSetDetailType } from './twItemType'
 
 const TwItemSetDetailSchema = new mongoose.Schema<TwItemSetDetailType>({
 	user: {

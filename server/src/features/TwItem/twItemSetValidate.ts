@@ -1,10 +1,6 @@
 import ajvInstance from '../../utils/ajv'
-import { TwItemSetDetailType } from '../../models/TwItemSetDetail'
 import { JSONSchemaType } from 'ajv'
-
-interface TwItemSetType {
-	element: Array<object>
-}
+import { TwItemSetType } from './twItemType'
 
 // interface elementInnerType {
 // 	items: string

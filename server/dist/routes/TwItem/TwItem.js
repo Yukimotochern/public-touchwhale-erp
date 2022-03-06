@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,58 +54,65 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-// Models
-var TwItem_1 = __importDefault(require("../features/TwItem/TwItem"));
-var TwItemSetDetail_1 = __importDefault(require("../features/TwItem/TwItemSetDetail"));
-// Util module
-var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
-// itemOwnerMiddleware will make sure this user has this item's ownership
-// if true it will set res.item and res.itemElement only if this item is set
-// res.item => is one of TwItem document
-// res.itemElement => is one of TwItemSetDetail document
-var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var itemId, populate, query, item, itemSetElement;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                if (!((_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 4];
-                itemId = req.params.id;
-                populate = req.query.populate;
-                query = TwItem_1.default.findById(itemId);
-                if (populate) {
-                    query = query.populate('setOfElement', 'element');
-                }
-                return [4 /*yield*/, query
-                    // Ensure that item must exist and user have ownership with this item
-                ];
-            case 1:
-                item = _b.sent();
-                // Ensure that item must exist and user have ownership with this item
-                if (!item || item.user.toString() !== req.userJWT.id) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Item not found', 404))];
-                }
-                if (!(item.item_type === 'set')) return [3 /*break*/, 3];
-                return [4 /*yield*/, TwItemSetDetail_1.default.findOne({
-                        parentItem: item.id,
-                    })];
-            case 2:
-                itemSetElement = _b.sent();
-                if (itemSetElement) {
-                    res.itemSetElement = itemSetElement;
-                }
-                _b.label = 3;
-            case 3:
-                res.item = item;
-                next();
-                return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500))];
-            case 5: return [2 /*return*/];
-        }
+var mongoose_1 = __importStar(require("mongoose"));
+// @todo Maybe this model can remember last update user_id
+var TwItemSchema = new mongoose_1.default.Schema({
+    user: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'regular_user',
+        required: true,
+    },
+    name: {
+        type: String,
+        // unique: true,
+        trim: true,
+    },
+    unit: {
+        type: String,
+        trim: true,
+    },
+    custom_id: { type: String, trim: true, required: true },
+    count_stock: {
+        type: Boolean,
+        default: true,
+    },
+    item_type: {
+        type: String,
+        enum: ['set', 'element'],
+        default: 'element',
+    },
+    image: {
+        type: String,
+    },
+    level: {
+        type: Number,
+        default: 0,
+    },
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true });
+TwItemSchema.pre('remove', function (next) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, this.model('tw_item_set_detail').deleteMany({ parentItem: this._id })];
+                case 1:
+                    _a.sent();
+                    next();
+                    return [2 /*return*/];
+            }
+        });
     });
-}); };
-exports.default = itemOwnerMiddleware;
+});
+TwItemSchema.virtual('setOfElement', {
+    ref: 'tw_item_set_detail',
+    localField: '_id',
+    foreignField: 'parentItem',
+    justOne: true,
+});
+var TwItem = mongoose_1.default.model('tw_item', TwItemSchema);
+exports.default = TwItem;
