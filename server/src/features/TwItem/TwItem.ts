@@ -1,23 +1,5 @@
-import mongoose, { Schema, Types, Document } from 'mongoose'
-
-interface TwItemType {
-	user: Types.ObjectId
-	name: string
-	unit: string
-	custom_id: string
-	count_stock: boolean
-	item_type: string
-	image: string
-}
-
-interface TwItemPayload extends Document {
-	name: string
-	unit: string
-	custom_id: string
-	count_stock: boolean
-	item_type: string
-	image: string
-}
+import mongoose, { Schema } from 'mongoose'
+import { TwItemType } from './twItemType'
 
 // @todo Maybe this model can remember last update user_id
 const TwItemSchema = new mongoose.Schema<TwItemType>(
@@ -49,6 +31,10 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
 		image: {
 			type: String,
 		},
+		level: {
+			type: Number,
+			default: 0,
+		},
 	},
 	{
 		timestamps: true,
@@ -59,12 +45,13 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
 
 TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true })
 
+// When TwItem document got remove, if it is a set this pre function will remove TwItemSet document as well
 TwItemSchema.pre('remove', async function (next) {
 	await this.model('tw_item_set_detail').deleteMany({ parentItem: this._id })
 	next()
 })
 
-TwItemSchema.virtual('setOfElements', {
+TwItemSchema.virtual('setOfElement', {
 	ref: 'tw_item_set_detail',
 	localField: '_id',
 	foreignField: 'parentItem',
@@ -72,7 +59,5 @@ TwItemSchema.virtual('setOfElements', {
 })
 
 const TwItem = mongoose.model('tw_item', TwItemSchema)
-
-export { TwItemType, TwItemPayload }
 
 export default TwItem

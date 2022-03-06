@@ -12,7 +12,7 @@ import {
 	deleteItem,
 	getB2URL,
 } from './twItemController'
-import TwItem from '../../models/TwItem'
+import TwItem from './TwItem'
 
 const router = express.Router()
 
@@ -20,7 +20,7 @@ const router = express.Router()
 router
 	.route('/')
 	.get(
-		[authMiddleware, advancedResult(TwItem, 'setOfElements')],
+		[authMiddleware, advancedResult(TwItem, 'setOfElement')],
 		errorCatcher(getItems)
 	)
 	.post(authMiddleware, errorCatcher(addItem))

@@ -79,7 +79,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                     return [2 /*return*/, next(new errorResponse_1.default("You have a item with same name: '".concat(name_1, "' ")))];
                 }
                 if (item_type === 'element' && element) {
-                    return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single intem.'))];
+                    return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single item.'))];
                 }
                 item_1 = new TwItem_1.default({
                     user: req.userJWT.id,
@@ -93,7 +93,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
             case 2:
                 _c.sent();
                 if (!(item_type === 'set')) return [3 /*break*/, 4];
-                // await item.save() worst case is n
+                // await item.save() worst case is n, best case is 1
                 element.map(function (ele) { return __awaiter(void 0, void 0, void 0, function () {
                     var element;
                     return __generator(this, function (_a) {
@@ -121,7 +121,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 _c.sent();
                 _c.label = 4;
             case 4:
-                res.status(200).json(item_1);
+                res.status(200).json({ data: item_1 });
                 _c.label = 5;
             case 5: return [2 /*return*/];
         }
@@ -134,7 +134,7 @@ exports.addItem = addItem;
 var getItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // itemOwnerMiddleware result will ensure res.item will not be null
-        res.status(200).json(res.item);
+        res.status(200).json({ data: res.item });
         return [2 /*return*/];
     });
 }); };
@@ -158,7 +158,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, res.item.save()];
             case 2:
                 _a.sent();
-                res.status(200).send(result);
+                res.status(200).send({ msg: result });
                 return [2 /*return*/];
         }
     });
@@ -225,7 +225,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
             case 6: return [4 /*yield*/, item.save()];
             case 7:
                 _c.sent();
-                res.status(200).json(item);
+                res.status(200).json({ data: item.populate('setOfElement', 'element') });
                 return [3 /*break*/, 9];
             case 8:
                 err_1 = _c.sent();
@@ -242,7 +242,7 @@ var deleteItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
     var _a;
     return __generator(this, function (_b) {
         (_a = res.item) === null || _a === void 0 ? void 0 : _a.delete();
-        res.status(200).json('Item deleted.');
+        res.status(200).json({ msg: 'Item deleted.' });
         return [2 /*return*/];
     });
 }); };

@@ -1,15 +1,9 @@
 import ajvInstance from '../../utils/ajv'
-import { TwItemType } from '../../models/TwItem'
 import { JSONSchemaType } from 'ajv'
 
-interface TwItemEditableType
-	extends Omit<TwItemType, 'user' | 'setObject' | 'image'> {}
+import { addItemBodyType } from './twItemType'
 
-interface addItemBodyTyep extends TwItemEditableType {
-	element: Array<object>
-}
-
-const addItemBodySchema: JSONSchemaType<addItemBodyTyep> = {
+const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
 	type: 'object',
 	properties: {
 		name: { type: 'string' },
@@ -23,8 +17,8 @@ const addItemBodySchema: JSONSchemaType<addItemBodyTyep> = {
 			items: {
 				type: 'object',
 				properties: {
-					quantity: { type: 'number' },
-					objectId: { type: 'string' },
+					qty: { type: 'number' },
+					id: { type: 'string' },
 				},
 			},
 		},

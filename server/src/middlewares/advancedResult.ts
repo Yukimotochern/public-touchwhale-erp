@@ -1,6 +1,6 @@
 import { Model } from 'mongoose'
 import { Response, NextFunction } from 'express'
-import { TwItemType } from '../models/TwItem'
+import { TwItemType } from '../features/TwItem/twItemType'
 import { RequestWithRegularUser } from './authMiddleware'
 
 import ErrorResponse from '../utils/errorResponse'
