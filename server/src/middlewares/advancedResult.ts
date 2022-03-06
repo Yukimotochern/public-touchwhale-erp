@@ -1,6 +1,5 @@
 import { Model } from 'mongoose'
 import { Response, NextFunction } from 'express'
-import { TwItemType } from '../features/twItem/twItemType'
 import { RequestWithRegularUser } from './authMiddleware'
 
 import ErrorResponse from '../utils/errorResponse'
@@ -17,7 +16,7 @@ interface advancedResultQuery {
 }
 
 const advancedResult =
-  (model: Model<TwItemType>, populateStr?: any) =>
+  (model: Model<any>, populateStr?: any) =>
   async (
     req: RequestWithRegularUser,
     res: advancedResultResponse,

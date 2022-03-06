@@ -10,6 +10,25 @@ import { PrivateRequestHandler } from '../../middlewares/authMiddleware'
 import { uploadImage } from '../../utils/AWS/b2'
 import ErrorResponse from '../../utils/errorResponse'
 
+// Valid Tree criteria
+// 1. No loop in tree:
+// - This means that the descendants(all children and children's children) do not contains any ancestors(all the parents and parents' parents).
+// 2. No tree node should have level > 4
+// - (0 -> 1 -> 2 -> 3 -> 4) OK, (0 -> 1 -> 2 -> 3 -> 4 -> 5) NO,
+
+// Add new item
+// 1. New item will not have any ancestors -> criteria 1 OK
+// 2. To ensure criteria 2, no children should have level == 4
+// 3. this item level = max(elements' level)
+// Update item
+// Denote the current updating item with I
+// a. Finding all ancestors. Obtaining arrays of objects ending with current updating item I
+// - ex. [A -> B -> I], [C -> D -> E -> F -> I], ....
+// b. Denote some array obtaining in 1. with K. Do the following,
+// c. For the newly provided element array E. For each element e in E, Do the following,
+// d. check if e in K, if so, break -> violating criteria 1.
+// d. if e not in K, push e to K, and repeat c. d. with children of e and children's children ...
+
 // Type definition
 import {
   addItemBodyType,
@@ -38,8 +57,7 @@ export const getItems: PrivateRequestHandler = async (
 // @access   Private
 export const addItem: AddItemRequestHandler = async (req, res, next) => {
   if (addItemValidator(req.body) && req.userJWT?.id) {
-    const { name, unit, custom_id, count_stock, item_type, element } =
-      req.body as AddItemRequestType
+    const { name, unit, custom_id, count_stock, item_type, element } = req.body
     const item_for_user = await TwItem.findOne({
       user: req.userJWT.id,
       name: name.trim(),
@@ -116,8 +134,7 @@ export const updateItem: itemOwnerResponseHandler = async (req, res, next) => {
   }
   if (addItemValidator(req.body) && res.item) {
     // User want to change these fields
-    const { name, unit, custom_id, count_stock, item_type, element } =
-      req.body as AddItemRequestType
+    const { name, unit, custom_id, count_stock, item_type, element } = req.body
 
     // itemOwnerMiddleware will check user is owner with this item(/:id) and to next()
     const item = res.item
@@ -193,7 +210,7 @@ export const deleteItem: itemOwnerResponseHandler = async (req, res, next) => {
 
 // Helper function
 // find max level element and return max level
-const max_level = async (element: Array<ElementObjectType>) => {
+const max_level = async (element: ElementObjectType[]) => {
   // push all element's id in array
   const elementId_array = new Array()
   element.map((ele) => {

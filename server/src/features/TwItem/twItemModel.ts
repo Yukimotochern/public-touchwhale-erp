@@ -26,11 +26,6 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
       type: Boolean,
       default: true,
     },
-    item_type: {
-      type: String,
-      enum: ['set', 'element'],
-      default: 'element',
-    },
     image: {
       type: String,
     },

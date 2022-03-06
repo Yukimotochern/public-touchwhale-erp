@@ -8,10 +8,12 @@ import ErrorResponse from '../utils/errorResponse'
 // Type definition
 import { itemOwnerResponseHandler } from '../features/twItem/twItemType'
 
-// itemOwnerMiddleware will make sure this user has this item's ownership
-// if true it will set res.item and res.itemElement only if this item is set
+// itemOwnerMiddleware will make sure that the accessing user owns that particular resource.
+// If the access right is proved, it will set 'res.item' and 'res.itemElement'.
+// The latter, 'res.itemElement', will be set only if 'res.item' represents a set.
 // res.item => is one of TwItem document
 // res.itemElement => is one of TwItemSetDetail document
+
 const itemOwnerMiddleware: itemOwnerResponseHandler = async (
   req,
   res,
@@ -34,7 +36,7 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
       return next(new ErrorResponse('Item not found', 404))
     }
 
-    // if item is a set middleware will set itemSetElement to res
+    // if item represent a set, middleware will set itemSetElement to res
     if (item.item_type === 'set') {
       const itemSetElement = await TwItemSetDetail.findOne({
         parentItem: item.id,
