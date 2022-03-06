@@ -10,7 +10,7 @@ export interface TwItemType {
   unit: string
   custom_id: string
   count_stock: boolean
-  item_type: string
+  item_type: 'set' | 'element'
   image: string
   level: number
 }
@@ -32,7 +32,7 @@ export interface AddItemRequestType extends RequestWithRegularUser {
   unit: string
   custom_id: string
   count_stock: boolean
-  item_type: string
+  item_type: 'set' | 'element'
   element: Array<ElementObjectType>
 }
 
@@ -60,7 +60,7 @@ export interface TwItemPayload extends Document {
   unit: string
   custom_id: string
   count_stock: boolean
-  item_type: string
+  item_type: 'set' | 'element'
   image: string
   level: number
 }

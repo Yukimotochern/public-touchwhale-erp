@@ -29,10 +29,7 @@ const TwItemSchema = new mongoose.Schema<TwItemType>(
     image: {
       type: String,
     },
-    level: {
-      type: Number,
-      default: 0,
-    },
+    item_type: { type: 'string', enum: ['set', 'element'] },
   },
   {
     timestamps: true,
