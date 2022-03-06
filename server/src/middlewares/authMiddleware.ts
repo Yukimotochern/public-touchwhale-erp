@@ -33,6 +33,7 @@ const authMiddleware: PrivateRequestHandler = (req, res, next) => {
     req.userJWT = decode
     next()
   } catch (err) {
+    console.error(err)
     return next(new ErrorResponse('Token is invalid.', 401))
   }
 }

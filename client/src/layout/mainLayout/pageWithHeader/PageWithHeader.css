@@ -20,3 +20,8 @@ h1 {
 .tw-page-with-header-user-menu .ant-dropdown-menu-item-group-list {
   margin: 0;
 }
+
+.user-icon .ant-avatar {
+  width: 35px;
+  height: 35px;
+}

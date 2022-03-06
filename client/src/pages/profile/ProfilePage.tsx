@@ -89,7 +89,14 @@ export const ProfilePage = () => {
               </Space>
             ) : null}
           </ProfileBlock>
-
+          <ProfileBlock
+            initialValue={-1}
+            fieldName='none'
+            title='Account Type'
+            type='plain'
+          >
+            TODO: Owner or Employee
+          </ProfileBlock>
           <ProfileBlock
             initialValue={username}
             fieldName='username'
@@ -110,14 +117,14 @@ export const ProfilePage = () => {
           >
             <ChangePassword edittable={provider === 'TouchWhale'} />
           </ProfileBlock>
-          <ProfileBlock
+          {/* <ProfileBlock
             initialValue={-1}
             fieldName='avatar'
             title='Avatar'
             type='plain'
           >
             <AvatarUpload />
-          </ProfileBlock>
+          </ProfileBlock> */}
         </Row>
       </>
     )
