@@ -62,26 +62,26 @@ exports.getItems = getItems;
 // @desc     Add a item and ref to user
 // @access   Private
 var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_1, unit, custom_id, count_stock, item_type, element, item_for_user, item_1, set;
-    var _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a, name_1, unit, custom_id, count_stock, item_type, element, item_for_user, item, _b, set;
+    var _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 5];
+                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id))) return [3 /*break*/, 7];
                 _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 return [4 /*yield*/, TwItem_1.default.findOne({
                         user: req.userJWT.id,
                         name: name_1.trim(),
                     })];
             case 1:
-                item_for_user = _c.sent();
+                item_for_user = _d.sent();
                 if (item_for_user) {
                     return [2 /*return*/, next(new errorResponse_1.default("You have a item with same name: '".concat(name_1, "' ")))];
                 }
                 if (item_type === 'element' && element) {
-                    return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single intem.'))];
+                    return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single item.'))];
                 }
-                item_1 = new TwItem_1.default({
+                item = new TwItem_1.default({
                     user: req.userJWT.id,
                     name: name_1,
                     unit: unit,
@@ -89,52 +89,44 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                     count_stock: count_stock,
                     item_type: item_type,
                 });
-                return [4 /*yield*/, item_1.save()];
+                return [4 /*yield*/, item.save()];
             case 2:
-                _c.sent();
-                if (!(item_type === 'set')) return [3 /*break*/, 4];
-                // await item.save() worst case is n
-                element.map(function (ele) { return __awaiter(void 0, void 0, void 0, function () {
-                    var element;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, TwItem_1.default.findById(ele.id)];
-                            case 1:
-                                element = _a.sent();
-                                if (!(element && element.level > item_1.level)) return [3 /*break*/, 3];
-                                item_1.level += element.level + 1;
-                                return [4 /*yield*/, item_1.save()];
-                            case 2:
-                                _a.sent();
-                                _a.label = 3;
-                            case 3: return [2 /*return*/];
-                        }
-                    });
-                }); });
+                _d.sent();
+                if (!(item_type === 'set')) return [3 /*break*/, 6];
+                // max_level helper function will calculate max_level in element array
+                _b = item;
+                return [4 /*yield*/, max_level(element)];
+            case 3:
+                // max_level helper function will calculate max_level in element array
+                _b.level = _d.sent();
+                return [4 /*yield*/, item.save()];
+            case 4:
+                _d.sent();
                 set = new TwItemSetDetail_1.default({
                     user: req.userJWT.id,
-                    parentItem: item_1._id,
+                    parentItem: item._id,
                     element: element,
                 });
                 return [4 /*yield*/, set.save()];
-            case 3:
-                _c.sent();
-                _c.label = 4;
-            case 4:
-                res.status(200).json(item_1);
-                _c.label = 5;
-            case 5: return [2 /*return*/];
+            case 5:
+                _d.sent();
+                _d.label = 6;
+            case 6:
+                res.status(200).json({ data: item });
+                _d.label = 7;
+            case 7: return [2 /*return*/];
         }
     });
 }); };
 exports.addItem = addItem;
+// "element": [{"qty": 2, "id": "62241c8f7096ddea6783e41a"}, {"qty": 3, "id": "622392fbafbb949826bd2a07"}]
 // @route    GET api/v1/twItem/:id
 // @desc     Get single item by item's id
 // @access   Private
 var getItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // itemOwnerMiddleware result will ensure res.item will not be null
-        res.status(200).json(res.item);
+        res.status(200).json({ data: res.item });
         return [2 /*return*/];
     });
 }); };
@@ -158,7 +150,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, res.item.save()];
             case 2:
                 _a.sent();
-                res.status(200).send(result);
+                res.status(200).send({ msg: result });
                 return [2 /*return*/];
         }
     });
@@ -168,15 +160,15 @@ exports.getB2URL = getB2URL;
 // @desc     Update item by item's id
 // @access   Private
 var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_2, unit, custom_id, count_stock, item_type, element, item, item_for_user, itemSetElement, set, err_1;
-    var _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a, name_2, unit, custom_id, count_stock, item_type, element, item, item_for_user, itemSetElement, set, _b, err_1;
+    var _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                if (!((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id)) {
+                if (!((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id)) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 9];
+                if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 11];
                 _a = req.body, name_2 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 item = res.item;
                 return [4 /*yield*/, TwItem_1.default.findOne({
@@ -186,7 +178,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                     // Check if that item not equal with item(/:id)
                 ];
             case 1:
-                item_for_user = _c.sent();
+                item_for_user = _d.sent();
                 // Check if that item not equal with item(/:id)
                 if ((item_for_user === null || item_for_user === void 0 ? void 0 : item_for_user.custom_id) &&
                     (item_for_user === null || item_for_user === void 0 ? void 0 : item_for_user.custom_id) !== item.custom_id) {
@@ -200,17 +192,16 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 item.custom_id = custom_id ? custom_id : item.custom_id;
                 item.count_stock = count_stock ? count_stock : item.count_stock;
                 item.item_type = item_type ? item_type : item.item_type;
-                _c.label = 2;
+                _d.label = 2;
             case 2:
-                _c.trys.push([2, 8, , 9]);
-                if (!element) return [3 /*break*/, 6];
+                _d.trys.push([2, 10, , 11]);
+                if (!element) return [3 /*break*/, 8];
                 if (!res.itemSetElement) return [3 /*break*/, 4];
-                console.log(res.itemSetElement);
                 itemSetElement = res.itemSetElement;
                 itemSetElement.element = element;
                 return [4 /*yield*/, itemSetElement.save()];
             case 3:
-                _c.sent();
+                _d.sent();
                 return [3 /*break*/, 6];
             case 4:
                 set = new TwItemSetDetail_1.default({
@@ -220,17 +211,25 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 });
                 return [4 /*yield*/, set.save()];
             case 5:
-                _c.sent();
-                _c.label = 6;
-            case 6: return [4 /*yield*/, item.save()];
+                _d.sent();
+                _d.label = 6;
+            case 6:
+                // max_level helper function will calculate max_level in element array
+                _b = item;
+                return [4 /*yield*/, max_level(element)];
             case 7:
-                _c.sent();
-                res.status(200).json(item);
-                return [3 /*break*/, 9];
-            case 8:
-                err_1 = _c.sent();
+                // max_level helper function will calculate max_level in element array
+                _b.level = _d.sent();
+                _d.label = 8;
+            case 8: return [4 /*yield*/, item.save()];
+            case 9:
+                _d.sent();
+                res.status(200).json({ data: item });
+                return [3 /*break*/, 11];
+            case 10:
+                err_1 = _d.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Something wrong. Maybe there has duplicate field in your items', 401, err_1))];
-            case 9: return [2 /*return*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); };
@@ -242,8 +241,31 @@ var deleteItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
     var _a;
     return __generator(this, function (_b) {
         (_a = res.item) === null || _a === void 0 ? void 0 : _a.delete();
-        res.status(200).json('Item deleted.');
+        res.status(200).json({ msg: 'Item deleted.' });
         return [2 /*return*/];
     });
 }); };
 exports.deleteItem = deleteItem;
+// Helper function
+// find max level element and return max level
+var max_level = function (element) { return __awaiter(void 0, void 0, void 0, function () {
+    var elementId_array, all_element, max_level_element;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                elementId_array = new Array();
+                element.map(function (ele) {
+                    elementId_array.push(ele.id);
+                });
+                return [4 /*yield*/, TwItem_1.default.find().where('_id').in(elementId_array)
+                    // find max level document
+                ];
+            case 1:
+                all_element = _a.sent();
+                max_level_element = all_element.reduce(function (pre, cur) {
+                    return pre.level > cur.level ? pre : cur;
+                });
+                return [2 /*return*/, max_level_element.level + 1];
+        }
+    });
+}); };

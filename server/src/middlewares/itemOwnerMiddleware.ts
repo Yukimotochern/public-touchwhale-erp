@@ -1,23 +1,17 @@
-import { PrivateRequestHandler } from './authMiddleware'
+// Models
+import TwItem from '../features/TwItem/TwItem'
+import TwItemSetDetail from '../features/TwItem/TwItemSetDetail'
+
+// Util module
 import ErrorResponse from '../utils/errorResponse'
 
-import TwItem, { TwItemPayload } from '../models/TwItem'
+// Type definition
+import { itemOwnerResponseHandler } from '../features/TwItem/twItemType'
 
-import { Request, NextFunction, Response } from 'express'
-import { RequestWithRegularUser } from './authMiddleware'
-
-interface itemOwnerResponse extends Response {
-	item?: TwItemPayload
-}
-
-interface itemOwnerResponseHandler {
-	(
-		req: RequestWithRegularUser,
-		res: itemOwnerResponse,
-		next: NextFunction
-	): void | Promise<void>
-}
-
+// itemOwnerMiddleware will make sure this user has this item's ownership
+// if true it will set res.item and res.itemElement only if this item is set
+// res.item => is one of TwItem document
+// res.itemElement => is one of TwItemSetDetail document
 const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 	req,
 	res,
@@ -30,7 +24,7 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 		let query = TwItem.findById(itemId)
 
 		if (populate) {
-			query = query.populate('setOfElements', 'element')
+			query = query.populate('setOfElement', 'element')
 		}
 
 		const item = await query
@@ -40,14 +34,21 @@ const itemOwnerMiddleware: itemOwnerResponseHandler = async (
 			return next(new ErrorResponse('Item not found', 404))
 		}
 
+		// if item is a set middleware will set itemSetElement to res
+		if (item.item_type === 'set') {
+			const itemSetElement = await TwItemSetDetail.findOne({
+				parentItem: item.id,
+			})
+			if (itemSetElement) {
+				res.itemSetElement = itemSetElement
+			}
+		}
 		res.item = item
 
 		next()
+	} else {
+		return next(new ErrorResponse('Server Error', 500))
 	}
-
-	return next(new ErrorResponse('Server Error', 500))
 }
-
-export { itemOwnerResponseHandler }
 
 export default itemOwnerMiddleware
