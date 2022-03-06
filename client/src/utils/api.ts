@@ -12,14 +12,18 @@ class api {
   }
 
   static async post(url: string, data: any, cof: AxiosRequestConfig = {}) {
-    return axios.post(this.apiUrl(url), data, { ...cof, ...config })
+    return axios.post(this.apiUrl(url), data, { ...config, ...cof })
   }
 
   static async put(url: string, data: any, cof: AxiosRequestConfig = {}) {
-    return axios.put(this.apiUrl(url), data, { ...cof, ...config })
+    return axios.put(this.apiUrl(url), data, { ...config, ...cof })
   }
 
-  static async delete(url: string, data: any, headers: AxiosRequestHeaders) {
+  static async delete(
+    url: string,
+    data: any = {},
+    headers: AxiosRequestHeaders = {}
+  ) {
     return axios.delete(this.apiUrl(url), {
       ...config,
       data,

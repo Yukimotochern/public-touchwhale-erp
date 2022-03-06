@@ -1,0 +1,6 @@
+.user-icon:hover {
+  opacity: 70%;
+}
+.user-icon {
+  cursor: pointer;
+}

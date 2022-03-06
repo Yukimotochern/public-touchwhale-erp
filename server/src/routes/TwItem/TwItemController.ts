@@ -6,7 +6,7 @@ import TwItem from '../../models/TwItem'
 import TwItemSetDetail from '../../models/TwItemSetDetail'
 
 import ErrorResponse from '../../utils/errorResponse'
-import uploadImage from '../../utils/AWS/uploadImage'
+import { uploadImg } from '../../utils/AWS/b2'
 
 // Validator
 import { addItemValidator } from './twItemValidate'
@@ -76,7 +76,7 @@ export const getItem: itemOwnerResponseHandler = async (req, res, next) => {
 // @access   Private
 export const getB2URL: itemOwnerResponseHandler = async (req, res, next) => {
   const itemId = req.params.id
-  const result = await uploadImage('TwItemImage', itemId)
+  const result = await uploadImg('TwItemImage', itemId)
   if (!res.item) {
     return next(new ErrorResponse('B2 can not set image to item.', 500))
   }

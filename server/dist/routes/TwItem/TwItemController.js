@@ -43,7 +43,7 @@ exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = e
 var TwItem_1 = __importDefault(require("../../models/TwItem"));
 var TwItemSetDetail_1 = __importDefault(require("../../models/TwItemSetDetail"));
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
-var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
+var b2_1 = require("../../utils/AWS/b2");
 // Validator
 var twItemValidate_1 = require("./twItemValidate");
 // @route    GET api/v1/twItem/
@@ -126,7 +126,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
         switch (_a.label) {
             case 0:
                 itemId = req.params.id;
-                return [4 /*yield*/, (0, uploadImage_1.default)('TwItemImage', itemId)];
+                return [4 /*yield*/, (0, b2_1.uploadImg)('TwItemImage', itemId)];
             case 1:
                 result = _a.sent();
                 if (!res.item) {

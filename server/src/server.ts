@@ -1,7 +1,12 @@
 import path from 'path'
+import dotenv from 'dotenv'
+
+// Load env vars
+dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
+
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import dotenv from 'dotenv'
+
 import passport from 'passport'
 import cors from 'cors'
 
@@ -30,8 +35,6 @@ const app = express()
 
 app.use(cookieParser())
 
-// Load env vars
-dotenv.config({ path: path.join(__dirname, '..', 'config', 'config.env') })
 // Connect to MongoDB
 connectDB()
 

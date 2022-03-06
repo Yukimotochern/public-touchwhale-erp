@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteImg = exports.uploadImg = void 0;
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var endpoint = new aws_sdk_1.default.Endpoint('s3.us-west-000.backblazeb2.com');
 var s3 = new aws_sdk_1.default.S3({
@@ -51,23 +52,40 @@ var s3 = new aws_sdk_1.default.S3({
     signatureVersion: 'v4',
 });
 // @todo This function will handle more upload image condition with other routes .
-function default_1(resource, id) {
-    return __awaiter(this, void 0, void 0, function () {
-        var Key, url;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    Key = "".concat(resource, "/").concat(id);
-                    return [4 /*yield*/, s3.getSignedUrlPromise('putObject', {
-                            Bucket: 'tw-user-data',
-                            ContentType: 'image/*',
-                            Key: Key,
-                        })];
-                case 1:
-                    url = _a.sent();
-                    return [2 /*return*/, { Key: Key, url: url }];
-            }
-        });
+var uploadImg = function (resource, id) { return __awaiter(void 0, void 0, void 0, function () {
+    var Key, url;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                Key = "".concat(resource, "/").concat(id);
+                return [4 /*yield*/, s3.getSignedUrlPromise('putObject', {
+                        Bucket: 'tw-user-data',
+                        ContentType: 'image/*',
+                        Key: Key,
+                    })];
+            case 1:
+                url = _a.sent();
+                return [2 /*return*/, { Key: Key, url: url }];
+        }
     });
-}
-exports.default = default_1;
+}); };
+exports.uploadImg = uploadImg;
+var deleteImg = function (resource, id) { return __awaiter(void 0, void 0, void 0, function () {
+    var Key;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                Key = "".concat(resource, "/").concat(id);
+                return [4 /*yield*/, s3
+                        .deleteObject({
+                        Bucket: 'tw-user-data',
+                        Key: Key,
+                    })
+                        .promise()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteImg = deleteImg;

@@ -32,6 +32,7 @@ var updateRegularUserBodySchema = {
     properties: {
         company_name: { type: 'string', nullable: true },
         username: { type: 'string', nullable: true },
+        avatar: { type: 'string', nullable: true },
     },
     required: [],
     additionalProperties: false,

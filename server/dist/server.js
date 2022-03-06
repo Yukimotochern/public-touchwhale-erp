@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = __importDefault(require("path"));
+var dotenv_1 = __importDefault(require("dotenv"));
+// Load env vars
+dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
 var express_1 = __importDefault(require("express"));
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
-var dotenv_1 = __importDefault(require("dotenv"));
 var passport_1 = __importDefault(require("passport"));
 var cors_1 = __importDefault(require("cors"));
 // routes
@@ -28,8 +30,6 @@ var app = (0, express_1.default)();
 //   origin: allowedOrigins,
 // }
 app.use((0, cookie_parser_1.default)());
-// Load env vars
-dotenv_1.default.config({ path: path_1.default.join(__dirname, '..', 'config', 'config.env') });
 // Connect to MongoDB
 (0, mongodb_1.default)();
 // Init Middleware
