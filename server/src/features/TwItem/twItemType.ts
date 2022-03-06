@@ -22,7 +22,7 @@ export interface TwItemSetDetailType {
 	element: Array<Object>
 }
 
-interface ElementObjectType {
+export interface ElementObjectType {
 	qty: number
 	id: Types.ObjectId
 }
@@ -62,6 +62,7 @@ export interface TwItemPayload extends Document {
 	count_stock: boolean
 	item_type: string
 	image: string
+	level: number
 }
 
 // For itemOwnerMiddleware res.itemElement

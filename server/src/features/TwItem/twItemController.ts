@@ -16,10 +16,12 @@ import {
 	AddItemRequestHandler,
 	AddItemRequestType,
 	itemOwnerResponseHandler,
+	ElementObjectType,
 } from './twItemType'
 
 // Validator
 import { addItemValidator } from './twItemValidate'
+import { nextTick } from 'process'
 
 // @route    GET api/v1/twItem/
 // @desc     Get all items with specific user
@@ -65,14 +67,11 @@ export const addItem: AddItemRequestHandler = async (req, res, next) => {
 		await item.save()
 
 		if (item_type === 'set') {
-			// await item.save() worst case is n, best case is 1
-			element.map(async (ele) => {
-				const element = await TwItem.findById(ele.id)
-				if (element && element.level > item.level) {
-					item.level += element.level + 1
-					await item.save()
-				}
-			})
+			// max_level helper function will calculate max_level in element array
+			item.level = await max_level(element)
+
+			await item.save()
+
 			const set = new TwItemSetDetail({
 				user: req.userJWT.id,
 				parentItem: item._id,
@@ -84,6 +83,8 @@ export const addItem: AddItemRequestHandler = async (req, res, next) => {
 		res.status(200).json({ data: item })
 	}
 }
+
+// "element": [{"qty": 2, "id": "62241c8f7096ddea6783e41a"}, {"qty": 3, "id": "622392fbafbb949826bd2a07"}]
 
 // @route    GET api/v1/twItem/:id
 // @desc     Get single item by item's id
@@ -116,7 +117,8 @@ export const updateItem: itemOwnerResponseHandler = async (req, res, next) => {
 	}
 	if (addItemValidator(req.body) && res.item) {
 		// User want to change these fields
-		const { name, unit, custom_id, count_stock, item_type, element } = req.body
+		const { name, unit, custom_id, count_stock, item_type, element } =
+			req.body as AddItemRequestType
 
 		// itemOwnerMiddleware will check user is owner with this item(/:id) and to next()
 		const item = res.item
@@ -152,8 +154,6 @@ export const updateItem: itemOwnerResponseHandler = async (req, res, next) => {
 		try {
 			if (element) {
 				if (res.itemSetElement) {
-					console.log(res.itemSetElement)
-
 					const itemSetElement = res.itemSetElement
 					itemSetElement.element = element
 					await itemSetElement.save()
@@ -166,10 +166,11 @@ export const updateItem: itemOwnerResponseHandler = async (req, res, next) => {
 
 					await set.save()
 				}
+				// max_level helper function will calculate max_level in element array
+				item.level = await max_level(element)
 			}
-
 			await item.save()
-			res.status(200).json({ data: item.populate('setOfElement', 'element') })
+			res.status(200).json({ data: item })
 		} catch (err) {
 			return next(
 				new ErrorResponse(
@@ -189,4 +190,24 @@ export const deleteItem: itemOwnerResponseHandler = async (req, res, next) => {
 	res.item?.delete()
 
 	res.status(200).json({ msg: 'Item deleted.' })
+}
+
+// Helper function
+// find max level element and return max level
+const max_level = async (element: Array<ElementObjectType>) => {
+	// push all element's id in array
+	const elementId_array = new Array()
+	element.map((ele) => {
+		elementId_array.push(ele.id)
+	})
+
+	// find all document in element array
+	const all_element = await TwItem.find().where('_id').in(elementId_array)
+
+	// find max level document
+	let max_level_element = all_element.reduce(function (pre, cur) {
+		return pre.level > cur.level ? pre : cur
+	})
+
+	return max_level_element.level + 1
 }
