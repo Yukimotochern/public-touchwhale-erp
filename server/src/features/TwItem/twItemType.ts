@@ -10,7 +10,7 @@ export interface TwItemType {
 	unit: string
 	custom_id: string
 	count_stock: boolean
-	item_type: string
+	item_type: 'set' | 'element'
 	image: string
 	level: number
 }
@@ -24,15 +24,15 @@ export interface TwItemSetDetailType {
 
 export interface ElementObjectType {
 	qty: number
-	id: Types.ObjectId
+	id: string
 }
 
 export interface AddItemRequestType extends RequestWithRegularUser {
 	name: string
-	unit?: string
+	unit: string
 	custom_id: string
 	count_stock: boolean
-	item_type: string
+	item_type: 'set' | 'element'
 	element: Array<ElementObjectType>
 }
 
@@ -51,7 +51,7 @@ export interface TwItemSetType {
 export interface TwItemEditableType
 	extends Omit<TwItemType, 'user' | 'setObject' | 'image' | 'level'> {}
 export interface addItemBodyType extends TwItemEditableType {
-	element: Array<object>
+	element: ElementObjectType[]
 }
 
 // For itemOwnerMiddleware res.item
@@ -60,7 +60,7 @@ export interface TwItemPayload extends Document {
 	unit: string
 	custom_id: string
 	count_stock: boolean
-	item_type: string
+	item_type: 'set' | 'element'
 	image: string
 	level: number
 }

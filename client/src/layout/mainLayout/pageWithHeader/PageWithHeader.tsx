@@ -8,7 +8,6 @@ import {
   PageHeaderProps,
   Dropdown,
   Menu,
-  Typography,
 } from 'antd'
 import { PureRouteObjectWithLink } from '../../../AppRoutes'
 import { useNavigate } from 'react-router-dom'
@@ -129,9 +128,10 @@ export const PageWithHeader: React.FC<Props> = ({
                   <FontAwesomeIcon
                     icon={faUser}
                     color='rgba(102, 101, 101, 0.849'
-                    size='sm'
+                    // size='2x'
                   />
                 }
+                size='default'
               />
             </Dropdown>
           </div>

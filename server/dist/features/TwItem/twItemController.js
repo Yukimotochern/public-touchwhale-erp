@@ -41,10 +41,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
 // Models
-var TwItem_1 = __importDefault(require("./TwItem"));
-var TwItemSetDetail_1 = __importDefault(require("./TwItemSetDetail"));
+var twItemModel_1 = require("./twItemModel");
+var twItemModel_2 = require("./twItemModel");
 // Utils modules
-var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
+var b2_1 = require("../../utils/AWS/b2");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 // Validator
 var twItemValidate_1 = require("./twItemValidate");
@@ -69,7 +69,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
             case 0:
                 if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id))) return [3 /*break*/, 7];
                 _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
-                return [4 /*yield*/, TwItem_1.default.findOne({
+                return [4 /*yield*/, twItemModel_1.TwItem.findOne({
                         user: req.userJWT.id,
                         name: name_1.trim(),
                     })];
@@ -81,7 +81,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 if (item_type === 'element' && element) {
                     return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single item.'))];
                 }
-                item = new TwItem_1.default({
+                item = new twItemModel_1.TwItem({
                     user: req.userJWT.id,
                     name: name_1,
                     unit: unit,
@@ -102,7 +102,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, item.save()];
             case 4:
                 _d.sent();
-                set = new TwItemSetDetail_1.default({
+                set = new twItemModel_2.TwItemSetDetail({
                     user: req.userJWT.id,
                     parentItem: item._id,
                     element: element,
@@ -140,7 +140,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
         switch (_a.label) {
             case 0:
                 itemId = req.params.id;
-                return [4 /*yield*/, (0, uploadImage_1.default)('TwItemImage', itemId)];
+                return [4 /*yield*/, (0, b2_1.uploadImage)('TwItemImage', itemId)];
             case 1:
                 result = _a.sent();
                 if (!res.item) {
@@ -171,7 +171,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 11];
                 _a = req.body, name_2 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 item = res.item;
-                return [4 /*yield*/, TwItem_1.default.findOne({
+                return [4 /*yield*/, twItemModel_1.TwItem.findOne({
                         user: req.userJWT.id,
                         name: name_2.trim(),
                     })
@@ -204,7 +204,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 _d.sent();
                 return [3 /*break*/, 6];
             case 4:
-                set = new TwItemSetDetail_1.default({
+                set = new twItemModel_2.TwItemSetDetail({
                     user: req.userJWT.id,
                     parentItem: item._id,
                     element: element,
@@ -257,7 +257,7 @@ var max_level = function (element) { return __awaiter(void 0, void 0, void 0, fu
                 element.map(function (ele) {
                     elementId_array.push(ele.id);
                 });
-                return [4 /*yield*/, TwItem_1.default.find().where('_id').in(elementId_array)
+                return [4 /*yield*/, twItemModel_1.TwItem.find().where('_id').in(elementId_array)
                     // find max level document
                 ];
             case 1:

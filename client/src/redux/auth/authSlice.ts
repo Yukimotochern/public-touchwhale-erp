@@ -38,6 +38,14 @@ export const authSlice = createSlice({
     updateRegularUser: (state, action: PayloadAction<IRegularUserRes>) => {
       state.user = action.payload
     },
+    updateRegularUserAvatar: (
+      state,
+      action: PayloadAction<IRegularUserRes['avatar']>
+    ) => {
+      if (state.user?.avatar) {
+        state.user.avatar = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder

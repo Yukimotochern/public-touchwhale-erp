@@ -7,13 +7,13 @@ import {
   regularUserSignOut,
   getRegularUser,
   updateRegularUser,
-  getB2URL,
-  setAvatar,
+  getAvatarUploadUrl,
+  deleteAvatar,
   changePassword,
   forgetPassword,
   resetPassword,
   OAuthCallback,
-} from './userController'
+} from './regularUserController'
 
 // Middleware
 import authMiddleware from '../../middlewares/authMiddleware'
@@ -48,9 +48,9 @@ router
   .put(authMiddleware, errorCatcher(updateRegularUser))
 
 router
-  .route('/uploadAvatar')
-  .get(authMiddleware, getB2URL)
-  .post(errorCatcher(setAvatar))
+  .route('/avatar')
+  .get(authMiddleware, errorCatcher(getAvatarUploadUrl))
+  .delete(authMiddleware, errorCatcher(deleteAvatar))
 
 router
   .route('/changePassword')

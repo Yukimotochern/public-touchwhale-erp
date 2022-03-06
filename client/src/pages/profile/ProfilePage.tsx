@@ -2,9 +2,7 @@ import React from 'react'
 import { Row, Col, Empty, Typography, Space } from 'antd'
 import { ProfileBlock } from './ProfileBlock'
 import { useAppSelector } from '../../redux/hooks'
-import Avatar from 'antd/lib/avatar/avatar'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+
 import moment from 'moment'
 import { ChangePassword } from './ChangePassword'
 import { AvatarUpload } from './AvatarUpload'
@@ -17,16 +15,7 @@ export const ProfilePage = () => {
       <>
         <Row gutter={8} style={{ marginTop: 10 }}>
           <Col>
-            <Avatar
-              size={50}
-              src={avatar}
-              icon={
-                <FontAwesomeIcon
-                  icon={faUser}
-                  color='rgba(102, 101, 101, 0.849'
-                />
-              }
-            />
+            <AvatarUpload avatar={avatar} />
           </Col>
           <Col>
             <Row>
@@ -89,7 +78,14 @@ export const ProfilePage = () => {
               </Space>
             ) : null}
           </ProfileBlock>
-
+          <ProfileBlock
+            initialValue={-1}
+            fieldName='none'
+            title='Account Type'
+            type='plain'
+          >
+            TODO: Owner or Employee
+          </ProfileBlock>
           <ProfileBlock
             initialValue={username}
             fieldName='username'
@@ -110,14 +106,14 @@ export const ProfilePage = () => {
           >
             <ChangePassword edittable={provider === 'TouchWhale'} />
           </ProfileBlock>
-          <ProfileBlock
+          {/* <ProfileBlock
             initialValue={-1}
             fieldName='avatar'
             title='Avatar'
             type='plain'
           >
             <AvatarUpload />
-          </ProfileBlock>
+          </ProfileBlock> */}
         </Row>
       </>
     )

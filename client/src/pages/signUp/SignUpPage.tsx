@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Typography } from 'antd'
-import styles from './SignUpPage.module.css'
+// import styles from './SignUpPage.module.css'
 import { EmailEnterForm } from './EmailEnterForm'
 import { VerifyEmailForm } from './VerifyEmailForm'
 import { PasswordSetUpForm } from './PasswordSetUpForm'
@@ -62,10 +62,6 @@ export const SignUpPage = () => {
   }
   return (
     <>
-      <div className={styles['app-logo']}>
-        <img alt='' src='/logo128.png' width='50' height='50' />{' '}
-        <span>TWhale ERP</span>
-      </div>
       <Typography.Title level={2}>Create your account:</Typography.Title>
       {signUpFormView}
     </>

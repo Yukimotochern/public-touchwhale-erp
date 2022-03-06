@@ -30,7 +30,7 @@ export const ChangePassword = ({ edittable }: ChangePasswordProp) => {
   if (!edittable) {
     return (
       <Typography.Text type='secondary' style={{ cursor: 'not-allowed' }}>
-        User who signed up with Google account cannot set up password.
+        User who signed up with Google account cannot set up a password.
       </Typography.Text>
     )
   } else {

@@ -10,7 +10,7 @@ import { SignInPage } from './pages/signIn/SignInPage'
 import { PrivateOutlet } from './pages/private/PrivateOutlet'
 import { PublicOutlet } from './pages/public/PublicOutlet'
 import { ProfilePage } from './pages/profile/ProfilePage'
-import { Typography } from 'antd'
+import { ForgetPassword } from './pages/forgetPassword/ForgetPasswordPage'
 
 // Specify the Complete Route structure
 // Then, cast to RouteObject for react-router-dom to deal with routing-related element rendering
@@ -172,6 +172,15 @@ const fullLayoutRoutes: RouteObjectWithLinkSpecification[] = [
   {
     path: 'signIn',
     element: <SignInPage />,
+  },
+  {
+    path: '/forgetPassword',
+    element: <ForgetPassword />,
+    children: [
+      {
+        path: ':forgetPasswordToken',
+      },
+    ],
   },
 ]
 

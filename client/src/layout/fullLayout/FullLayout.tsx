@@ -7,7 +7,13 @@ export const FullLayout = () => {
     <div className={styles['tw-full-layout']}>
       <div className={styles['tw-auth-left-panel']}>
         <div className={styles['tw-auth-left-panel-inner-set']}>
-          <Outlet />
+          <>
+            <div className={styles['tw-app-logo']}>
+              <img alt='' src='/logo128.png' width='50' height='50' />{' '}
+              <span>TWhale ERP</span>
+            </div>
+            <Outlet />
+          </>
         </div>
       </div>
       <div className={styles['tw-auth-marketing-background']} />

@@ -1,7 +1,9 @@
 import ajvInstance from '../../utils/ajv'
 import { JSONSchemaType } from 'ajv'
 
-import { addItemBodyType } from './twItemType'
+import { addItemBodyType, TwItemSetType } from './twItemType'
+
+// twItem
 
 const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
 	type: 'object',
@@ -20,6 +22,7 @@ const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
 					qty: { type: 'number' },
 					id: { type: 'string' },
 				},
+				required: ['id', 'qty'],
 			},
 		},
 	},
@@ -29,4 +32,39 @@ const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
 
 const addItemValidator = ajvInstance.compile(addItemBodySchema)
 
-export { addItemValidator }
+// twItemSetDetailValidate
+
+// interface elementInnerType {
+// 	items: string
+// }
+
+// const elementInnerSchema: JSONSchemaType<elementInnerType = {
+// 	type: 'array',
+// 	properties: {
+// 		items: { type: 'string' },
+// 	},
+// 	required: [],
+// 	additionalProperties: false,
+// }
+
+const itemSetBodySchema: JSONSchemaType<TwItemSetType> = {
+	type: 'object',
+	properties: {
+		element: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					quantity: { type: 'number' },
+					objectId: { type: 'string' },
+				},
+			},
+		},
+	},
+	required: [],
+	additionalProperties: false,
+}
+
+const itemSetValidator = ajvInstance.compile(itemSetBodySchema)
+
+export { itemSetValidator, addItemValidator }

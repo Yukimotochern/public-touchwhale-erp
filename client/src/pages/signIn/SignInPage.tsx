@@ -35,10 +35,6 @@ export const SignInPage = () => {
   }
   return (
     <>
-      <div className={styles['app-logo']}>
-        <img alt='' src='/logo128.png' width='50' height='50' />{' '}
-        <span>TWhale ERP</span>
-      </div>
       <Typography.Title level={2}>Log in your account:</Typography.Title>
       <Button
         className={styles['google-button']}
@@ -101,11 +97,7 @@ export const SignInPage = () => {
           </Button>
         </Form.Item>
         <Form.Item>
-          <Typography.Text
-            style={{
-              marginLeft: '10px',
-            }}
-          >
+          <Typography.Text>
             Don't have an account ?{' '}
             <Button
               type='link'
@@ -117,6 +109,18 @@ export const SignInPage = () => {
               onClick={() => navigate('/signUp')}
             >
               Sign Up
+            </Button>
+            . Forget your password ?{' '}
+            <Button
+              type='link'
+              htmlType='button'
+              style={{
+                padding: '0px',
+              }}
+              disabled={loading}
+              onClick={() => navigate('/forgetPassword')}
+            >
+              Reset Password
             </Button>
           </Typography.Text>
         </Form.Item>

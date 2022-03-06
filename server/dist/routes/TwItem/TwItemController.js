@@ -40,12 +40,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
+<<<<<<< HEAD
+var TwItem_1 = __importDefault(require("../../models/TwItem"));
+var TwItemSetDetail_1 = __importDefault(require("../../models/TwItemSetDetail"));
+var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
+var b2_1 = require("../../utils/AWS/b2");
+=======
 // Models
 var TwItem_1 = __importDefault(require("./TwItem"));
 var TwItemSetDetail_1 = __importDefault(require("./TwItemSetDetail"));
 // Utils modules
 var uploadImage_1 = __importDefault(require("../../utils/AWS/uploadImage"));
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
+>>>>>>> 7910370fc0b7e93586ef340292125b32c3862656
 // Validator
 var twItemValidate_1 = require("./twItemValidate");
 // @route    GET api/v1/twItem/
@@ -148,7 +155,7 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
         switch (_a.label) {
             case 0:
                 itemId = req.params.id;
-                return [4 /*yield*/, (0, uploadImage_1.default)('TwItemImage', itemId)];
+                return [4 /*yield*/, (0, b2_1.uploadImg)('TwItemImage', itemId)];
             case 1:
                 result = _a.sent();
                 if (!res.item) {
