@@ -13,7 +13,7 @@ const s3 = new AWS.S3({
 })
 
 // @todo This function will handle more upload image condition with other routes .
-export const uploadImg = async (resource: string, id: string) => {
+export const uploadImage = async (resource: string, id: string) => {
   const Key = `${resource}/${id}`
 
   let url = await s3.getSignedUrlPromise('putObject', {
@@ -24,7 +24,7 @@ export const uploadImg = async (resource: string, id: string) => {
   return { Key, url }
 }
 
-export const deleteImg = async (resource: string, id: string) => {
+export const deleteImage = async (resource: string, id: string) => {
   const Key = `${resource}/${id}`
   await s3
     .deleteObject({

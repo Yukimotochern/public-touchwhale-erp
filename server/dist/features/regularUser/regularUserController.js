@@ -44,8 +44,8 @@ var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
-var userValidate_1 = require("./userValidate");
-var RegularUser_1 = __importDefault(require("../../models/RegularUser"));
+var regularUserValidate_1 = require("./regularUserValidate");
+var regularUserModel_1 = __importDefault(require("./regularUserModel"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var b2_1 = require("../../utils/AWS/b2");
 // @route    POST api/v1/regularUser/signUp
@@ -56,9 +56,9 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
+                if (!(0, regularUserValidate_1.signUpBodyValidator)(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
-                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
+                return [4 /*yield*/, regularUserModel_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
                 sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
@@ -73,7 +73,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                     }
                 }
                 else {
-                    user = new RegularUser_1.default({
+                    user = new regularUserModel_1.default({
                         email: email,
                         password: sixDigits,
                         provider: 'TouchWhale',
@@ -92,7 +92,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                 _a.sent();
                 res.status(200).json({ msg: "Verification code has been send to ".concat(email) });
                 return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signUpBodyValidator.errors))];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
         }
     });
@@ -107,7 +107,7 @@ var regularUserVerify = function (req, res, next) { return __awaiter(void 0, voi
         switch (_b.label) {
             case 0:
                 _a = req.body, email = _a.email, password = _a.password;
-                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
+                return [4 /*yield*/, regularUserModel_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
                 if (!user || user.active) {
@@ -132,9 +132,9 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                if (!(0, userValidate_1.signInBodyValidator)(req.body)) return [3 /*break*/, 3];
+                if (!(0, regularUserValidate_1.signInBodyValidator)(req.body)) return [3 /*break*/, 3];
                 _a = req.body, email = _a.email, password = _a.password;
-                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email }).select('+password')];
+                return [4 /*yield*/, regularUserModel_1.default.findOne({ email: email }).select('+password')];
             case 1:
                 user = _b.sent();
                 if (!user || !user.active) {
@@ -147,7 +147,7 @@ var regularUserSignIn = function (req, res, next) { return __awaiter(void 0, voi
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
-            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.signInBodyValidator.errors))];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.signInBodyValidator.errors))];
         }
     });
 }); };
@@ -164,11 +164,11 @@ var OAuthCallback = function (req, res, next) { return __awaiter(void 0, void 0,
                 if (!req.user) return [3 /*break*/, 6];
                 profile = req.user._json;
                 email = profile.email;
-                return [4 /*yield*/, RegularUser_1.default.findOne({ email: email })];
+                return [4 /*yield*/, regularUserModel_1.default.findOne({ email: email })];
             case 1:
                 user = _a.sent();
                 if (!!user) return [3 /*break*/, 3];
-                user = new RegularUser_1.default({
+                user = new regularUserModel_1.default({
                     email: profile === null || profile === void 0 ? void 0 : profile.email,
                     password: crypto_1.default.randomBytes(10).toString('hex'),
                     avatar: profile === null || profile === void 0 ? void 0 : profile.picture,
@@ -228,7 +228,7 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
         switch (_a.label) {
             case 0:
                 if (!req.userJWT) return [3 /*break*/, 2];
-                return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id)];
+                return [4 /*yield*/, regularUserModel_1.default.findById(req.userJWT.id)];
             case 1:
                 user = _a.sent();
                 if (user) {
@@ -254,9 +254,9 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.updateRegularUserBodyValidator)(req.body)) return [3 /*break*/, 4];
+                if (!(0, regularUserValidate_1.updateRegularUserBodyValidator)(req.body)) return [3 /*break*/, 4];
                 if (!req.userJWT) return [3 /*break*/, 2];
-                return [4 /*yield*/, RegularUser_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
+                return [4 /*yield*/, regularUserModel_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
                         new: true,
                         runValidators: true,
                     })];
@@ -268,7 +268,7 @@ var updateRegularUser = function (req, res, next) { return __awaiter(void 0, voi
                 return [3 /*break*/, 3];
             case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
             case 3: return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.updateRegularUserBodyValidator.errors))];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.updateRegularUserBodyValidator.errors))];
             case 5: return [2 /*return*/];
         }
     });
@@ -285,7 +285,7 @@ var getAvatarUploadUrl = function (req, res, next) { return __awaiter(void 0, vo
             case 0:
                 if (!((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id)) return [3 /*break*/, 4];
                 id = req.userJWT.id;
-                return [4 /*yield*/, RegularUser_1.default.findById(id)];
+                return [4 /*yield*/, regularUserModel_1.default.findById(id)];
             case 1:
                 user = _c.sent();
                 if (!user) {
@@ -318,7 +318,7 @@ var deleteAvatar = function (req, res, next) { return __awaiter(void 0, void 0, 
             case 0:
                 if (!((_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 4];
                 id = req.userJWT.id;
-                return [4 /*yield*/, RegularUser_1.default.findById(id)];
+                return [4 /*yield*/, regularUserModel_1.default.findById(id)];
             case 1:
                 user = _b.sent();
                 if (!user) {
@@ -347,8 +347,8 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!((0, userValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 7];
-                return [4 /*yield*/, RegularUser_1.default.findById(req.userJWT.id).select('+password')];
+                if (!((0, regularUserValidate_1.changePasswordBodyValidator)(req.body) && req.userJWT)) return [3 /*break*/, 7];
+                return [4 /*yield*/, regularUserModel_1.default.findById(req.userJWT.id).select('+password')];
             case 1:
                 user = _a.sent();
                 if (!(user && user.active)) return [3 /*break*/, 4];
@@ -371,7 +371,7 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
                 _a.sent();
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.changePasswordBodyValidator.errors))];
+            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.changePasswordBodyValidator.errors))];
         }
     });
 }); };
@@ -384,8 +384,8 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.forgetPasswordBodyValidator)(req.body)) return [3 /*break*/, 8];
-                return [4 /*yield*/, RegularUser_1.default.findOne({ email: req.body.email })];
+                if (!(0, regularUserValidate_1.forgetPasswordBodyValidator)(req.body)) return [3 /*break*/, 8];
+                return [4 /*yield*/, regularUserModel_1.default.findOne({ email: req.body.email })];
             case 1:
                 user = _a.sent();
                 if (!user) {
@@ -425,7 +425,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 _a.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_2))];
             case 7: return [3 /*break*/, 9];
-            case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.forgetPasswordBodyValidator.errors))];
+            case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.forgetPasswordBodyValidator.errors))];
             case 9: return [2 /*return*/];
         }
     });
@@ -439,12 +439,12 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(0, userValidate_1.resetPasswordBodyValidator)(req.body)) return [3 /*break*/, 3];
+                if (!(0, regularUserValidate_1.resetPasswordBodyValidator)(req.body)) return [3 /*break*/, 3];
                 forgetPasswordToken = crypto_1.default
                     .createHash('sha256')
                     .update(req.params.resetToken)
                     .digest('hex');
-                return [4 /*yield*/, RegularUser_1.default.findOne({
+                return [4 /*yield*/, regularUserModel_1.default.findOne({
                         forgetPasswordToken: forgetPasswordToken,
                         forgetPasswordExpire: { $gt: Date.now() },
                     })];
@@ -461,7 +461,7 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
                 _a.sent();
                 res.status(200).json({ data: 'Your password has been set.' });
                 return [3 /*break*/, 4];
-            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(userValidate_1.resetPasswordBodyValidator.errors))];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.resetPasswordBodyValidator.errors))];
             case 4: return [2 /*return*/];
         }
     });

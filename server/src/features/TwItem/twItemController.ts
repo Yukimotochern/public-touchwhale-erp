@@ -1,13 +1,13 @@
 // Models
-import TwItem from './TwItem'
-import TwItemSetDetail from './TwItemSetDetail'
+import { TwItem } from './twItemModel'
+import { TwItemSetDetail } from './twItemModel'
 
 // Middlewares
 import { advancedResultResponse } from '../../middlewares/advancedResult'
 import { PrivateRequestHandler } from '../../middlewares/authMiddleware'
 
 // Utils modules
-import uploadImage from '../../utils/AWS/uploadImage'
+import { uploadImage } from '../../utils/AWS/b2'
 import ErrorResponse from '../../utils/errorResponse'
 
 // Type definition
@@ -21,7 +21,6 @@ import {
 
 // Validator
 import { addItemValidator } from './twItemValidate'
-import { nextTick } from 'process'
 
 // @route    GET api/v1/twItem/
 // @desc     Get all items with specific user

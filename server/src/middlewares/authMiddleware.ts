@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { Request, NextFunction, Response, RequestHandler } from 'express'
-import { RegularUserJWTPayload } from '../models/RegularUser'
+import { RegularUserJWTPayload } from '../features/regularUser/regularUserModel'
 import ErrorResponse from '../utils/errorResponse'
 
 interface RequestWithRegularUser extends Request {

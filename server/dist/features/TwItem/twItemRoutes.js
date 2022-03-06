@@ -9,12 +9,12 @@ var itemOwnerMiddleware_1 = __importDefault(require("../../middlewares/itemOwner
 var advancedResult_1 = __importDefault(require("../../middlewares/advancedResult"));
 var errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
 var twItemController_1 = require("./twItemController");
-var TwItem_1 = __importDefault(require("./TwItem"));
+var twItemModel_1 = require("./twItemModel");
 var router = express_1.default.Router();
 // @todo twItem routes supposed to handle diff user access right.
 router
     .route('/')
-    .get([authMiddleware_1.default, (0, advancedResult_1.default)(TwItem_1.default, 'setOfElement')], (0, errorCatcher_1.default)(twItemController_1.getItems))
+    .get([authMiddleware_1.default, (0, advancedResult_1.default)(twItemModel_1.TwItem, 'setOfElement')], (0, errorCatcher_1.default)(twItemController_1.getItems))
     .post(authMiddleware_1.default, (0, errorCatcher_1.default)(twItemController_1.addItem));
 router
     .route('/:id')

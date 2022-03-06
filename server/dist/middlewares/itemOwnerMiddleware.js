@@ -40,8 +40,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Models
-var TwItem_1 = __importDefault(require("../features/TwItem/TwItem"));
-var TwItemSetDetail_1 = __importDefault(require("../features/TwItem/TwItemSetDetail"));
+var twItemModel_1 = require("../features/twItem/twItemModel");
+var twItemModel_2 = require("../features/twItem/twItemModel");
 // Util module
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 // itemOwnerMiddleware will make sure this user has this item's ownership
@@ -57,7 +57,7 @@ var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, v
                 if (!((_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 4];
                 itemId = req.params.id;
                 populate = req.query.populate;
-                query = TwItem_1.default.findById(itemId);
+                query = twItemModel_1.TwItem.findById(itemId);
                 if (populate) {
                     query = query.populate('setOfElement', 'element');
                 }
@@ -71,7 +71,7 @@ var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, v
                     return [2 /*return*/, next(new errorResponse_1.default('Item not found', 404))];
                 }
                 if (!(item.item_type === 'set')) return [3 /*break*/, 3];
-                return [4 /*yield*/, TwItemSetDetail_1.default.findOne({
+                return [4 /*yield*/, twItemModel_2.TwItemSetDetail.findOne({
                         parentItem: item.id,
                     })];
             case 2:

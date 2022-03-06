@@ -13,7 +13,7 @@ import {
   forgetPassword,
   resetPassword,
   OAuthCallback,
-} from './userController'
+} from './regularUserController'
 
 // Middleware
 import authMiddleware from '../../middlewares/authMiddleware'

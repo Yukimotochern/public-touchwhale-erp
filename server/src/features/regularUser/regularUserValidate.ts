@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv'
 import ajvInstance from '../../utils/ajv'
-import { RegularUserType } from '../../models/RegularUser'
+import { RegularUserType } from './regularUserModel'
 
 // This type ensure that the data format between json schema here and mongoose schema are in sync. If not, type error will be thrown. Also, by excluding forgetPasswordToken and other fields, potential database injections that update the token via api call will not happen.
 // by Yuki

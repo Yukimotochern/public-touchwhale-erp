@@ -17,14 +17,14 @@ import {
   changePasswordBodyValidator,
   forgetPasswordBodyValidator,
   resetPasswordBodyValidator,
-} from './userValidate'
+} from './regularUserValidate'
 
-import RegularUserModel from '../../models/RegularUser'
+import RegularUserModel from './regularUserModel'
 import {
   forgetPasswordMessage,
   sixDigitsMessage,
 } from '../../utils/emailMessage'
-import { uploadImg, deleteImg } from '../../utils/AWS/b2'
+import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 
 // @route    POST api/v1/regularUser/signUp
 // @desc     Sign regularUser up
@@ -226,7 +226,7 @@ export const getAvatarUploadUrl: PrivateRequestHandler = async (
     if (!user) {
       return next(new ErrorResponse('Server Error.'))
     }
-    const { Key, url } = await uploadImg('RegularUserAvatar', id)
+    const { Key, url } = await uploadImage('RegularUserAvatar', id)
     let avatar = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
     user.avatar = avatar
     await user.save()
@@ -247,7 +247,7 @@ export const deleteAvatar: PrivateRequestHandler = async (req, res, next) => {
     if (!user) {
       return next(new ErrorResponse('Server Error.'))
     }
-    await deleteImg('RegularUserAvatar', id)
+    await deleteImage('RegularUserAvatar', id)
     user.avatar = undefined
     await user.save()
     return res.status(200).json({
