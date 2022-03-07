@@ -62,19 +62,19 @@ exports.getItems = getItems;
 // @desc     Add a item and ref to user
 // @access   Private
 var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_1, unit, custom_id, count_stock, item_type, element, item_for_user, item, _b, set;
-    var _c;
-    return __generator(this, function (_d) {
-        switch (_d.label) {
+    var _a, name_1, unit, custom_id, count_stock, item_type, element, item_for_user, item, set;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id))) return [3 /*break*/, 7];
+                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 6];
                 _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 return [4 /*yield*/, twItemModel_1.TwItem.findOne({
                         user: req.userJWT.id,
                         name: name_1.trim(),
                     })];
             case 1:
-                item_for_user = _d.sent();
+                item_for_user = _c.sent();
                 if (item_for_user) {
                     return [2 /*return*/, next(new errorResponse_1.default("You have a item with same name: '".concat(name_1, "' ")))];
                 }
@@ -91,30 +91,24 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                 });
                 return [4 /*yield*/, item.save()];
             case 2:
-                _d.sent();
-                if (!(item_type === 'set')) return [3 /*break*/, 6];
-                // max_level helper function will calculate max_level in element array
-                _b = item;
-                return [4 /*yield*/, max_level(element)];
-            case 3:
-                // max_level helper function will calculate max_level in element array
-                _b.level = _d.sent();
+                _c.sent();
+                if (!(item_type === 'set')) return [3 /*break*/, 5];
                 return [4 /*yield*/, item.save()];
-            case 4:
-                _d.sent();
+            case 3:
+                _c.sent();
                 set = new twItemModel_2.TwItemSetDetail({
                     user: req.userJWT.id,
                     parentItem: item._id,
                     element: element,
                 });
                 return [4 /*yield*/, set.save()];
+            case 4:
+                _c.sent();
+                _c.label = 5;
             case 5:
-                _d.sent();
-                _d.label = 6;
-            case 6:
                 res.status(200).json({ data: item });
-                _d.label = 7;
-            case 7: return [2 /*return*/];
+                _c.label = 6;
+            case 6: return [2 /*return*/];
         }
     });
 }); };
@@ -160,7 +154,7 @@ exports.getB2URL = getB2URL;
 // @desc     Update item by item's id
 // @access   Private
 var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_2, unit, custom_id, count_stock, item_type, element, item, item_for_user, itemSetElement, set, _b, err_1;
+    var _a, name_2, unit, custom_id, count_stock, item_type, element, item, item_for_user, _b, itemSetElement, set, err_1;
     var _c;
     return __generator(this, function (_d) {
         switch (_d.label) {
@@ -168,7 +162,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 if (!((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id)) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 11];
+                if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 13];
                 _a = req.body, name_2 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 item = res.item;
                 return [4 /*yield*/, twItemModel_1.TwItem.findOne({
@@ -194,42 +188,43 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 item.item_type = item_type ? item_type : item.item_type;
                 _d.label = 2;
             case 2:
-                _d.trys.push([2, 10, , 11]);
-                if (!element) return [3 /*break*/, 8];
-                if (!res.itemSetElement) return [3 /*break*/, 4];
+                _d.trys.push([2, 12, , 13]);
+                _b = element;
+                if (!_b) return [3 /*break*/, 4];
+                return [4 /*yield*/, check_no_loop_Breadth_First_search(element, item.id)];
+            case 3:
+                _b = (_d.sent());
+                _d.label = 4;
+            case 4:
+                if (!_b) return [3 /*break*/, 9];
+                if (!res.itemSetElement) return [3 /*break*/, 6];
                 itemSetElement = res.itemSetElement;
                 itemSetElement.element = element;
                 return [4 /*yield*/, itemSetElement.save()];
-            case 3:
+            case 5:
                 _d.sent();
-                return [3 /*break*/, 6];
-            case 4:
+                return [3 /*break*/, 8];
+            case 6:
                 set = new twItemModel_2.TwItemSetDetail({
                     user: req.userJWT.id,
                     parentItem: item._id,
                     element: element,
                 });
                 return [4 /*yield*/, set.save()];
-            case 5:
-                _d.sent();
-                _d.label = 6;
-            case 6:
-                // max_level helper function will calculate max_level in element array
-                _b = item;
-                return [4 /*yield*/, max_level(element)];
             case 7:
-                // max_level helper function will calculate max_level in element array
-                _b.level = _d.sent();
+                _d.sent();
                 _d.label = 8;
-            case 8: return [4 /*yield*/, item.save()];
-            case 9:
+            case 8: return [3 /*break*/, 10];
+            case 9: return [2 /*return*/, next(new errorResponse_1.default('Items element has a loop. '))];
+            case 10: return [4 /*yield*/, item.save()];
+            case 11:
                 _d.sent();
                 res.status(200).json({ data: item });
-                return [3 /*break*/, 11];
-            case 10:
+                return [3 /*break*/, 13];
+            case 12:
                 err_1 = _d.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Something wrong. Maybe there has duplicate field in your items', 401, err_1))];
-            case 11: return [2 /*return*/];
+            case 13: return [2 /*return*/];
         }
     });
 }); };
@@ -248,8 +243,22 @@ var deleteItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
 exports.deleteItem = deleteItem;
 // Helper function
 // find max level element and return max level
-var max_level = function (element) { return __awaiter(void 0, void 0, void 0, function () {
-    var elementId_array, all_element, max_level_element;
+// const max_level = async (element: ElementObjectType[]) => {
+//   // push all element's id in array
+//   const elementId_array = new Array()
+//   element.map((ele) => {
+//     elementId_array.push(ele.id)
+//   })
+//   // find all document in element array
+//   const all_element = await TwItem.find().where('_id').in(elementId_array)
+//   // find max level document
+//   let max_level_element = all_element.reduce(function (pre, cur) {
+//     return pre.level > cur.level ? pre : cur
+//   })
+//   return max_level_element.level + 1
+// }
+var check_no_loop_Breadth_First_search = function (element, item_id) { return __awaiter(void 0, void 0, void 0, function () {
+    var elementId_array, searched, _loop_1, state_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -257,15 +266,42 @@ var max_level = function (element) { return __awaiter(void 0, void 0, void 0, fu
                 element.map(function (ele) {
                     elementId_array.push(ele.id);
                 });
-                return [4 /*yield*/, twItemModel_1.TwItem.find().where('_id').in(elementId_array)
-                    // find max level document
-                ];
+                searched = new Array();
+                _loop_1 = function () {
+                    var new_element, new_child, new_array_1;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                new_element = elementId_array.shift();
+                                if (!!searched.includes(new_element)) return [3 /*break*/, 3];
+                                if (!(new_element === item_id)) return [3 /*break*/, 1];
+                                return [2 /*return*/, { value: false }];
+                            case 1: return [4 /*yield*/, twItemModel_2.TwItemSetDetail.findOne({
+                                    parentItem: new_element,
+                                })];
+                            case 2:
+                                new_child = _b.sent();
+                                new_array_1 = new Array();
+                                new_child === null || new_child === void 0 ? void 0 : new_child.element.map(function (obj) {
+                                    new_array_1.push(obj.id);
+                                });
+                                elementId_array = elementId_array.concat(new_array_1);
+                                searched.push(new_element);
+                                _b.label = 3;
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                };
+                _a.label = 1;
             case 1:
-                all_element = _a.sent();
-                max_level_element = all_element.reduce(function (pre, cur) {
-                    return pre.level > cur.level ? pre : cur;
-                });
-                return [2 /*return*/, max_level_element.level + 1];
+                if (!elementId_array.length) return [3 /*break*/, 3];
+                return [5 /*yield**/, _loop_1()];
+            case 2:
+                state_1 = _a.sent();
+                if (typeof state_1 === "object")
+                    return [2 /*return*/, state_1.value];
+                return [3 /*break*/, 1];
+            case 3: return [2 /*return*/, true];
         }
     });
 }); };
