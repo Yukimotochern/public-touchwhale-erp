@@ -165,10 +165,7 @@ export const updateItem: itemOwnerResponseHandler = async (req, res, next) => {
 		item.item_type = item_type ? item_type : item.item_type
 
 		try {
-			if (
-				element &&
-				(await check_no_loop_Breadth_First_search(element, item.id))
-			) {
+			if (element && (await check_no_loop(element, item.id))) {
 				if (res.itemSetElement) {
 					const itemSetElement = res.itemSetElement
 					itemSetElement.element = element
@@ -228,10 +225,7 @@ export const deleteItem: itemOwnerResponseHandler = async (req, res, next) => {
 //   return max_level_element.level + 1
 // }
 
-const check_no_loop_Breadth_First_search = async (
-	element: ElementObjectType[],
-	item_id: string
-) => {
+const check_no_loop = async (element: ElementObjectType[], item_id: string) => {
 	let elementId_array = new Array()
 	element.map((ele) => {
 		elementId_array.push(ele.id)
