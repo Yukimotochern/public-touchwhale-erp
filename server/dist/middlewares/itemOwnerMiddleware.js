@@ -44,8 +44,9 @@ var twItemModel_1 = require("../features/twItem/twItemModel");
 var twItemModel_2 = require("../features/twItem/twItemModel");
 // Util module
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
-// itemOwnerMiddleware will make sure this user has this item's ownership
-// if true it will set res.item and res.itemElement only if this item is set
+// itemOwnerMiddleware will make sure that the accessing user owns that particular resource.
+// If the access right is proved, it will set 'res.item' and 'res.itemElement'.
+// The latter, 'res.itemElement', will be set only if 'res.item' represents a set.
 // res.item => is one of TwItem document
 // res.itemElement => is one of TwItemSetDetail document
 var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
