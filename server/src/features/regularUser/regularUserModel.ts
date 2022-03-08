@@ -6,20 +6,22 @@ import { RegularUserType } from './regularUserType'
 
 const RegularUserSchema = new mongoose.Schema<RegularUserType.Mongoose>(
   {
-    company_name: {
-      type: String,
-    },
-    username: {
-      type: String,
-    },
     email: {
       type: String,
       unique: true,
-      required: true,
+      sparse: true,
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
         'Please add a valid email.',
       ],
+    },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    company_name: {
+      type: String,
     },
     password: {
       type: String,

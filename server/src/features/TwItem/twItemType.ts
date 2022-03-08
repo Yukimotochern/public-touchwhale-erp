@@ -1,7 +1,7 @@
 import { Types, Document } from 'mongoose'
 import { RequestWithRegularUser } from '../../middlewares/authMiddleware'
 import { Request, NextFunction, Response } from 'express'
-import { SuccessResponse } from '../types/Response'
+import { SuccessResponse } from '../../types/CustomExpressTypes'
 
 // TwItem Model
 export interface TwItemType {

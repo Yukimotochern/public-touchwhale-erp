@@ -42,11 +42,7 @@ export namespace RegularUserType {
   export interface ResetPasswordBody extends Pick<Editable, 'password'> {}
 }
 
-// avj validates: Req, Req.body, Res.body
-
 // Request
-
-// Request Body
 
 // Response
 
