@@ -2,33 +2,9 @@ import mongoose from 'mongoose'
 import bcrtpt from 'bcryptjs'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import crypto from 'crypto'
+import { RegularUserType } from './regularUserType'
 
-interface RegularUserType {
-  email: string
-  password: string
-  avatar?: string
-  company_name?: string
-  username?: string
-  provider: 'TouchWhale' | 'Google'
-  active: boolean
-  createdAt: Date
-  forgetPasswordToken?: string
-  forgetPasswordExpire?: Date
-  resetEmailToken?: string
-  resetEmailExpire?: Date
-  updatedAt: Date
-  matchPassword: (password: string) => Promise<boolean>
-  getForgetPasswordToken: () => string
-  getSignedJWTToken: () => string
-}
-
-interface RegularUserJWTPayload extends JwtPayload {
-  id?: string
-  iat?: number
-  exp?: number
-}
-
-const RegularUserSchema = new mongoose.Schema<RegularUserType>(
+const RegularUserSchema = new mongoose.Schema<RegularUserType.Mongoose>(
   {
     company_name: {
       type: String,
@@ -114,11 +90,9 @@ RegularUserSchema.methods.getResetEmailToken = function () {
   return token
 }
 
-const RegularUserModel = mongoose.model<RegularUserType>(
+const RegularUserModel = mongoose.model<RegularUserType.Mongoose>(
   'regular_user',
   RegularUserSchema
 )
-
-export { RegularUserType, RegularUserJWTPayload }
 
 export default RegularUserModel

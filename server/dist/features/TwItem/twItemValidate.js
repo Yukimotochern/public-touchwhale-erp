@@ -23,6 +23,7 @@ var addItemBodySchema = {
                     qty: { type: 'number' },
                     id: { type: 'string' },
                 },
+                required: ['id', 'qty'],
             },
         },
     },

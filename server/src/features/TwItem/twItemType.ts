@@ -24,7 +24,7 @@ export interface TwItemSetDetailType {
 
 export interface ElementObjectType {
   qty: number
-  id: Types.ObjectId
+  id: string
 }
 
 export interface AddItemRequestType extends RequestWithRegularUser {

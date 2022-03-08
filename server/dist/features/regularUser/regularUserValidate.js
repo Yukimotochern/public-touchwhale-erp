@@ -3,9 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPasswordBodyValidator = exports.forgetPasswordBodyValidator = exports.changePasswordBodyValidator = exports.updateRegularUserEmailBodyValidator = exports.updateRegularUserBodyValidator = exports.signUpBodyValidator = exports.signInBodyValidator = void 0;
+exports.resetPasswordBodyValidator = exports.forgetPasswordBodyValidator = exports.changePasswordBodyValidator = exports.updateRegularUserBodyValidator = exports.signUpBodyValidator = exports.signInBodyValidator = void 0;
 var ajv_1 = __importDefault(require("../../utils/ajv"));
-// Bellow, the purpose of variable is more explicit. by Yuki
 var signUpBodySchema = {
     type: 'object',
     properties: {
@@ -39,16 +38,6 @@ var updateRegularUserBodySchema = {
 };
 var updateRegularUserBodyValidator = ajv_1.default.compile(updateRegularUserBodySchema);
 exports.updateRegularUserBodyValidator = updateRegularUserBodyValidator;
-var updateRegularUserEmailBodySchema = {
-    type: 'object',
-    properties: {
-        email: { type: 'string', format: 'email' },
-    },
-    required: ['email'],
-    additionalProperties: false,
-};
-var updateRegularUserEmailBodyValidator = ajv_1.default.compile(updateRegularUserEmailBodySchema);
-exports.updateRegularUserEmailBodyValidator = updateRegularUserEmailBodyValidator;
 var changePasswordBodySchema = {
     type: 'object',
     properties: {
@@ -71,6 +60,7 @@ var forgetPasswordBodySchema = {
 };
 var forgetPasswordBodyValidator = ajv_1.default.compile(forgetPasswordBodySchema);
 exports.forgetPasswordBodyValidator = forgetPasswordBodyValidator;
+// User reset password Validator
 var resetPasswordBodySchema = {
     type: 'object',
     properties: {

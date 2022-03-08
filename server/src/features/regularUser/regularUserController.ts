@@ -1,8 +1,5 @@
-import { NextFunction, RequestHandler, Response } from 'express'
-import {
-  RequestWithGoogleProfile,
-  GoogleAuthCallbackHandler,
-} from '../../utils/passportOAuth'
+import { RequestHandler, Response } from 'express'
+import { GoogleAuthCallbackHandler } from '../../utils/passportOAuth'
 import { PrivateRequestHandler } from '../../middlewares/authMiddleware'
 import crypto from 'crypto'
 
@@ -39,7 +36,7 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
         // User already register and has been activated
         return next(new ErrorResponse('User already exists.', 409))
       } else {
-        // User already register but not be activated
+        // User already register but is not activated
         user.password = sixDigits
       }
     } else {

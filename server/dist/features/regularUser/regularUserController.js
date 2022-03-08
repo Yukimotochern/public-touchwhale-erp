@@ -68,7 +68,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                         return [2 /*return*/, next(new errorResponse_1.default('User already exists.', 409))];
                     }
                     else {
-                        // User already register but not be activated
+                        // User already register but is not activated
                         user.password = sixDigits;
                     }
                 }

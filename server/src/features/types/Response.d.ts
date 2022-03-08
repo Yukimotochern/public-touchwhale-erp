@@ -1,6 +1,9 @@
 import { Response } from 'express'
 
-interface SuccessResponse<DataType = any> extends Response {
+export interface SuccessResponseBody<DataType> {
   data?: DataType
-  msg?: string
+  message?: string
 }
+
+export interface SuccessResponse<DataType = any>
+  extends Response<SuccessResponseBody<DataType>> {}

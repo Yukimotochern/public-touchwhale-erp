@@ -4,7 +4,6 @@ import { JSONSchemaType } from 'ajv'
 import { addItemBodyType, TwItemSetType } from './twItemType'
 
 // twItem
-
 const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
   type: 'object',
   properties: {
@@ -22,6 +21,7 @@ const addItemBodySchema: JSONSchemaType<addItemBodyType> = {
           qty: { type: 'number' },
           id: { type: 'string' },
         },
+        required: ['id', 'qty'],
       },
     },
   },
