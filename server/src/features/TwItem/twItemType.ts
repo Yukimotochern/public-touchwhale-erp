@@ -12,14 +12,13 @@ export interface TwItemType {
   count_stock: boolean
   item_type: 'set' | 'element'
   image: string
-  level: number
 }
 
 // TwItemSet Model
 export interface TwItemSetDetailType {
   user: Types.ObjectId
   parentItem: Types.ObjectId
-  element: Array<Object>
+  element: Array<ElementObjectType>
 }
 
 export interface ElementObjectType {
@@ -49,7 +48,7 @@ export interface TwItemSetType {
   element: Array<object>
 }
 export interface TwItemEditableType
-  extends Omit<TwItemType, 'user' | 'setObject' | 'image' | 'level'> {}
+  extends Omit<TwItemType, 'user' | 'setObject' | 'image'> {}
 export interface addItemBodyType extends TwItemEditableType {
   element: ElementObjectType[]
 }
@@ -62,13 +61,12 @@ export interface TwItemPayload extends Document {
   count_stock: boolean
   item_type: 'set' | 'element'
   image: string
-  level: number
 }
 
 // For itemOwnerMiddleware res.itemElement
 export interface TwItemSetPayload extends Document {
   parentItem: Types.ObjectId
-  element: Array<object>
+  element: Array<ElementObjectType>
 }
 
 // For itemOwnerMiddleware res (res.item and res.itemElement)

@@ -93,11 +93,35 @@ TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true });
 // When TwItem document got remove, if it is a set this pre function will remove TwItemSet document as well
 TwItemSchema.pre('remove', function (next) {
     return __awaiter(this, void 0, void 0, function () {
+        var related_element;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, this.model('tw_item_set_detail').deleteMany({ parentItem: this._id })];
+                case 0: return [4 /*yield*/, this.model('tw_item_set_detail').deleteMany({ parentItem: this._id })
+                    // find all related element and remove thid._id element if this is in element
+                ];
                 case 1:
                     _a.sent();
+                    return [4 /*yield*/, TwItemSetDetail.find()];
+                case 2:
+                    related_element = _a.sent();
+                    related_element.map(function (set_info) {
+                        var element_array = set_info.element;
+                        element_array.map(function (obj, index) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (!(obj.id === this._id.toString())) return [3 /*break*/, 2];
+                                        set_info.element.splice(index, 1);
+                                        return [4 /*yield*/, set_info.save()];
+                                    case 1:
+                                        _a.sent();
+                                        _a.label = 2;
+                                    case 2: return [2 /*return*/];
+                                }
+                            });
+                        }); });
+                    });
                     next();
                     return [2 /*return*/];
             }
