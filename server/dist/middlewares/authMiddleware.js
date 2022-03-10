@@ -29,9 +29,11 @@ var authMiddleware = function (req, res, next) {
         var decode = jsonwebtoken_1.default.verify(token, process.env.JWTSECRET);
         if (tokenValidator(decode)) {
             req.userJWT = decode;
-            next();
+            return next();
         }
-        return next(new errorResponse_1.default('Token is invalid.', 401));
+        else {
+            return next(new errorResponse_1.default('Token is invalid.', 401));
+        }
     }
     catch (err) {
         console.error(err);

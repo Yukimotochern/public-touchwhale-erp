@@ -22,6 +22,7 @@ import {
   sixDigitsMessage,
 } from '../../utils/emailMessage'
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
+import { send } from '../../utils/customExpress'
 
 // @route    POST api/v1/regularUser/signUp
 // @desc     Sign regularUser up
@@ -53,7 +54,7 @@ export const regularUserSignUp: RequestHandler = async (req, res, next) => {
       subject: 'Your verificatiom code',
       message: message,
     })
-    res.status(200).json({ msg: `Verification code has been send to ${email}` })
+    send(res, 200, { message: `Verification code has been send to ${email}` })
   } else {
     return next(avjErrorWrapper(signUpBodyValidator.errors))
   }
@@ -114,7 +115,6 @@ export const OAuthCallback: GoogleAuthCallbackHandler = async (
       const profile = req.user._json
       const email = profile.email
       let user = await RegularUserModel.findOne({ email })
-
       if (!user) {
         user = new RegularUserModel({
           email: profile?.email,
@@ -155,7 +155,11 @@ export const regularUserSignOut: PrivateRequestHandler = async (
   next
 ) => {
   res.clearCookie('token', {
-    httpOnly: true,
+    path: '/',
+    domain:
+      process.env.NODE_ENV === 'development'
+        ? process.env.DEV_DOMAIN
+        : process.env.PROD_DOMAIN,
   })
   res.status(200).json({
     data: {},
@@ -169,7 +173,7 @@ export const getRegularUser: PrivateRequestHandler = async (req, res, next) => {
   if (req.userJWT) {
     const user = await RegularUserModel.findById(req.userJWT.id)
     if (user) {
-      res.status(200).json({
+      return res.status(200).json({
         data: user,
       })
     } else {

@@ -43,7 +43,22 @@ var mongoose_1 = __importDefault(require("mongoose"));
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var crypto_1 = __importDefault(require("crypto"));
-var RegularUserSchema = new mongoose_1.default.Schema({
+var UserSchema = new mongoose_1.default.Schema({
+    // Classifier
+    isOwner: {
+        type: Boolean,
+        required: true,
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+    },
+    provider: {
+        type: String,
+        enum: ['TouchWhale', 'Google'],
+        required: true,
+    },
+    // Identity
     email: {
         type: String,
         unique: true,
@@ -53,33 +68,34 @@ var RegularUserSchema = new mongoose_1.default.Schema({
             'Please add a valid email.',
         ],
     },
-    username: {
+    login_name: {
         type: String,
         unique: true,
         sparse: true,
+        match: [/^[^@]+$/, "Login name should not contains the '@' sign."],
     },
-    company_name: {
-        type: String,
-    },
+    // Secret
     password: {
         type: String,
-        required: true,
         minlength: 8,
         select: false,
     },
-    provider: { type: String, enum: ['TouchWhale', 'Google'], required: true },
-    active: { type: Boolean, required: true, default: false },
+    // Editable
+    username: {
+        type: String,
+    },
+    company: {
+        type: String,
+    },
     avatar: {
         type: String,
     },
+    // Token
     forgetPasswordToken: String,
     forgetPasswordExpire: Date,
-    resetEmailToken: String,
-    resetEmailExpire: Date,
-}, 
-// Automatically adding and modifying createdAt and updatedAt by Yuki
-{ timestamps: true });
-RegularUserSchema.pre('save', function (next) {
+    forgetPasswordRecord: [Date],
+}, { timestamps: true });
+UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function () {
         var salt, _a;
         return __generator(this, function (_b) {
@@ -100,12 +116,12 @@ RegularUserSchema.pre('save', function (next) {
         });
     });
 });
-RegularUserSchema.methods.getSignedJWTToken = function () {
+UserSchema.methods.getSignedJWTToken = function () {
     return jsonwebtoken_1.default.sign({ id: this._id }, process.env.JWTSECRET, {
         expiresIn: process.env.JWT_EXPIRE,
     });
 };
-RegularUserSchema.methods.matchPassword = function (enteredPassword) {
+UserSchema.methods.matchPassword = function (enteredPassword) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -115,25 +131,16 @@ RegularUserSchema.methods.matchPassword = function (enteredPassword) {
         });
     });
 };
-RegularUserSchema.methods.getForgetPasswordToken = function () {
+UserSchema.methods.getForgetPasswordToken = function () {
     var token = crypto_1.default.randomBytes(20).toString('hex');
     // Set hash token
     this.forgetPasswordToken = crypto_1.default
         .createHash('sha256')
         .update(token)
         .digest('hex');
-    // Expire in 10 mins
+    // Expire in 1 hour
     this.forgetPasswordExpire = Date.now() + 60 * 60 * 1000;
     return token;
 };
-RegularUserSchema.methods.getResetEmailToken = function () {
-    var token = crypto_1.default.randomBytes(20).toString('hex');
-    // Set hash token
-    this.resetEmailToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
-    // Expire in 10 mins
-    this.resetEmailExpire =
-        Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24;
-    return token;
-};
-var RegularUserModel = mongoose_1.default.model('regular_user', RegularUserSchema);
-exports.default = RegularUserModel;
+var UserModel = mongoose_1.default.model('user', UserSchema);
+exports.default = UserModel;

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { Request, NextFunction, Response } from 'express'
 import { JSONSchemaType } from 'ajv'
-import ajvInstance from '../utils/ajv'
+import ajv from '../utils/ajv'
 import ErrorResponse from '../utils/errorResponse'
 
 export interface AuthJWT {
@@ -32,7 +32,7 @@ const tokenSchema: JSONSchemaType<AuthJWT> = {
   additionalProperties: true,
 }
 
-const tokenValidator = ajvInstance.compile(tokenSchema)
+const tokenValidator = ajv.compile(tokenSchema)
 
 const authMiddleware: PrivateRequestHandler = (req, res, next) => {
   let token = req.cookies.token
@@ -47,9 +47,10 @@ const authMiddleware: PrivateRequestHandler = (req, res, next) => {
     const decode = jwt.verify(token, process.env.JWTSECRET)
     if (tokenValidator(decode)) {
       req.userJWT = decode
-      next()
+      return next()
+    } else {
+      return next(new ErrorResponse('Token is invalid.', 401))
     }
-    return next(new ErrorResponse('Token is invalid.', 401))
   } catch (err) {
     console.error(err)
     return next(new ErrorResponse('Token is invalid.', 401, err))

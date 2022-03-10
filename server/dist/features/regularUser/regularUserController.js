@@ -48,6 +48,7 @@ var regularUserValidate_1 = require("./regularUserValidate");
 var regularUserModel_1 = __importDefault(require("./regularUserModel"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var b2_1 = require("../../utils/AWS/b2");
+var customExpress_1 = require("../../utils/customExpress");
 // @route    POST api/v1/regularUser/signUp
 // @desc     Sign regularUser up
 // @access   Public
@@ -90,7 +91,7 @@ var regularUserSignUp = function (req, res, next) { return __awaiter(void 0, voi
                     })];
             case 3:
                 _a.sent();
-                res.status(200).json({ msg: "Verification code has been send to ".concat(email) });
+                (0, customExpress_1.send)(res, 200, { message: "Verification code has been send to ".concat(email) });
                 return [3 /*break*/, 5];
             case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(regularUserValidate_1.signUpBodyValidator.errors))];
             case 5: return [2 /*return*/];
@@ -210,7 +211,10 @@ exports.OAuthCallback = OAuthCallback;
 var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         res.clearCookie('token', {
-            httpOnly: true,
+            path: '/',
+            domain: process.env.NODE_ENV === 'development'
+                ? process.env.DEV_DOMAIN
+                : process.env.PROD_DOMAIN,
         });
         res.status(200).json({
             data: {},
@@ -232,9 +236,9 @@ var getRegularUser = function (req, res, next) { return __awaiter(void 0, void 0
             case 1:
                 user = _a.sent();
                 if (user) {
-                    res.status(200).json({
-                        data: user,
-                    });
+                    return [2 /*return*/, res.status(200).json({
+                            data: user,
+                        })];
                 }
                 else {
                     return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];

@@ -191,7 +191,7 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 _d.trys.push([2, 12, , 13]);
                 _b = element;
                 if (!_b) return [3 /*break*/, 4];
-                return [4 /*yield*/, check_no_loop_Breadth_First_search(element, item.id)];
+                return [4 /*yield*/, check_no_loop(element, item.id)];
             case 3:
                 _b = (_d.sent());
                 _d.label = 4;
@@ -257,7 +257,7 @@ exports.deleteItem = deleteItem;
 //   })
 //   return max_level_element.level + 1
 // }
-var check_no_loop_Breadth_First_search = function (element, item_id) { return __awaiter(void 0, void 0, void 0, function () {
+var check_no_loop = function (element, item_id) { return __awaiter(void 0, void 0, void 0, function () {
     var elementId_array, searched, _loop_1, state_1;
     return __generator(this, function (_a) {
         switch (_a.label) {

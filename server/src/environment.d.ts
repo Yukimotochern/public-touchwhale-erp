@@ -20,6 +20,8 @@ declare global {
       FRONTEND_DEV_URL: string
       GOOGLE_OAUTH_CLIENT_ID: string
       GOOGLE_OAUTH_CLIENT_SECRET: string
+      DEV_DOMAIN: string
+      PROD_DOMAIN: string
     }
   }
 }

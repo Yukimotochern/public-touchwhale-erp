@@ -51,6 +51,11 @@ export namespace UserType {
 
   export interface SignUpBody extends Required<Pick<Identity, 'email'>> {}
 
+  export interface VerifyBody
+    extends Required<Pick<Identity, 'email'>>,
+      Required<Secret> {}
+  export type VerifyData = ReturnType<Mongoose['getSignedJWTToken']>
+
   export interface SignInBody extends Identity, Required<Secret> {}
 
   export interface UpdateBody extends Editable {}

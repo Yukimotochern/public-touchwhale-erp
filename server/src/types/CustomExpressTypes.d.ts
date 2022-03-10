@@ -1,8 +1,9 @@
 import { Response } from 'express'
 
-export interface ResBody<DataType = any> {
-  data?: DataType
+export interface ResBody<ResponseBodyDataType = any> {
+  data?: ResponseBodyType | undefined
   message?: string
 }
 
-export interface Response<DataType = any> extends Response<ResBody<DataType>> {}
+export interface SuccessResponse<ResponseBodyDataType = any>
+  extends Response<ResBody<DataType>> {}
