@@ -18,7 +18,11 @@ router
 router
     .route('/googleOAuth')
     .get(passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
-router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', { failureRedirect: '/signIn' }), //failureRedirect need to be changed
+router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', {
+    failureRedirect: process.env.NODE_ENV === 'production'
+        ? '/signIn'
+        : "".concat(process.env.FRONTEND_DEV_URL, "signIN"),
+}), //failureRedirect need to be changed
 (0, errorCatcher_1.default)(regularUserController_1.OAuthCallback));
 router.route('/signIn').post((0, errorCatcher_1.default)(regularUserController_1.regularUserSignIn));
 router.route('/signOut').get(authMiddleware_1.default, (0, errorCatcher_1.default)(regularUserController_1.regularUserSignOut));

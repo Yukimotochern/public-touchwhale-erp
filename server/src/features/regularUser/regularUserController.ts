@@ -154,16 +154,20 @@ export const regularUserSignOut: PrivateRequestHandler = async (
   res,
   next
 ) => {
-  res.clearCookie('token', {
-    path: '/',
-    domain:
-      process.env.NODE_ENV === 'development'
-        ? process.env.DEV_DOMAIN
-        : process.env.PROD_DOMAIN,
-  })
-  res.status(200).json({
-    data: {},
-  })
+  console.log(
+    process.env.NODE_ENV === 'development'
+      ? process.env.DEV_DOMAIN
+      : process.env.PROD_DOMAIN
+  )
+  res
+    .clearCookie('token', {
+      path: '/',
+      domain:
+        process.env.NODE_ENV === 'development'
+          ? process.env.DEV_DOMAIN
+          : process.env.PROD_DOMAIN,
+    })
+    .end()
 }
 
 // @route    GET api/v1/regularUser/

@@ -34,7 +34,12 @@ router
   .get(passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 router.route('/googleOAuth/callback').get(
-  passport.authenticate('google', { failureRedirect: '/signIn' }), //failureRedirect need to be changed
+  passport.authenticate('google', {
+    failureRedirect:
+      process.env.NODE_ENV === 'production'
+        ? '/signIn'
+        : `${process.env.FRONTEND_DEV_URL}signIN`,
+  }), //failureRedirect need to be changed
   errorCatcher(OAuthCallback)
 )
 
