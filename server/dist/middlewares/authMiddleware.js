@@ -6,6 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var ajv_1 = __importDefault(require("../utils/ajv"));
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
+// export interface RequestWithRegularUser extends Request {
+//   userJWT?: AuthJWT
+// }
+// export interface PrivateRequestHandler {
+//   (req: RequestWithRegularUser, res: Response, next: NextFunction):
+//     | void
+//     | Promise<void>
+//     | Promise<void | Response<any, Record<string, any>>>
+// }
 var tokenSchema = {
     type: 'object',
     properties: {

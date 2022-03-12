@@ -1,8 +1,5 @@
 import { RequestHandler, Response } from 'express'
-import { GoogleAuthCallbackHandler } from '../../utils/passportOAuth'
-import { PrivateRequestHandler } from '../../middlewares/authMiddleware'
 import crypto from 'crypto'
-
 import { sendEmail } from '../../utils/sendEmail'
 import { avjErrorWrapper } from '../../utils/ajv'
 import ErrorResponse from '../../utils/errorResponse'
@@ -12,11 +9,10 @@ import {
   sixDigitsMessage,
 } from '../../utils/emailMessage'
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
-import { UserValidator } from './userValidators'
-import { ResBody } from '../../types/CustomExpressTypes'
-import { send } from '../../utils/customExpress'
+import { UserIO } from './userHandlerIO'
+import { ResBody } from '../apiTypes'
 import { UserType } from './userTypes'
-import mongoose from 'mongoose'
+import { HandlerIO } from '../apiIO'
 
 const {
   SignUp,
@@ -28,7 +24,7 @@ const {
   ChangePassword,
   ForgetPassword,
   ResetPassword,
-} = UserValidator
+} = UserIO
 
 const UserAvatarKeyPrifix = 'UserAvatar'
 
@@ -40,7 +36,7 @@ export const userSignUp: RequestHandler<{}, ResBody> = async (
   res,
   next
 ) => {
-  if (SignUp.body(req.body)) {
+  if (SignUp.bodyValidator(req.body)) {
     const { email } = req.body
     let user = await UserModel.findOne({ email })
     const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
@@ -68,18 +64,18 @@ export const userSignUp: RequestHandler<{}, ResBody> = async (
       subject: 'Your verificatiom code',
       message: message,
     })
-    return send(res, 200, {
+    return SignUp.send(res, 200, {
       message: `Verification code has been send to ${email}`,
     })
   }
-  next(avjErrorWrapper(SignUp.body.errors))
+  next(avjErrorWrapper(SignUp.bodyValidator.errors))
 }
 
 // @route    POST api/v1/user/signUp/verify
 // @desc     Verify user email
 // @access   Public
 export const userVerify: RequestHandler = async (req, res, next) => {
-  if (Verify.body(req.body)) {
+  if (Verify.bodyValidator(req.body)) {
     const { email, password } = req.body
     const user = await UserModel.findOne({ email }).select('+password')
     if (!user || user.isActive) {
@@ -92,14 +88,14 @@ export const userVerify: RequestHandler = async (req, res, next) => {
 
     return Verify.sendData(res, user.getSignedJWTToken())
   }
-  next(avjErrorWrapper(Verify.body.errors))
+  next(avjErrorWrapper(Verify.bodyValidator.errors))
 }
 
 // @route    POST api/v1/user/signIn
 // @desc     Sign user in
 // @access   Public
 export const userSignIn: RequestHandler = async (req, res, next) => {
-  if (SignIn.body(req.body)) {
+  if (SignIn.bodyValidator(req.body)) {
     const { email, login_name, password } = req.body
     let user = await UserModel.findOne({ login_name, email }).select(
       '+password'
@@ -130,7 +126,7 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
     }
     return sendTokenResponse(user, 200, res)
   }
-  next(avjErrorWrapper(SignIn.body.errors))
+  next(avjErrorWrapper(SignIn.bodyValidator.errors))
 }
 
 // @route    GET api/v1/user/googleOAuth/callback
@@ -212,7 +208,7 @@ export const userSignOut: RequestHandler = async (req, res, next) => {
 // @route    GET api/v1/user/
 // @desc     Get user infomation
 // @access   Private
-export const getUser: PrivateRequestHandler = async (req, res, next) => {
+export const getUser: RequestHandler = async (req, res, next) => {
   if (req.userJWT) {
     const user = await UserModel.findById(req.userJWT.id)
     if (user) {
@@ -228,8 +224,8 @@ export const getUser: PrivateRequestHandler = async (req, res, next) => {
 // @route    PUT api/v1/user/
 // @desc     Update user infomation
 // @access   Private
-export const updateUser: PrivateRequestHandler = async (req, res, next) => {
-  if (Update.body(req.body)) {
+export const updateUser: RequestHandler = async (req, res, next) => {
+  if (Update.bodyValidator(req.body)) {
     if (req.userJWT) {
       const user = await UserModel.findByIdAndUpdate(req.userJWT.id, req.body, {
         new: true,
@@ -243,14 +239,14 @@ export const updateUser: PrivateRequestHandler = async (req, res, next) => {
       return next(new ErrorResponse('Server Error'))
     }
   } else {
-    return next(avjErrorWrapper(Update.body.errors))
+    return next(avjErrorWrapper(Update.bodyValidator.errors))
   }
 }
 
 // @route    GET api/v1/user/avatar
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
-export const userGetAvatarUploadUrl: PrivateRequestHandler = async (
+export const userGetAvatarUploadUrl: RequestHandler = async (
   req,
   res,
   next
@@ -273,7 +269,7 @@ export const userGetAvatarUploadUrl: PrivateRequestHandler = async (
 // @route    DELETE api/v1/user/avatar
 // @desc     DELET User Avatar
 // @access   Private
-export const deleteAvatar: PrivateRequestHandler = async (req, res, next) => {
+export const deleteAvatar: RequestHandler = async (req, res, next) => {
   if (req.userJWT?.id) {
     const { id } = req.userJWT
     const user = await UserModel.findById(id)
@@ -283,7 +279,7 @@ export const deleteAvatar: PrivateRequestHandler = async (req, res, next) => {
     await deleteImage(UserAvatarKeyPrifix, id)
     user.avatar = undefined
     await user.save()
-    return send(res, 200, { message: 'Avatar deleted.' })
+    return HandlerIO.send(res, 200, { message: 'Avatar deleted.' })
   }
   return next(new ErrorResponse('Server Error', 500))
 }
@@ -291,8 +287,8 @@ export const deleteAvatar: PrivateRequestHandler = async (req, res, next) => {
 // @route    PUT api/v1/user/changePassword
 // @desc     Update password
 // @access   Private
-export const changePassword: PrivateRequestHandler = async (req, res, next) => {
-  if (ChangePassword.body(req.body) && req.userJWT) {
+export const changePassword: RequestHandler = async (req, res, next) => {
+  if (ChangePassword.bodyValidator(req.body) && req.userJWT) {
     const user = await UserModel.findById(req.userJWT.id).select('+password')
     if (user && user.isActive && req.body.currentPassword) {
       if (!(await user.matchPassword(req.body.currentPassword))) {
@@ -309,7 +305,7 @@ export const changePassword: PrivateRequestHandler = async (req, res, next) => {
     }
     return next(new ErrorResponse('Server Error'))
   } else {
-    return next(avjErrorWrapper(ChangePassword.body.errors))
+    return next(avjErrorWrapper(ChangePassword.bodyValidator.errors))
   }
 }
 
@@ -317,7 +313,7 @@ export const changePassword: PrivateRequestHandler = async (req, res, next) => {
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {
-  if (ForgetPassword.body(req.body)) {
+  if (ForgetPassword.bodyValidator(req.body)) {
     const user = await UserModel.findOne({ email: req.body.email })
     if (!user) {
       return next(new ErrorResponse('There is no user with that email.', 404))
@@ -337,7 +333,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
         subject: 'Password reset token',
         message,
       })
-      send(res, 200, { message: 'Email sent' })
+      ForgetPassword.send(res, 200, { message: 'Email sent' })
     } catch (err: any) {
       console.error(err)
       user.forgetPasswordToken = undefined
@@ -347,7 +343,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
       return next(new ErrorResponse('Email could not be sent.', 500, err))
     }
   } else {
-    return next(avjErrorWrapper(ForgetPassword.body.errors))
+    return next(avjErrorWrapper(ForgetPassword.bodyValidator.errors))
   }
 }
 
@@ -355,7 +351,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 // @route       PUT /api/v1/user/forgetPassword
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
-  if (ResetPassword.body(req.body)) {
+  if (ResetPassword.bodyValidator(req.body)) {
     // case 1: body only provide token
     // 1. validate the token
     // 2. reset a new token and return
@@ -395,7 +391,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
       )
     }
   } else {
-    return next(avjErrorWrapper(ResetPassword.body.errors))
+    return next(avjErrorWrapper(ResetPassword.bodyValidator.errors))
   }
 }
 
@@ -404,12 +400,12 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
 // @desc     
 // @access   Public
 export const userXXX: RequestHandler = async (req, res, next) => {
-  if (XXX.body(req.body)) {
+  if (XXX.bodyValidator(req.body)) {
     // return send(res, {})
     // or
     // return XXX.sendData(res, {})
   }
-  next(avjErrorWrapper(XXX.body.errors))
+  next(avjErrorWrapper(XXX.bodyValidator.errors))
 }
 */
 
@@ -433,5 +429,5 @@ const sendTokenResponse = (
   res: Response
 ): void => {
   setToken(user, res)
-  return send(res, statusCode)
+  return HandlerIO.send(res, statusCode)
 }

@@ -1,6 +1,5 @@
 import { Model } from 'mongoose'
-import { Response, NextFunction } from 'express'
-import { RequestWithRegularUser } from './authMiddleware'
+import { Request, Response, NextFunction } from 'express'
 
 import ErrorResponse from '../utils/errorResponse'
 
@@ -17,11 +16,7 @@ interface advancedResultQuery {
 
 const advancedResult =
   (model: Model<any>, populateStr?: any) =>
-  async (
-    req: RequestWithRegularUser,
-    res: advancedResultResponse,
-    next: NextFunction
-  ) => {
+  async (req: Request, res: advancedResultResponse, next: NextFunction) => {
     if (!req.userJWT?.id) {
       return next(new ErrorResponse('Invalid credentials.', 401))
     }

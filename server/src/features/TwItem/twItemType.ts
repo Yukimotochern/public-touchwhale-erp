@@ -1,7 +1,6 @@
 import { Types, Document } from 'mongoose'
-import { RequestWithRegularUser } from '../../middlewares/authMiddleware'
 import { Request, NextFunction, Response } from 'express'
-import { SuccessResponse } from '../../types/CustomExpressTypes'
+import { ApiRes } from '../apiTypes'
 
 // TwItem Model
 export interface TwItemType {
@@ -26,7 +25,7 @@ export interface ElementObjectType {
   id: string
 }
 
-export interface AddItemRequestType extends RequestWithRegularUser {
+export interface AddItemRequestType extends Request {
   name: string
   unit: string
   custom_id: string
@@ -35,12 +34,16 @@ export interface AddItemRequestType extends RequestWithRegularUser {
   element: Array<ElementObjectType>
 }
 
+declare global {
+  namespace Express {
+    interface Request {}
+    interface Response {}
+    interface Application {}
+  }
+}
+
 export interface AddItemRequestHandler {
-  (
-    req: RequestWithRegularUser,
-    res: SuccessResponse<Object>,
-    next: NextFunction
-  ): void | Promise<void>
+  (req: Request, res: ApiRes<Object>, next: NextFunction): void | Promise<void>
 }
 
 // For AJV
@@ -78,7 +81,7 @@ export interface itemOwnerResponse extends Response {
 // For itemOwnerMiddleware function type
 export interface itemOwnerResponseHandler {
   (
-    req: RequestWithRegularUser,
+    req: Request,
     res: itemOwnerResponse,
     next: NextFunction
   ): void | Promise<void>

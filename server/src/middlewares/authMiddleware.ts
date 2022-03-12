@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { Request, NextFunction, Response } from 'express'
+import { RequestHandler } from 'express'
 import { JSONSchemaType } from 'ajv'
 import ajv from '../utils/ajv'
 import ErrorResponse from '../utils/errorResponse'
@@ -10,16 +10,26 @@ export interface AuthJWT {
   exp: number
 }
 
-export interface RequestWithRegularUser extends Request {
-  userJWT?: AuthJWT
+declare global {
+  namespace Express {
+    interface Request {
+      userJWT?: AuthJWT
+    }
+    interface Response {}
+    interface Application {}
+  }
 }
 
-export interface PrivateRequestHandler {
-  (req: RequestWithRegularUser, res: Response, next: NextFunction):
-    | void
-    | Promise<void>
-    | Promise<void | Response<any, Record<string, any>>>
-}
+// export interface RequestWithRegularUser extends Request {
+//   userJWT?: AuthJWT
+// }
+
+// export interface PrivateRequestHandler {
+//   (req: RequestWithRegularUser, res: Response, next: NextFunction):
+//     | void
+//     | Promise<void>
+//     | Promise<void | Response<any, Record<string, any>>>
+// }
 
 const tokenSchema: JSONSchemaType<AuthJWT> = {
   type: 'object',
@@ -34,7 +44,7 @@ const tokenSchema: JSONSchemaType<AuthJWT> = {
 
 const tokenValidator = ajv.compile(tokenSchema)
 
-const authMiddleware: PrivateRequestHandler = (req, res, next) => {
+const authMiddleware: RequestHandler = (req, res, next) => {
   let token = req.body.token
 
   if (!token) {

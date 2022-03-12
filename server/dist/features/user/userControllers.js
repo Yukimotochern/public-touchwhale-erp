@@ -47,9 +47,9 @@ var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var userModel_1 = __importDefault(require("./userModel"));
 var emailMessage_1 = require("../../utils/emailMessage");
 var b2_1 = require("../../utils/AWS/b2");
-var userValidators_1 = require("./userValidators");
-var customExpress_1 = require("../../utils/customExpress");
-var SignUp = userValidators_1.UserValidator.SignUp, Verify = userValidators_1.UserValidator.Verify, SignIn = userValidators_1.UserValidator.SignIn, GetUser = userValidators_1.UserValidator.GetUser, Update = userValidators_1.UserValidator.Update, GetAvatarUploadUrl = userValidators_1.UserValidator.GetAvatarUploadUrl, ChangePassword = userValidators_1.UserValidator.ChangePassword, ForgetPassword = userValidators_1.UserValidator.ForgetPassword, ResetPassword = userValidators_1.UserValidator.ResetPassword;
+var userHandlerIO_1 = require("./userHandlerIO");
+var apiIO_1 = require("../apiIO");
+var SignUp = userHandlerIO_1.UserIO.SignUp, Verify = userHandlerIO_1.UserIO.Verify, SignIn = userHandlerIO_1.UserIO.SignIn, GetUser = userHandlerIO_1.UserIO.GetUser, Update = userHandlerIO_1.UserIO.Update, GetAvatarUploadUrl = userHandlerIO_1.UserIO.GetAvatarUploadUrl, ChangePassword = userHandlerIO_1.UserIO.ChangePassword, ForgetPassword = userHandlerIO_1.UserIO.ForgetPassword, ResetPassword = userHandlerIO_1.UserIO.ResetPassword;
 var UserAvatarKeyPrifix = 'UserAvatar';
 // @route    POST api/v1/user/signUp
 // @desc     Sign user up
@@ -59,7 +59,7 @@ var userSignUp = function (req, res, next) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!SignUp.body(req.body)) return [3 /*break*/, 4];
+                if (!SignUp.bodyValidator(req.body)) return [3 /*break*/, 4];
                 email = req.body.email;
                 return [4 /*yield*/, userModel_1.default.findOne({ email: email })];
             case 1:
@@ -95,11 +95,11 @@ var userSignUp = function (req, res, next) { return __awaiter(void 0, void 0, vo
                     })];
             case 3:
                 _a.sent();
-                return [2 /*return*/, (0, customExpress_1.send)(res, 200, {
+                return [2 /*return*/, SignUp.send(res, 200, {
                         message: "Verification code has been send to ".concat(email),
                     })];
             case 4:
-                next((0, ajv_1.avjErrorWrapper)(SignUp.body.errors));
+                next((0, ajv_1.avjErrorWrapper)(SignUp.bodyValidator.errors));
                 return [2 /*return*/];
         }
     });
@@ -113,7 +113,7 @@ var userVerify = function (req, res, next) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                if (!Verify.body(req.body)) return [3 /*break*/, 3];
+                if (!Verify.bodyValidator(req.body)) return [3 /*break*/, 3];
                 _a = req.body, email = _a.email, password = _a.password;
                 return [4 /*yield*/, userModel_1.default.findOne({ email: email }).select('+password')];
             case 1:
@@ -129,7 +129,7 @@ var userVerify = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 }
                 return [2 /*return*/, Verify.sendData(res, user.getSignedJWTToken())];
             case 3:
-                next((0, ajv_1.avjErrorWrapper)(Verify.body.errors));
+                next((0, ajv_1.avjErrorWrapper)(Verify.bodyValidator.errors));
                 return [2 /*return*/];
         }
     });
@@ -143,7 +143,7 @@ var userSignIn = function (req, res, next) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                if (!SignIn.body(req.body)) return [3 /*break*/, 3];
+                if (!SignIn.bodyValidator(req.body)) return [3 /*break*/, 3];
                 _a = req.body, email = _a.email, login_name = _a.login_name, password = _a.password;
                 return [4 /*yield*/, userModel_1.default.findOne({ login_name: login_name, email: email }).select('+password')];
             case 1:
@@ -165,7 +165,7 @@ var userSignIn = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 }
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
             case 3:
-                next((0, ajv_1.avjErrorWrapper)(SignIn.body.errors));
+                next((0, ajv_1.avjErrorWrapper)(SignIn.bodyValidator.errors));
                 return [2 /*return*/];
         }
     });
@@ -291,7 +291,7 @@ var updateUser = function (req, res, next) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!Update.body(req.body)) return [3 /*break*/, 4];
+                if (!Update.bodyValidator(req.body)) return [3 /*break*/, 4];
                 if (!req.userJWT) return [3 /*break*/, 2];
                 return [4 /*yield*/, userModel_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
                         new: true,
@@ -305,7 +305,7 @@ var updateUser = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
             case 2: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
             case 3: return [3 /*break*/, 5];
-            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(Update.body.errors))];
+            case 4: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(Update.bodyValidator.errors))];
             case 5: return [2 /*return*/];
         }
     });
@@ -366,7 +366,7 @@ var deleteAvatar = function (req, res, next) { return __awaiter(void 0, void 0, 
                 return [4 /*yield*/, user.save()];
             case 3:
                 _b.sent();
-                return [2 /*return*/, (0, customExpress_1.send)(res, 200, { message: 'Avatar deleted.' })];
+                return [2 /*return*/, apiIO_1.HandlerIO.send(res, 200, { message: 'Avatar deleted.' })];
             case 4: return [2 /*return*/, next(new errorResponse_1.default('Server Error', 500))];
         }
     });
@@ -380,7 +380,7 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(ChangePassword.body(req.body) && req.userJWT)) return [3 /*break*/, 7];
+                if (!(ChangePassword.bodyValidator(req.body) && req.userJWT)) return [3 /*break*/, 7];
                 return [4 /*yield*/, userModel_1.default.findById(req.userJWT.id).select('+password')];
             case 1:
                 user = _a.sent();
@@ -404,7 +404,7 @@ var changePassword = function (req, res, next) { return __awaiter(void 0, void 0
                 _a.sent();
                 return [2 /*return*/, sendTokenResponse(user, 200, res)];
             case 6: return [2 /*return*/, next(new errorResponse_1.default('Server Error'))];
-            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ChangePassword.body.errors))];
+            case 7: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ChangePassword.bodyValidator.errors))];
         }
     });
 }); };
@@ -417,7 +417,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!ForgetPassword.body(req.body)) return [3 /*break*/, 8];
+                if (!ForgetPassword.bodyValidator(req.body)) return [3 /*break*/, 8];
                 return [4 /*yield*/, userModel_1.default.findOne({ email: req.body.email })];
             case 1:
                 user = _a.sent();
@@ -446,7 +446,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                     })];
             case 4:
                 _a.sent();
-                (0, customExpress_1.send)(res, 200, { message: 'Email sent' });
+                ForgetPassword.send(res, 200, { message: 'Email sent' });
                 return [3 /*break*/, 7];
             case 5:
                 err_2 = _a.sent();
@@ -458,7 +458,7 @@ var forgetPassword = function (req, res, next) { return __awaiter(void 0, void 0
                 _a.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Email could not be sent.', 500, err_2))];
             case 7: return [3 /*break*/, 9];
-            case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ForgetPassword.body.errors))];
+            case 8: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ForgetPassword.bodyValidator.errors))];
             case 9: return [2 /*return*/];
         }
     });
@@ -472,7 +472,7 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!ResetPassword.body(req.body)) return [3 /*break*/, 6];
+                if (!ResetPassword.bodyValidator(req.body)) return [3 /*break*/, 6];
                 forgetPasswordToken = crypto_1.default
                     .createHash('sha256')
                     .update(req.body.token)
@@ -501,7 +501,7 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
                 _a.sent();
                 return [2 /*return*/, ResetPassword.sendData(res, { token: token }, { message: 'Please use this new token to reset the password.' })];
             case 5: return [3 /*break*/, 7];
-            case 6: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ResetPassword.body.errors))];
+            case 6: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(ResetPassword.bodyValidator.errors))];
             case 7: return [2 /*return*/];
         }
     });
@@ -512,12 +512,12 @@ exports.resetPassword = resetPassword;
 // @desc
 // @access   Public
 export const userXXX: RequestHandler = async (req, res, next) => {
-  if (XXX.body(req.body)) {
+  if (XXX.bodyValidator(req.body)) {
     // return send(res, {})
     // or
     // return XXX.sendData(res, {})
   }
-  next(avjErrorWrapper(XXX.body.errors))
+  next(avjErrorWrapper(XXX.bodyValidator.errors))
 }
 */
 // Helper functions
@@ -532,5 +532,5 @@ var setToken = function (user, res) {
 };
 var sendTokenResponse = function (user, statusCode, res) {
     setToken(user, res);
-    return (0, customExpress_1.send)(res, statusCode);
+    return apiIO_1.HandlerIO.send(res, statusCode);
 };

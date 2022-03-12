@@ -56,37 +56,54 @@ export namespace UserType {
 
   export interface SubmitEmail extends Required<Pick<Identity, 'email'>> {}
 
-  export interface SignUpBody extends SubmitEmail {}
-
-  export interface VerifyBody
-    extends Required<Pick<Identity, 'email'>>,
-      Required<Secret> {}
-  export type VerifyData = ReturnType<Mongoose['getSignedJWTToken']>
-
-  export interface SignInBody extends Identity, Required<Secret> {}
-
-  export interface UpdateBody extends Editable {}
-  export interface UpdateData extends PlainUser {}
-
-  export interface GetUserData extends PlainUser {}
-
-  export interface GetAvatarUploadUrlData
-    extends Required<Pick<Editable, 'avatar'>> {
-    uploadUrl: string
+  export namespace SignUp {
+    export interface Body extends SubmitEmail {}
   }
 
-  export interface ChangePasswordBody {
-    currentPassword?: string
-    newPassword: string
-    token?: string
+  export namespace Verify {
+    export interface Body
+      extends Required<Pick<Identity, 'email'>>,
+        Required<Secret> {}
+    export type Data = ReturnType<Mongoose['getSignedJWTToken']>
   }
 
-  export interface ForgetPasswordBody extends SubmitEmail {}
-
-  export interface ResetPasswordBody extends Partial<Secret> {
-    token: string
+  export namespace SignIn {
+    export interface Body extends Identity, Required<Secret> {}
   }
-  export interface ResetPasswordData {
-    token?: string
+
+  export namespace Update {
+    export interface Body extends Editable {}
+    export interface Data extends PlainUser {}
+  }
+
+  export namespace GetUser {
+    export interface Data extends PlainUser {}
+  }
+
+  export namespace GetAvatarUploadUrl {
+    export interface Data extends Required<Pick<Editable, 'avatar'>> {
+      uploadUrl: string
+    }
+  }
+
+  export namespace ChangePassword {
+    export interface Body {
+      currentPassword?: string
+      newPassword: string
+      token?: string
+    }
+  }
+
+  export namespace ForgetPassword {
+    export interface Body extends SubmitEmail {}
+  }
+
+  export namespace ResetPassword {
+    export interface Body extends Partial<Secret> {
+      token: string
+    }
+    export interface Data {
+      token?: string
+    }
   }
 }
