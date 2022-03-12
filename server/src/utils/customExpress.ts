@@ -1,14 +1,14 @@
 import { Response } from 'express'
 import { ResBody } from '../types/CustomExpressTypes'
 import ajv from './ajv'
-import { JSONSchemaType } from 'ajv'
+import { JSONSchemaType, ValidateFunction } from 'ajv'
 import ErrorResponse from './errorResponse'
 
 export interface ResBodyWithOutData extends Omit<ResBody, 'data'> {}
 
 // send data function creator
 export function sendDataCreator<DataType>(
-  validator?: (data: any) => data is DataType
+  validator?: ValidateFunction<DataType>
 ) {
   return function (
     res: Response,
@@ -20,10 +20,15 @@ export function sendDataCreator<DataType>(
       data,
       ...extra,
     }
+
     if (process.env.NODE_ENV === 'development') {
       if (resBodyValidator(resBody)) {
         if (validator) {
-          if (!validator(data)) {
+          // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+          let clientObtainedThing = JSON.parse(JSON.stringify(data))
+          if (!validator(clientObtainedThing)) {
+            console.log(clientObtainedThing)
+            console.log(validator.errors)
             throw new ErrorResponse('Unexpected response body from server.')
           }
         }

@@ -1,6 +1,4 @@
-import { InstanceIdentity } from 'aws-sdk/clients/datapipeline'
-import { GeneratedFraudsterId } from 'aws-sdk/clients/voiceid'
-
+import { MongooseStatics } from '../../utils/mongodb'
 export namespace UserType {
   export interface Classifier {
     isOwner: boolean
@@ -24,32 +22,41 @@ export namespace UserType {
   }
 
   export interface Stamp {
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date | string
+    updatedAt: Date | string
   }
 
   export interface Token {
     forgetPasswordToken?: string
-    forgetPasswordExpire?: Date
-    forgetPasswordRecord: Date[]
+    forgetPasswordExpire?: Date | string
   }
 
-  export interface MongooseMethod {
+  export interface MongooseMethods {
     matchPassword: (password: string) => Promise<boolean>
     getForgetPasswordToken: () => string
     getSignedJWTToken: () => string
   }
 
+  export interface PlainUser
+    extends Classifier,
+      Identity,
+      Editable,
+      Stamp,
+      MongooseStatics {}
+
   export interface Mongoose
-    extends Editable,
-      Classifier,
+    extends Classifier,
       Identity,
       Secret,
-      MongooseMethod,
+      Editable,
       Stamp,
-      Token {}
+      Token,
+      MongooseMethods,
+      MongooseStatics {}
 
-  export interface SignUpBody extends Required<Pick<Identity, 'email'>> {}
+  export interface SubmitEmail extends Required<Pick<Identity, 'email'>> {}
+
+  export interface SignUpBody extends SubmitEmail {}
 
   export interface VerifyBody
     extends Required<Pick<Identity, 'email'>>,
@@ -59,8 +66,27 @@ export namespace UserType {
   export interface SignInBody extends Identity, Required<Secret> {}
 
   export interface UpdateBody extends Editable {}
+  export interface UpdateData extends PlainUser {}
 
-  export interface ForgetPasswordBody extends SignUpBody {}
+  export interface GetUserData extends PlainUser {}
 
-  export interface ResetPasswordBody extends Secret {}
+  export interface GetAvatarUploadUrlData
+    extends Required<Pick<Editable, 'avatar'>> {
+    uploadUrl: string
+  }
+
+  export interface ChangePasswordBody {
+    currentPassword?: string
+    newPassword: string
+    token?: string
+  }
+
+  export interface ForgetPasswordBody extends SubmitEmail {}
+
+  export interface ResetPasswordBody extends Partial<Secret> {
+    token: string
+  }
+  export interface ResetPasswordData {
+    token?: string
+  }
 }

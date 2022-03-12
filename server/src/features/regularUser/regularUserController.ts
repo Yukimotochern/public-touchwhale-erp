@@ -154,11 +154,6 @@ export const regularUserSignOut: PrivateRequestHandler = async (
   res,
   next
 ) => {
-  console.log(
-    process.env.NODE_ENV === 'development'
-      ? process.env.DEV_DOMAIN
-      : process.env.PROD_DOMAIN
-  )
   res
     .clearCookie('token', {
       path: '/',
@@ -166,6 +161,7 @@ export const regularUserSignOut: PrivateRequestHandler = async (
         process.env.NODE_ENV === 'development'
           ? process.env.DEV_DOMAIN
           : process.env.PROD_DOMAIN,
+      httpOnly: true,
     })
     .end()
 }
@@ -380,3 +376,27 @@ const sendTokenResponse = (
   const token = setToken(user, res)
   res.status(statusCode).json({ token })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

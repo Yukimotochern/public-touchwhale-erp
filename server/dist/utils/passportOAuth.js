@@ -46,7 +46,7 @@ var passportOAuth = function (passport) {
         clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
         callbackURL: "".concat(process.env.NODE_ENV === 'development'
             ? process.env.BACKEND_DEV_URL
-            : process.env.BACKEND_PROD_URL, "/api/v1/regularUser/googleOAuth/callback"),
+            : process.env.BACKEND_PROD_URL, "/api/v1/user/googleOAuth/callback"),
     }, function (accessToken, refreshToken, profile, cb) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

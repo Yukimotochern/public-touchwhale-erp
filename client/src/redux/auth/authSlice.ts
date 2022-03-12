@@ -16,20 +16,17 @@ const initialState: AppAuthState = {
   loading: true,
 }
 
-export const getRegularUser = createAsyncThunk(
-  'auth/getRegularUser',
-  async () => {
-    const { data } = await api.get('/regularUser/')
-    const resData = data.data
-    if (getRegularUserResValidator(resData)) {
-      return resData
-    } else {
-      console.log(resData)
-      message.error('Something Went Wrong!')
-      throw Error('Invalid Response From Server')
-    }
+export const getRegularUser = createAsyncThunk('auth/getUser', async () => {
+  const { data } = await api.get('/user/')
+  const resData = data.data
+  if (getRegularUserResValidator(resData)) {
+    return resData
+  } else {
+    console.log(resData)
+    message.error('Something Went Wrong!')
+    throw Error('Invalid Response From Server')
   }
-)
+})
 
 export const authSlice = createSlice({
   name: 'auth',

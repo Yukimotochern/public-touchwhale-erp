@@ -10,7 +10,7 @@ import { AvatarUpload } from './AvatarUpload'
 export const ProfilePage = () => {
   const user = useAppSelector((s) => s.auth.user)
   if (user) {
-    const { username, avatar, email, company_name, createdAt, provider } = user
+    const { username, avatar, email, company, createdAt, provider } = user
     return (
       <>
         <Row gutter={8} style={{ marginTop: 10 }}>
@@ -93,8 +93,8 @@ export const ProfilePage = () => {
             type='edit'
           />
           <ProfileBlock
-            initialValue={company_name}
-            fieldName='company_name'
+            initialValue={company}
+            fieldName='company'
             title='Company Name'
             type='edit'
           />

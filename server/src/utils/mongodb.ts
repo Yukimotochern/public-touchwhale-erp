@@ -21,4 +21,15 @@ const connectDB = async () => {
   }
 }
 
+export interface MongooseStatics {
+  _id: string
+  __v: number
+}
+export const MongooseStaticsJSONSchema: {
+  _id: { type: 'string' }
+  __v: { type: 'number' }
+} = {
+  _id: { type: 'string' },
+  __v: { type: 'number' },
+}
 export default connectDB

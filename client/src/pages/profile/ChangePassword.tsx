@@ -17,7 +17,7 @@ export const ChangePassword = ({ edittable }: ChangePasswordProp) => {
     try {
       const currentPassword = form.getFieldValue('currentPassword')
       const newPassword = form.getFieldValue('newPassword')
-      await api.put('/regularUser/changePassword', {
+      await api.put('/user/changePassword', {
         currentPassword,
         newPassword,
       })

@@ -210,15 +210,13 @@ exports.OAuthCallback = OAuthCallback;
 // @access   Private
 var regularUserSignOut = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        console.log(process.env.NODE_ENV === 'development'
-            ? process.env.DEV_DOMAIN
-            : process.env.PROD_DOMAIN);
         res
             .clearCookie('token', {
             path: '/',
             domain: process.env.NODE_ENV === 'development'
                 ? process.env.DEV_DOMAIN
                 : process.env.PROD_DOMAIN,
+            httpOnly: true,
         })
             .end();
         return [2 /*return*/];

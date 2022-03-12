@@ -91,9 +91,8 @@ var UserSchema = new mongoose_1.default.Schema({
         type: String,
     },
     // Token
-    forgetPasswordToken: String,
-    forgetPasswordExpire: Date,
-    forgetPasswordRecord: [Date],
+    forgetPasswordToken: { type: String, select: false },
+    forgetPasswordExpire: { type: Date, select: false },
 }, { timestamps: true });
 UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function () {
@@ -132,7 +131,7 @@ UserSchema.methods.matchPassword = function (enteredPassword) {
     });
 };
 UserSchema.methods.getForgetPasswordToken = function () {
-    var token = crypto_1.default.randomBytes(20).toString('hex');
+    var token = crypto_1.default.randomBytes(20).toString('hex') + String(this.email);
     // Set hash token
     this.forgetPasswordToken = crypto_1.default
         .createHash('sha256')

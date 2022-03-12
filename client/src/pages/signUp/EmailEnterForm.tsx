@@ -20,7 +20,7 @@ export const EmailEnterForm = ({
       email,
     }))
     try {
-      await api.post('/regularUser/signUp', {
+      await api.post('/user/signUp', {
         email,
       })
       setSignUpProcessState((state) => ({

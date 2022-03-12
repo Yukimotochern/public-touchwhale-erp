@@ -27,7 +27,7 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
   }: RcCustomRequestOptions) => {
     setAvatarLoading(true)
     try {
-      const { data } = await api.get('/regularUser/avatar')
+      const { data } = await api.get('/user/avatar')
       let file = fileOrigin as UploadFile
       let fileType = 'image/jpeg'
       if (file.type) {
@@ -52,13 +52,13 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
     } catch (error) {
       setAvatarLoading(false)
       console.error(error)
-      await api.delete('/regularUser/avatar')
+      await api.delete('/user/avatar')
     }
   }
   const onDeleteAvatar = async () => {
     try {
       setAvatarLoading(true)
-      await api.delete('/regularUser/avatar')
+      await api.delete('/user/avatar')
       dispatch(authSlice.actions.updateRegularUserAvatar(''))
       setAvatarLoading(false)
     } catch (error) {

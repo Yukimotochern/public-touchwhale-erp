@@ -34,10 +34,10 @@ const RegularUserSchema = new mongoose.Schema<RegularUserType.Mongoose>(
     avatar: {
       type: String,
     },
-    forgetPasswordToken: String,
-    forgetPasswordExpire: Date,
-    resetEmailToken: String,
-    resetEmailExpire: Date,
+    forgetPasswordToken: { type: String, select: false },
+    forgetPasswordExpire: { type: Date, select: false },
+    resetEmailToken: { type: String, select: false },
+    resetEmailExpire: { type: Date, select: false },
   },
   // Automatically adding and modifying createdAt and updatedAt by Yuki
   { timestamps: true }

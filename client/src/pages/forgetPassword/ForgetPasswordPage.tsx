@@ -14,7 +14,7 @@ export const ForgetPassword = () => {
     try {
       setEmailFormLoading(true)
       const email = sendEmailForm.getFieldValue('email')
-      const { data } = await api.post('/regularUser/forgetPassword', { email })
+      const { data } = await api.post('/user/forgetPassword', { email })
 
       setEmailFormLoading(false)
     } catch (error) {

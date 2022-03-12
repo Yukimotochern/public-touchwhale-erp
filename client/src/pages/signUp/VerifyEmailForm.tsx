@@ -34,7 +34,7 @@ export const VerifyEmailForm = ({
     }))
     restart()
     try {
-      await api.post('/regularUser/signUp', {
+      await api.post('/user/signUp', {
         email,
       })
       setSignUpProcessState((state) => ({
@@ -78,7 +78,7 @@ export const VerifyEmailForm = ({
     }))
     try {
       const password = form.getFieldValue('verify')
-      const { data } = await api.post('/regularUser/signUp/verify', {
+      const { data } = await api.post('/user/signUp/verify', {
         email,
         password,
       })

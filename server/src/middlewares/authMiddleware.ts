@@ -35,10 +35,10 @@ const tokenSchema: JSONSchemaType<AuthJWT> = {
 const tokenValidator = ajv.compile(tokenSchema)
 
 const authMiddleware: PrivateRequestHandler = (req, res, next) => {
-  let token = req.cookies.token
+  let token = req.body.token
 
   if (!token) {
-    token = req.body.token
+    token = req.cookies.token
   }
   if (!token) {
     return next(new ErrorResponse('No token, authorization denied.', 401))
@@ -52,7 +52,7 @@ const authMiddleware: PrivateRequestHandler = (req, res, next) => {
       return next(new ErrorResponse('Token is invalid.', 401))
     }
   } catch (err) {
-    console.error(err)
+    console.log('Token is invalid.')
     return next(new ErrorResponse('Token is invalid.', 401, err))
   }
 }

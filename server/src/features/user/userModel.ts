@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import bcrtpt from 'bcryptjs'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { UserType } from './userTypes'
 
@@ -53,9 +53,8 @@ const UserSchema = new mongoose.Schema<UserType.Mongoose>(
       type: String,
     },
     // Token
-    forgetPasswordToken: String,
-    forgetPasswordExpire: Date,
-    forgetPasswordRecord: [Date],
+    forgetPasswordToken: { type: String, select: false },
+    forgetPasswordExpire: { type: Date, select: false },
   },
   { timestamps: true }
 )
@@ -80,7 +79,7 @@ UserSchema.methods.matchPassword = async function (enteredPassword: string) {
 }
 
 UserSchema.methods.getForgetPasswordToken = function () {
-  const token = crypto.randomBytes(20).toString('hex')
+  const token = crypto.randomBytes(20).toString('hex') + String(this.email)
 
   // Set hash token
   this.forgetPasswordToken = crypto

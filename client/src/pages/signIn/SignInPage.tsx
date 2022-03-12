@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { Form, Input, Button, Divider, Typography } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Form, Input, Button, Divider, Typography, notification } from 'antd'
 import styles from './SignInPage.module.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../utils/api'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
@@ -9,13 +9,29 @@ import { getRegularUser } from '../../redux/auth/authSlice'
 
 export const SignInPage = () => {
   const [form] = Form.useForm()
+  const { hash: message } = useLocation()
+  useEffect(() => {
+    if (message) {
+      notification.error({
+        placement: 'topLeft',
+        message: decodeURI(message).replace('#', ''),
+        style: {
+          position: 'fixed',
+          left: '50%',
+          transform: 'translate(-50%, 0%)',
+        },
+        duration: 6,
+      })
+    }
+  }, [message])
+
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const onFinish = async () => {
     setLoading(true)
     try {
-      await api.post('/regularUser/signIn', {
+      await api.post('/user/signIn', {
         email: form.getFieldValue('email'),
         password: form.getFieldValue('password'),
       })
@@ -43,7 +59,7 @@ export const SignInPage = () => {
         icon={<img src='/google_logo.png' alt='Google Logo' />}
         disabled={loading}
         onClick={() => {
-          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/regularUser/googleOAuth`
+          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/googleOAuth`
         }}
       >
         Log in with Google

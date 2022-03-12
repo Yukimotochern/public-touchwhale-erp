@@ -18,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ErrorResponse = /** @class */ (function (_super) {
     __extends(ErrorResponse, _super);
     function ErrorResponse(msg, statusCode, errorData, messageArray) {
+        var _newTarget = this.constructor;
         if (msg === void 0) { msg = 'Unspecified Error Message'; }
         if (statusCode === void 0) { statusCode = 500; }
         var _this = _super.call(this, msg) || this;
@@ -25,8 +26,9 @@ var ErrorResponse = /** @class */ (function (_super) {
         _this.errorData = errorData;
         _this.messageArray = messageArray;
         _this.name = 'CustomError';
+        // restore prototype chain
+        Object.setPrototypeOf(_this, _newTarget.prototype);
         return _this;
-        // Object.setPrototypeOf(this, ErrorResponse.prototype)
     }
     return ErrorResponse;
 }(Error));

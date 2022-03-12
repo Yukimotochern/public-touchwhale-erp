@@ -29,7 +29,7 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
       // Request to update user
       const {
         data: { data },
-      } = await api.put('/regularUser', {
+      } = await api.put('/user', {
         [fieldName]: value,
       })
       setLoading(false)

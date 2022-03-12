@@ -12,7 +12,7 @@ var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var passport_1 = __importDefault(require("passport"));
 var cors_1 = __importDefault(require("cors"));
 // routes
-var api_1 = __importDefault(require("./features/api"));
+var apiRoutes_1 = __importDefault(require("./features/apiRoutes"));
 var mongodb_1 = __importDefault(require("./utils/mongodb"));
 require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");
@@ -44,7 +44,7 @@ passport_1.default.deserializeUser(function (user, done) {
 // Enable CORS
 app.use((0, cors_1.default)());
 // Mount API
-app.use('/api/v1', api_1.default);
+app.use('/api/v1', apiRoutes_1.default);
 app.use(errorMiddleware_1.errorHandler);
 var PORT = process.env.SERVER_PORT || 5000;
 var server = app.listen(PORT, function () {

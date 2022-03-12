@@ -19,7 +19,7 @@ export const PasswordSetUpForm = ({
       loading: true,
     }))
     try {
-      await api.put('/regularUser/changePassword', {
+      await api.put('/user/changePassword', {
         currentPassword: password,
         newPassword: form.getFieldValue('password'),
         token,

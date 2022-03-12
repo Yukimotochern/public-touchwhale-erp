@@ -4,7 +4,7 @@ import ajv from '../utils/ajv'
 export interface IRegularUserRes {
   email: string
   avatar?: string
-  company_name?: string
+  company?: string
   username?: string
   createdAt?: string
   updatedAt?: string
@@ -15,7 +15,7 @@ const RegularUserResSchema: JSONSchemaType<IRegularUserRes> = {
   properties: {
     email: { type: 'string', format: 'email' },
     avatar: { type: 'string', nullable: true },
-    company_name: { type: 'string', nullable: true },
+    company: { type: 'string', nullable: true },
     username: { type: 'string', nullable: true },
     updatedAt: { type: 'string', nullable: true },
     createdAt: { type: 'string', nullable: true },

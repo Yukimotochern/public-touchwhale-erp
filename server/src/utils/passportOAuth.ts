@@ -22,7 +22,7 @@ const passportOAuth = (passport: any) => {
           process.env.NODE_ENV === 'development'
             ? process.env.BACKEND_DEV_URL
             : process.env.BACKEND_PROD_URL
-        }/api/v1/regularUser/googleOAuth/callback`,
+        }/api/v1/user/googleOAuth/callback`,
       },
       async function (accessToken, refreshToken, profile, cb) {
         cb(null, profile)

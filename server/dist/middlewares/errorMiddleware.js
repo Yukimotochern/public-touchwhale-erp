@@ -9,7 +9,9 @@ var mongoose_1 = require("mongoose");
 mongoose_1.mongo.MongoError;
 var errorHandler = function (err, req, res, next) {
     // Log to console for dev
-    console.error(err);
+    if (!(err instanceof errorResponse_1.default) || err.statusCode !== 401) {
+        // Don't log 401
+    }
     var error = new errorResponse_1.default(err.message || 'Server Error', err.statusCode || 500, err);
     if (err instanceof errorResponse_1.default) {
         error = err;

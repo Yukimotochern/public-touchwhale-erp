@@ -26,7 +26,11 @@ function sendDataCreator(validator) {
         if (process.env.NODE_ENV === 'development') {
             if ((0, exports.resBodyValidator)(resBody)) {
                 if (validator) {
-                    if (!validator(data)) {
+                    // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+                    var clientObtainedThing = JSON.parse(JSON.stringify(data));
+                    if (!validator(clientObtainedThing)) {
+                        console.log(clientObtainedThing);
+                        console.log(validator.errors);
                         throw new errorResponse_1.default('Unexpected response body from server.');
                     }
                 }

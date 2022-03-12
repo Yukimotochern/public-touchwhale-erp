@@ -18,9 +18,9 @@ var tokenSchema = {
 };
 var tokenValidator = ajv_1.default.compile(tokenSchema);
 var authMiddleware = function (req, res, next) {
-    var token = req.cookies.token;
+    var token = req.body.token;
     if (!token) {
-        token = req.body.token;
+        token = req.cookies.token;
     }
     if (!token) {
         return next(new errorResponse_1.default('No token, authorization denied.', 401));
@@ -36,7 +36,7 @@ var authMiddleware = function (req, res, next) {
         }
     }
     catch (err) {
-        console.error(err);
+        console.log('Token is invalid.');
         return next(new errorResponse_1.default('Token is invalid.', 401, err));
     }
 };
