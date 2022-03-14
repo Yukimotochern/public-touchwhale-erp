@@ -1,6 +1,9 @@
 import { JSONSchemaType } from 'ajv'
 import { UserType } from './userTypes'
-import { MongooseStaticsJSONSchema } from '../../utils/mongodb'
+import {
+  MongooseStaticsJSONSchema,
+  MongooseStampsJSONSchema,
+} from '../../utils/mongodb'
 import { HandlerIO } from '../apiIO'
 
 /*
@@ -16,7 +19,9 @@ export namespace UserIO {
     type: 'object',
     properties: {
       ...MongooseStaticsJSONSchema,
+      ...MongooseStampsJSONSchema,
       isOwner: { type: 'boolean' },
+      owner: { type: 'string', nullable: true },
       isActive: { type: 'boolean' },
       provider: { type: 'string', enum: ['Google', 'TouchWhale'] },
       email: { type: 'string', nullable: true },
@@ -24,12 +29,6 @@ export namespace UserIO {
       username: { type: 'string', nullable: true },
       company: { type: 'string', nullable: true },
       avatar: { type: 'string', nullable: true },
-      createdAt: {
-        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
-      },
-      updatedAt: {
-        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
-      },
     },
     required: ['isOwner', 'isActive', 'provider', 'createdAt', 'updatedAt'],
     additionalProperties: false,

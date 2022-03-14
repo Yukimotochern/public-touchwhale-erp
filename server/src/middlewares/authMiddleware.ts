@@ -8,6 +8,8 @@ export interface AuthJWT {
   id: string
   iat: number
   exp: number
+  isOwner: boolean
+  owner: string
 }
 
 declare global {
@@ -15,21 +17,11 @@ declare global {
     interface Request {
       userJWT?: AuthJWT
     }
-    interface Response {}
-    interface Application {}
+    interface Response {
+      owner: string
+    }
   }
 }
-
-// export interface RequestWithRegularUser extends Request {
-//   userJWT?: AuthJWT
-// }
-
-// export interface PrivateRequestHandler {
-//   (req: RequestWithRegularUser, res: Response, next: NextFunction):
-//     | void
-//     | Promise<void>
-//     | Promise<void | Response<any, Record<string, any>>>
-// }
 
 const tokenSchema: JSONSchemaType<AuthJWT> = {
   type: 'object',
@@ -37,8 +29,10 @@ const tokenSchema: JSONSchemaType<AuthJWT> = {
     id: { type: 'string' },
     iat: { type: 'number' },
     exp: { type: 'number' },
+    isOwner: { type: 'boolean' },
+    owner: { type: 'string' },
   },
-  required: ['id', 'iat', 'exp'],
+  required: ['id', 'iat', 'exp', 'isOwner', 'owner'],
   additionalProperties: true,
 }
 
@@ -57,6 +51,8 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     const decode = jwt.verify(token, process.env.JWTSECRET)
     if (tokenValidator(decode)) {
       req.userJWT = decode
+      // used to check owner when sending data
+      res.owner = decode.owner
       return next()
     } else {
       return next(new ErrorResponse('Token is invalid.', 401))

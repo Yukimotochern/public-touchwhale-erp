@@ -32,4 +32,26 @@ export const MongooseStaticsJSONSchema: {
   _id: { type: 'string' },
   __v: { type: 'number' },
 }
+
+export interface MongooseStamps {
+  createdAt: Date | string
+  updatedAt: Date | string
+}
+
+export const MongooseStampsJSONSchema: {
+  createdAt: {
+    anyOf: [{ type: 'object'; required: [] }, { type: 'string' }]
+  }
+  updatedAt: {
+    anyOf: [{ type: 'object'; required: [] }, { type: 'string' }]
+  }
+} = {
+  createdAt: {
+    anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
+  },
+  updatedAt: {
+    anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
+  },
+}
+
 export default connectDB

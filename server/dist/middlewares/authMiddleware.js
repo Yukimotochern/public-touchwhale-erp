@@ -6,23 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var ajv_1 = __importDefault(require("../utils/ajv"));
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
-// export interface RequestWithRegularUser extends Request {
-//   userJWT?: AuthJWT
-// }
-// export interface PrivateRequestHandler {
-//   (req: RequestWithRegularUser, res: Response, next: NextFunction):
-//     | void
-//     | Promise<void>
-//     | Promise<void | Response<any, Record<string, any>>>
-// }
 var tokenSchema = {
     type: 'object',
     properties: {
         id: { type: 'string' },
         iat: { type: 'number' },
         exp: { type: 'number' },
+        isOwner: { type: 'boolean' },
+        owner: { type: 'string' },
     },
-    required: ['id', 'iat', 'exp'],
+    required: ['id', 'iat', 'exp', 'isOwner', 'owner'],
     additionalProperties: true,
 };
 var tokenValidator = ajv_1.default.compile(tokenSchema);
@@ -38,6 +31,8 @@ var authMiddleware = function (req, res, next) {
         var decode = jsonwebtoken_1.default.verify(token, process.env.JWTSECRET);
         if (tokenValidator(decode)) {
             req.userJWT = decode;
+            // used to check owner when sending data
+            res.owner = decode.owner;
             return next();
         }
         else {

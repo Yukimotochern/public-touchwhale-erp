@@ -1,8 +1,10 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 import bcrtpt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { UserType } from './userTypes'
+import { AuthJWT } from '../../middlewares/authMiddleware'
+import ErrorResponse from '../../utils/errorResponse'
 
 const UserSchema = new mongoose.Schema<UserType.Mongoose>(
   {
@@ -10,6 +12,10 @@ const UserSchema = new mongoose.Schema<UserType.Mongoose>(
     isOwner: {
       type: Boolean,
       required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
     },
     isActive: {
       type: Boolean,
@@ -69,7 +75,17 @@ UserSchema.pre('save', async function (next) {
 })
 
 UserSchema.methods.getSignedJWTToken = function (): string {
-  return jwt.sign({ id: this._id }, process.env.JWTSECRET, {
+  if (!this.isOwner && !this.owner) {
+    throw new ErrorResponse('Unattached User.')
+  }
+
+  const token: Omit<AuthJWT, 'iat' | 'exp'> = {
+    id: this._id,
+    isOwner: this.isOwner,
+    owner: this.isOwner ? this._id : this.owner,
+  }
+
+  return jwt.sign(token, process.env.JWTSECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   })
 }

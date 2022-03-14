@@ -4,7 +4,7 @@ import { ApiRes } from '../apiTypes'
 
 // TwItem Model
 export interface TwItemType {
-  user: Types.ObjectId
+  owner: Types.ObjectId | string
   name: string
   unit: string
   custom_id: string
@@ -15,7 +15,7 @@ export interface TwItemType {
 
 // TwItemSet Model
 export interface TwItemSetDetailType {
-  user: Types.ObjectId
+  owner: Types.ObjectId | string
   parentItem: Types.ObjectId
   element: Array<ElementObjectType>
 }
@@ -51,7 +51,7 @@ export interface TwItemSetType {
   element: Array<object>
 }
 export interface TwItemEditableType
-  extends Omit<TwItemType, 'user' | 'setObject' | 'image'> {}
+  extends Omit<TwItemType, 'owner' | 'setObject' | 'image'> {}
 export interface addItemBodyType extends TwItemEditableType {
   element: ElementObjectType[]
 }

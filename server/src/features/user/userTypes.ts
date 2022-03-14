@@ -1,9 +1,12 @@
 import { MongooseStatics } from '../../utils/mongodb'
+import mongoose from 'mongoose'
+
 export namespace UserType {
   export interface Classifier {
     isOwner: boolean
     isActive: boolean
     provider: 'TouchWhale' | 'Google'
+    owner?: string | mongoose.Types.ObjectId
   }
 
   export interface Identity {

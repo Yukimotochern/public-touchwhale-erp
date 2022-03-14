@@ -145,14 +145,17 @@ var userSignIn = function (req, res, next) { return __awaiter(void 0, void 0, vo
             case 0:
                 if (!SignIn.bodyValidator(req.body)) return [3 /*break*/, 3];
                 _a = req.body, email = _a.email, login_name = _a.login_name, password = _a.password;
+                if (!email && !login_name) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Without Identity.', 400))];
+                }
                 return [4 /*yield*/, userModel_1.default.findOne({ login_name: login_name, email: email }).select('+password')];
             case 1:
                 user = _b.sent();
-                if (user && !user.isActive) {
-                    return [2 /*return*/, next(new errorResponse_1.default('Your have not completed the sign up process. Please sign up again.', 400))];
-                }
                 if (!user) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
+                }
+                if (user.isActive) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Your have not completed the sign up process. Please sign up again.', 400))];
                 }
                 return [4 /*yield*/, user.matchPassword(password)];
             case 2:

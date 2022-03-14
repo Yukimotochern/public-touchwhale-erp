@@ -10,25 +10,6 @@ import { RequestHandler } from 'express'
 import { uploadImage } from '../../utils/AWS/b2'
 import ErrorResponse from '../../utils/errorResponse'
 
-// Valid Tree criteria
-// 1. No loop in tree:
-// - This means that the descendants(all children and children's children) do not contains any ancestors(all the parents and parents' parents).
-// 2. No tree node should have level > 4
-// - (0 -> 1 -> 2 -> 3 -> 4) OK, (0 -> 1 -> 2 -> 3 -> 4 -> 5) NO,
-
-// Add new item
-// 1. New item will not have any ancestors -> criteria 1 OK
-// 2. To ensure criteria 2, no children should have level == 4
-// 3. this item level = max(elements' level)
-// Update item
-// Denote the current updating item with I
-// a. Finding all ancestors. Obtaining arrays of objects ending with current updating item I
-// - ex. [A -> B -> I], [C -> D -> E -> F -> I], ....
-// b. Denote some array obtaining in 1. with K. Do the following,
-// c. For the newly provided element array E. For each element e in E, Do the following,
-// d. check if e in K, if so, break -> violating criteria 1.
-// d. if e not in K, push e to K, and repeat c. d. with children of e and children's children ...
-
 // Type definition
 import {
   addItemBodyType,

@@ -61,9 +61,9 @@ var mongoose_1 = __importStar(require("mongoose"));
 // @doc the basic stock unit.
 // @todo Maybe this model can remember last update user_id
 var TwItemSchema = new mongoose_1.default.Schema({
-    user: {
+    owner: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'regular_user',
+        ref: 'user',
         required: true,
     },
     name: {
@@ -139,9 +139,9 @@ exports.TwItem = TwItem;
 // TwItemSetDetail
 // @doc the combination info of set item
 var TwItemSetDetailSchema = new mongoose_1.default.Schema({
-    user: {
+    owner: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'regular_user',
+        ref: 'user',
         required: true,
     },
     parentItem: {

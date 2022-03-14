@@ -44,11 +44,6 @@ var twItemModel_1 = require("../features/twItem/twItemModel");
 var twItemModel_2 = require("../features/twItem/twItemModel");
 // Util module
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
-// itemOwnerMiddleware will make sure that the accessing user owns that particular resource.
-// If the access right is proved, it will set 'res.item' and 'res.itemElement'.
-// The latter, 'res.itemElement', will be set only if 'res.item' represents a set.
-// res.item => is one of TwItem document
-// res.itemElement => is one of TwItemSetDetail document
 var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var itemId, populate, query, item, itemSetElement;
     var _a;
@@ -68,7 +63,7 @@ var itemOwnerMiddleware = function (req, res, next) { return __awaiter(void 0, v
             case 1:
                 item = _b.sent();
                 // Ensure that item must exist and user have ownership with this item
-                if (!item || item.user.toString() !== req.userJWT.id) {
+                if (!item || item.owner.toString() !== req.userJWT.id) {
                     return [2 /*return*/, next(new errorResponse_1.default('Item not found', 404))];
                 }
                 if (!(item.item_type === 'set')) return [3 /*break*/, 3];

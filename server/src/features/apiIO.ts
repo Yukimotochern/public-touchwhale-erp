@@ -33,10 +33,37 @@ export class HandlerIO {
         ...extra,
       }
 
+      // do some computationally intensive checks in development mode
       if (process.env.NODE_ENV === 'development') {
         if (resBodyValidator(resBody)) {
           // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
           let clientObtainedThing = JSON.parse(JSON.stringify(data))
+
+          // check owner
+          type objectWithOwner = { owner: string }
+          let ArrayWithOwner: objectWithOwner[] = []
+          const isObjectWithOwner = (x: any): x is objectWithOwner =>
+            typeof x === 'object' && typeof x.owner === 'string'
+          const isArrayWithOwner = (x: any[]): x is objectWithOwner[] =>
+            x.every(isObjectWithOwner)
+
+          if (isObjectWithOwner(clientObtainedThing)) {
+            ArrayWithOwner.push(clientObtainedThing)
+          } else if (
+            Array.isArray(clientObtainedThing) &&
+            isArrayWithOwner(clientObtainedThing)
+          ) {
+            ArrayWithOwner = ArrayWithOwner.concat(clientObtainedThing)
+          }
+          if (ArrayWithOwner.length !== 0) {
+            if (!ArrayWithOwner.every((item) => item.owner === res.owner)) {
+              return new ErrorResponse(
+                'Controller has returned something that is not owned by this user or the owner of this user.'
+              )
+            }
+          }
+
+          // check with provided validator
           if (!validator(clientObtainedThing)) {
             console.log(clientObtainedThing)
             console.log(validator.errors)

@@ -10,7 +10,6 @@ import {
 } from '../../utils/emailMessage'
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import { UserIO } from './userHandlerIO'
-import { ResBody } from '../apiTypes'
 import { UserType } from './userTypes'
 import { HandlerIO } from '../apiIO'
 
@@ -31,11 +30,7 @@ const UserAvatarKeyPrifix = 'UserAvatar'
 // @route    POST api/v1/user/signUp
 // @desc     Sign user up
 // @access   Public
-export const userSignUp: RequestHandler<{}, ResBody> = async (
-  req,
-  res,
-  next
-) => {
+export const userSignUp: RequestHandler = async (req, res, next) => {
   if (SignUp.bodyValidator(req.body)) {
     const { email } = req.body
     let user = await UserModel.findOne({ email })
@@ -97,11 +92,16 @@ export const userVerify: RequestHandler = async (req, res, next) => {
 export const userSignIn: RequestHandler = async (req, res, next) => {
   if (SignIn.bodyValidator(req.body)) {
     const { email, login_name, password } = req.body
+    if (!email && !login_name) {
+      return next(new ErrorResponse('Without Identity.', 400))
+    }
     let user = await UserModel.findOne({ login_name, email }).select(
       '+password'
     )
-
-    if (user && !user.isActive) {
+    if (!user) {
+      return next(new ErrorResponse('Invalid credentials.', 401))
+    }
+    if (user.isActive) {
       return next(
         new ErrorResponse(
           'Your have not completed the sign up process. Please sign up again.',
@@ -109,9 +109,7 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
         )
       )
     }
-    if (!user) {
-      return next(new ErrorResponse('Invalid credentials.', 401))
-    }
+
     const isMatch = await user.matchPassword(password)
     if (!isMatch) {
       if (user.provider === 'Google') {

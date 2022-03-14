@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,15 +58,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = __importDefault(require("mongoose"));
+var mongoose_1 = __importStar(require("mongoose"));
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var crypto_1 = __importDefault(require("crypto"));
+var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var UserSchema = new mongoose_1.default.Schema({
     // Classifier
     isOwner: {
         type: Boolean,
         required: true,
+    },
+    owner: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'user',
     },
     isActive: {
         type: Boolean,
@@ -116,7 +140,15 @@ UserSchema.pre('save', function (next) {
     });
 });
 UserSchema.methods.getSignedJWTToken = function () {
-    return jsonwebtoken_1.default.sign({ id: this._id }, process.env.JWTSECRET, {
+    if (!this.isOwner && !this.owner) {
+        throw new errorResponse_1.default('Unattached User.');
+    }
+    var token = {
+        id: this._id,
+        isOwner: this.isOwner,
+        owner: this.isOwner ? this._id : this.owner,
+    };
+    return jsonwebtoken_1.default.sign(token, process.env.JWTSECRET, {
         expiresIn: process.env.JWT_EXPIRE,
     });
 };

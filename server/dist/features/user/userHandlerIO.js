@@ -40,7 +40,7 @@ var UserIO;
 (function (UserIO) {
     var plainUserSchema = {
         type: 'object',
-        properties: __assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), { isOwner: { type: 'boolean' }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true }, createdAt: {
+        properties: __assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true }, createdAt: {
                 anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
             }, updatedAt: {
                 anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
