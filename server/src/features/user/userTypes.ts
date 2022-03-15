@@ -1,5 +1,6 @@
 import { MongooseStatics } from '../../utils/mongodb'
 import mongoose from 'mongoose'
+import { TwPermissons } from '../../middlewares/permission/permissionType'
 
 export namespace UserType {
   export interface Classifier {
@@ -16,6 +17,12 @@ export namespace UserType {
 
   export interface Secret {
     password?: string
+  }
+
+  export interface Permission {
+    role?: string | mongoose.Types.ObjectId
+    permission_groups?: TwPermissons.PermissionGroupNames[]
+    role_type?: 'default' | 'custom'
   }
 
   export interface Editable {
@@ -45,7 +52,8 @@ export namespace UserType {
       Identity,
       Editable,
       Stamp,
-      MongooseStatics {}
+      MongooseStatics,
+      Permission {}
 
   export interface Mongoose
     extends Classifier,
@@ -55,7 +63,8 @@ export namespace UserType {
       Stamp,
       Token,
       MongooseMethods,
-      MongooseStatics {}
+      MongooseStatics,
+      Permission {}
 
   export interface SubmitEmail extends Required<Pick<Identity, 'email'>> {}
 
@@ -108,5 +117,28 @@ export namespace UserType {
     export interface Data {
       token?: string
     }
+  }
+
+  export namespace GetWorkers {
+    export type Data = PlainUser[]
+  }
+
+  export namespace GetWorker {
+    export interface Data extends PlainUser {}
+  }
+
+  export namespace CreateWorker {
+    export interface Body
+      extends Required<Pick<Identity, 'login_name'>>,
+        Required<Secret>,
+        Required<Permission> {}
+    export interface Data extends PlainUser {}
+  }
+  export namespace UpdateWorker {
+    export interface Body extends Secret, Permission {}
+    export interface Data extends PlainUser {}
+  }
+  export namespace DeleteWorker {
+    export interface Data extends PlainUser {}
   }
 }

@@ -15,6 +15,13 @@ export namespace UserPermissions {
     // 'change_password',
     // 'forget_password',
     // 'reset_password',
+    // Below are HR permission
+    'get_worker',
+    'get_workers',
+    'create_worker',
+    'update_worker',
+    'update_worker',
+    'delete_worker',
   ] as const
 
   type controllers = typeof _permissionSet[number]

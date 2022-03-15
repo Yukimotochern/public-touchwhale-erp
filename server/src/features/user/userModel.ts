@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { UserType } from './userTypes'
 import { AuthJWT } from '../../middlewares/authMiddleware'
 import ErrorResponse from '../../utils/errorResponse'
+import { TwPermissons } from '../../middlewares/permission/permissionType'
 
 const UserSchema = new mongoose.Schema<UserType.Mongoose>(
   {
@@ -41,6 +42,23 @@ const UserSchema = new mongoose.Schema<UserType.Mongoose>(
       unique: true,
       sparse: true,
       match: [/^[^@]+$/, "Login name should not contains the '@' sign."],
+    },
+    // Permission
+    role: {
+      type: Schema.Types.ObjectId,
+      ref: 'role',
+    },
+    permission_groups: {
+      type: [
+        {
+          type: String,
+          enum: TwPermissons.permissionGroupNameSet,
+        },
+      ],
+    },
+    role_type: {
+      type: String,
+      enum: ['default', 'custom'],
     },
     // Secret
     password: {

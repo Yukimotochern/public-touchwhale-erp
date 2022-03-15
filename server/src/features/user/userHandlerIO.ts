@@ -5,17 +5,35 @@ import {
   MongooseStampsJSONSchema,
 } from '../../utils/mongodb'
 import { HandlerIO } from '../apiIO'
+import { TwPermissons } from '../../middlewares/permission/permissionType'
+import { User } from 'aws-sdk/clients/budgets'
 
 /*
   TEMPLATE HERE
   export class XXX extends HandlerIO {
-    static bodyValidator = super.bodyValidatorCreator<UserType.XXXBody>()
-    static sendData = super.sendDataCreator<UserType.XXXData>()
+    static bodyValidator = super.bodyValidatorCreator<yyyType.XXXBody>({<bodySchema>})
+    static sendData = super.sendDataCreator<yyyType.XXXData>({dataSchema})
   }
 */
 
 export namespace UserIO {
-  const plainUserSchema: JSONSchemaType<UserType.PlainUser> = {
+  const permissionFields = {
+    role: { type: 'string', nullable: true },
+    permission_groups: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: TwPermissons.permissionGroupNameSet,
+      },
+      nullable: true,
+    },
+    role_type: {
+      type: 'string',
+      enum: ['default', 'custom'],
+      nullable: true,
+    },
+  } as const
+  export const plainUserSchema: JSONSchemaType<UserType.PlainUser> = {
     type: 'object',
     properties: {
       ...MongooseStaticsJSONSchema,
@@ -24,15 +42,16 @@ export namespace UserIO {
       owner: { type: 'string', nullable: true },
       isActive: { type: 'boolean' },
       provider: { type: 'string', enum: ['Google', 'TouchWhale'] },
-      email: { type: 'string', nullable: true },
+      email: { type: 'string', nullable: true, format: 'email' },
       login_name: { type: 'string', nullable: true },
       username: { type: 'string', nullable: true },
       company: { type: 'string', nullable: true },
       avatar: { type: 'string', nullable: true },
+      ...permissionFields,
     },
     required: ['isOwner', 'isActive', 'provider', 'createdAt', 'updatedAt'],
     additionalProperties: false,
-  }
+  } as const
   const submitEmailSchema: JSONSchemaType<UserType.SubmitEmail> = {
     type: 'object',
     properties: {
@@ -148,5 +167,62 @@ export namespace UserIO {
         token: { type: 'string', nullable: true },
       },
     })
+  }
+
+  export class GetWorkers extends HandlerIO {
+    static sendData = super.sendDataCreator<UserType.GetWorkers.Data>({
+      type: 'array',
+      items: plainUserSchema,
+    })
+  }
+
+  export class GetWorker extends HandlerIO {
+    static sendData = super.sendDataCreator<UserType.GetWorker.Data>(
+      plainUserSchema
+    )
+  }
+
+  export class CreateWorker extends HandlerIO {
+    static bodyValidator =
+      super.bodyValidatorCreator<UserType.CreateWorker.Body>({
+        type: 'object',
+        properties: {
+          login_name: { type: 'string' },
+          password: { type: 'string' },
+          ...permissionFields,
+        },
+        required: [
+          'login_name',
+          'password',
+          'role',
+          'role_type',
+          'permission_groups',
+        ],
+        additionalProperties: false,
+      })
+    static sendData = super.sendDataCreator<UserType.GetWorker.Data>(
+      plainUserSchema
+    )
+  }
+
+  export class UpdateWorker extends HandlerIO {
+    static bodyValidator =
+      super.bodyValidatorCreator<UserType.UpdateWorker.Body>({
+        type: 'object',
+        properties: {
+          password: { type: 'string', nullable: true },
+          ...permissionFields,
+        },
+        additionalProperties: false,
+      })
+    static sendData = super.sendDataCreator<UserType.UpdateWorker.Data>(
+      plainUserSchema
+    )
+  }
+
+  export class DeleteWorker extends HandlerIO {
+    static sendData = super.sendDataCreator<UserType.DeleteWorker.Data>(
+      plainUserSchema
+    )
   }
 }

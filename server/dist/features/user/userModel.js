@@ -63,6 +63,7 @@ var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var crypto_1 = __importDefault(require("crypto"));
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
+var permissionType_1 = require("../../middlewares/permission/permissionType");
 var UserSchema = new mongoose_1.default.Schema({
     // Classifier
     isOwner: {
@@ -97,6 +98,23 @@ var UserSchema = new mongoose_1.default.Schema({
         unique: true,
         sparse: true,
         match: [/^[^@]+$/, "Login name should not contains the '@' sign."],
+    },
+    // Permission
+    role: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'role',
+    },
+    permission_groups: {
+        type: [
+            {
+                type: String,
+                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+            },
+        ],
+    },
+    role_type: {
+        type: String,
+        enum: ['default', 'custom'],
     },
     // Secret
     password: {

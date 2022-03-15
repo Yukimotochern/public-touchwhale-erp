@@ -18,17 +18,6 @@ require("colorts/lib/string");
 var errorMiddleware_1 = require("./middlewares/errorMiddleware");
 var passportOAuth_1 = __importDefault(require("./utils/passportOAuth"));
 var app = (0, express_1.default)();
-// Add a list of allowed origins.
-// If you have more origins you would like to add, you can add them to the array below.
-// const allowedOrigins = [
-//   'http://localhost:3000',
-//   'https://google.com',
-//   'https://accounts.google.com',
-//   'https://touchwhale-erp.com',
-// ]
-// const options: cors.CorsOptions = {
-//   origin: allowedOrigins,
-// }
 app.use((0, cookie_parser_1.default)());
 // Connect to MongoDB
 (0, mongodb_1.default)();

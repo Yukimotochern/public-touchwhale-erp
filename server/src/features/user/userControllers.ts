@@ -23,6 +23,11 @@ const {
   ChangePassword,
   ForgetPassword,
   ResetPassword,
+  GetWorker,
+  GetWorkers,
+  CreateWorker,
+  DeleteWorker,
+  UpdateWorker,
 } = UserIO
 
 const UserAvatarKeyPrifix = 'UserAvatar'
@@ -101,7 +106,7 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
     if (!user) {
       return next(new ErrorResponse('Invalid credentials.', 401))
     }
-    if (user.isActive) {
+    if (!user.isActive) {
       return next(
         new ErrorResponse(
           'Your have not completed the sign up process. Please sign up again.',
@@ -391,6 +396,110 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
   } else {
     return next(avjErrorWrapper(ResetPassword.bodyValidator.errors))
   }
+}
+
+// @route    GET api/v1/user/workers
+// @desc     Get all workers
+// @access   Private
+export const getWorkers: RequestHandler = async (req, res, next) => {
+  if (req.userJWT) {
+    const workers = await UserModel.find({
+      owner: req.userJWT.owner,
+      isOwner: false,
+    })
+    GetWorkers.sendData(res, workers)
+  }
+  return next(new ErrorResponse('Internal Server Error'))
+}
+
+// @route    GET api/v1/user/workers/:id
+// @desc     Get worker
+// @access   Private
+export const getWorker: RequestHandler = async (req, res, next) => {
+  if (req.userJWT) {
+    const worker = await UserModel.findOne({
+      owner: req.userJWT.owner,
+      isOwner: false,
+      _id: req.params.id,
+    })
+    if (worker) {
+      GetWorker.sendData(res, worker)
+    }
+    next(new ErrorResponse('Worker not found.'))
+  }
+  return next(new ErrorResponse('Internal Server Error'))
+}
+
+// @route    POST api/v1/user/workers/
+// @desc     Get worker
+// @access   Private
+export const createWorker: RequestHandler = async (req, res, next) => {
+  if (CreateWorker.bodyValidator(req.body)) {
+    if (req.userJWT) {
+      const worker = await UserModel.create(req.body)
+      CreateWorker.sendData(res, worker)
+    }
+    return next(new ErrorResponse('Internal Server Error'))
+  }
+  return next(avjErrorWrapper(CreateWorker.bodyValidator.errors))
+}
+
+// @route    PUT api/v1/user/workers/:id
+// @desc     Update a worker
+// @access   Private
+export const updateWorker: RequestHandler = async (req, res, next) => {
+  if (UpdateWorker.bodyValidator(req.body)) {
+    if (req.userJWT) {
+      // TODO make sure the permission group obeys the tree like structure
+      const worker = await UserModel.findOneAndUpdate(
+        {
+          owner: req.userJWT.owner,
+          _id: req.params.id,
+        },
+        req.body,
+        { runValidators: true, new: true }
+      )
+      if (worker) {
+        return UpdateWorker.sendData(res, worker)
+      }
+      return next(
+        new ErrorResponse(
+          'The worker does not exist or you do not have the correct access permission.',
+          400
+        )
+      )
+    }
+    return next(new ErrorResponse('Internal Server Error'))
+  }
+  return next(avjErrorWrapper(UpdateWorker.bodyValidator.errors))
+}
+
+// @route    DELETE api/v1/user/workers/:id
+// @desc     Delete a worker
+// @access   Private
+export const deleteWorker: RequestHandler = async (req, res, next) => {
+  if (req.userJWT) {
+    let idToDelete = req.params.id
+    if (req.params.id === idToDelete) {
+      return next(new ErrorResponse('Your cannot delete yourself.'))
+    }
+    const worker = await UserModel.findOne({
+      owner: req.userJWT.owner,
+      _id: idToDelete,
+    })
+    if (worker) {
+      await worker.delete()
+      DeleteWorker.sendData(res, worker, {
+        message: 'The user in the data is successfully deleted.',
+      })
+    }
+    return next(
+      new ErrorResponse(
+        'Worker not found or you may not have the correct access right.'
+      )
+    )
+  }
+  return next(new ErrorResponse('Internal Server Error'))
 }
 
 /*

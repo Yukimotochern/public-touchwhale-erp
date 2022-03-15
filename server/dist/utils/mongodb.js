@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MongooseStaticsJSONSchema = void 0;
+exports.MongooseStampsJSONSchema = exports.MongooseStaticsJSONSchema = void 0;
 var mongoose_1 = __importDefault(require("mongoose"));
 var connectDB = function () { return __awaiter(void 0, void 0, void 0, function () {
     var connect, err_1;
@@ -71,5 +71,13 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
 exports.MongooseStaticsJSONSchema = {
     _id: { type: 'string' },
     __v: { type: 'number' },
+};
+exports.MongooseStampsJSONSchema = {
+    createdAt: {
+        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
+    },
+    updatedAt: {
+        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
+    },
 };
 exports.default = connectDB;

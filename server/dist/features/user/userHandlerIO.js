@@ -29,21 +29,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserIO = void 0;
 var mongodb_1 = require("../../utils/mongodb");
 var apiIO_1 = require("../apiIO");
+var permissionType_1 = require("../../middlewares/permission/permissionType");
 /*
   TEMPLATE HERE
   export class XXX extends HandlerIO {
-    static bodyValidator = super.bodyValidatorCreator<UserType.XXXBody>()
-    static sendData = super.sendDataCreator<UserType.XXXData>()
+    static bodyValidator = super.bodyValidatorCreator<yyyType.XXXBody>({<bodySchema>})
+    static sendData = super.sendDataCreator<yyyType.XXXData>({dataSchema})
   }
 */
 var UserIO;
 (function (UserIO) {
     var plainUserSchema = {
         type: 'object',
-        properties: __assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true }, createdAt: {
-                anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
-            }, updatedAt: {
-                anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
+        properties: __assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true, format: 'email' }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true }, role: { type: 'string', nullable: true }, permission_groups: {
+                type: 'array',
+                items: {
+                    type: 'string',
+                    enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                },
+                nullable: true,
+            }, role_type: {
+                type: 'string',
+                enum: ['default', 'custom'],
+                nullable: true,
             } }),
         required: ['isOwner', 'isActive', 'provider', 'createdAt', 'updatedAt'],
         additionalProperties: false,

@@ -1,5 +1,11 @@
 export namespace RolePermissions {
-  const _permissionSet = ['get_roles'] as const
+  const _permissionSet = [
+    'get_roles',
+    'get_role',
+    'create_role',
+    'update_role',
+    'delete_role',
+  ] as const
 
   type controllers = typeof _permissionSet[number]
   export type Permissions = `role.${controllers}`

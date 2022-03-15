@@ -154,7 +154,7 @@ var userSignIn = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 if (!user) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                if (user.isActive) {
+                if (!user.isActive) {
                     return [2 /*return*/, next(new errorResponse_1.default('Your have not completed the sign up process. Please sign up again.', 400))];
                 }
                 return [4 /*yield*/, user.matchPassword(password)];

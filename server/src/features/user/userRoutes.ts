@@ -13,11 +13,17 @@ import {
   changePassword,
   forgetPassword,
   resetPassword,
+  getWorkers,
+  getWorker,
+  createWorker,
+  updateWorker,
+  deleteWorker,
 } from './userControllers'
 
 // Middleware
-import authMiddleware from '../../middlewares/authMiddleware'
+import auth from '../../middlewares/authMiddleware'
 import errorCatcher from '../../middlewares/errorCatcher'
+import { permission } from '../../middlewares/permission/permissionMiddleware'
 
 const router = express.Router()
 
@@ -27,9 +33,7 @@ router.route('/signUp/verify').post(errorCatcher(userVerify))
 
 router.route('/signIn').post(errorCatcher(userSignIn))
 
-router
-  .route('/signUp/setPassword')
-  .post(authMiddleware, errorCatcher(changePassword)) // Use changePassword to implement new user setPassword
+router.route('/signUp/setPassword').post(auth, errorCatcher(changePassword)) // Use changePassword to implement new user setPassword
 
 router
   .route('/googleOAuth')
@@ -49,21 +53,32 @@ router.route('/signOut').get(errorCatcher(userSignOut))
 
 router
   .route('/')
-  .get(authMiddleware, errorCatcher(getUser))
-  .put(authMiddleware, errorCatcher(updateUser))
+  .get(auth, errorCatcher(getUser))
+  .put(auth, errorCatcher(updateUser))
 
 router
   .route('/avatar')
-  .get(authMiddleware, errorCatcher(userGetAvatarUploadUrl))
-  .delete(authMiddleware, errorCatcher(deleteAvatar))
+  .get(auth, errorCatcher(userGetAvatarUploadUrl))
+  .delete(auth, errorCatcher(deleteAvatar))
 
-router
-  .route('/changePassword')
-  .put(authMiddleware, errorCatcher(changePassword))
+router.route('/changePassword').put(auth, errorCatcher(changePassword))
 
 router
   .route('/forgetPassword')
   .post(errorCatcher(forgetPassword))
   .put(errorCatcher(resetPassword))
+
+router
+  .route('/workers')
+  .all(auth)
+  .get(permission(['user.get_workers']), getWorkers)
+
+router
+  .route('/workers/:id')
+  .all(auth)
+  .get(permission(['user.get_worker']), getWorker)
+  .post(permission(['user.create_worker']), createWorker)
+  .put(permission(['user.update_worker']), updateWorker)
+  .delete(permission(['user.delete_worker']), deleteWorker)
 
 export default router

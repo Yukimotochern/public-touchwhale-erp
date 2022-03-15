@@ -4,8 +4,6 @@ import { DefinedError } from 'ajv'
 import { ErrorRequestHandler } from 'express'
 import { Error, mongo } from 'mongoose'
 
-mongo.MongoError
-
 const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
   // Log to console for dev
   if (!(err instanceof ErrorResponse) || err.statusCode !== 401) {
