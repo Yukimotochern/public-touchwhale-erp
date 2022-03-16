@@ -30,10 +30,13 @@ exports.RoleIO = void 0;
 var permissionType_1 = require("../../middlewares/permission/permissionType");
 var mongodb_1 = require("../../utils/mongodb");
 var apiIO_1 = require("../apiIO");
+var userHandlerIO_1 = require("../user/userHandlerIO");
 var RoleIO;
 (function (RoleIO) {
-    var editableFields = {
+    var classifierFields = {
         owner: { type: 'string' },
+    };
+    var editableFields = {
         name: { type: 'string' },
         description: { type: 'string', nullable: true },
         permission_groups: {
@@ -46,7 +49,7 @@ var RoleIO;
     };
     var plainRoleSchema = {
         type: 'object',
-        properties: __assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), editableFields),
+        properties: __assign(__assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), editableFields), classifierFields),
         required: ['name', 'permission_groups'],
         additionalProperties: false,
     };
@@ -92,4 +95,95 @@ var RoleIO;
         return CreateRole;
     }(apiIO_1.HandlerIO));
     RoleIO.CreateRole = CreateRole;
+    var UpdateRole = /** @class */ (function (_super) {
+        __extends(UpdateRole, _super);
+        function UpdateRole() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _d;
+        _d = UpdateRole;
+        UpdateRole.bodyValidator = _super.bodyValidatorCreator.call(_d, {
+            type: 'object',
+            properties: {
+                shouldCascade: { type: 'boolean' },
+                updates: {
+                    type: 'object',
+                    properties: {
+                        name: { type: 'string', nullable: true },
+                        description: { type: 'string', nullable: true },
+                        permission_groups: {
+                            type: 'array',
+                            items: {
+                                type: 'string',
+                                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                            },
+                            nullable: true,
+                        },
+                    },
+                    additionalProperties: false,
+                },
+            },
+            required: ['shouldCascade', 'updates'],
+        });
+        UpdateRole.sendData = _super.sendDataCreator.call(_d, {
+            type: 'object',
+            properties: {
+                isUpdateDone: { type: 'boolean' },
+                updatedRole: __assign(__assign({}, plainRoleSchema), { nullable: true }),
+                userAffected: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            user: userHandlerIO_1.UserIO.plainUserSchema,
+                            shouldAdd: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                    enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                                },
+                            },
+                            shouldRemove: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                    enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                                },
+                            },
+                        },
+                        required: ['shouldAdd', 'shouldRemove', 'user'],
+                        additionalProperties: false,
+                    },
+                    nullable: true,
+                },
+            },
+            required: ['isUpdateDone'],
+            additionalProperties: false,
+        });
+        return UpdateRole;
+    }(apiIO_1.HandlerIO));
+    RoleIO.UpdateRole = UpdateRole;
+    var DeleteRole = /** @class */ (function (_super) {
+        __extends(DeleteRole, _super);
+        function DeleteRole() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _e;
+        _e = DeleteRole;
+        DeleteRole.sendData = _super.sendDataCreator.call(_e, {
+            type: 'object',
+            properties: {
+                deleted: { type: 'boolean' },
+                deletedRole: __assign(__assign({}, plainRoleSchema), { nullable: true }),
+                usersOfThisRole: {
+                    type: 'array',
+                    items: userHandlerIO_1.UserIO.plainUserSchema,
+                    nullable: true,
+                },
+            },
+            required: ['deleted'],
+        });
+        return DeleteRole;
+    }(apiIO_1.HandlerIO));
+    RoleIO.DeleteRole = DeleteRole;
 })(RoleIO = exports.RoleIO || (exports.RoleIO = {}));

@@ -9,13 +9,12 @@ var userControllers_1 = require("./userControllers");
 // Middleware
 var authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 var errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
+var permissionMiddleware_1 = require("../../middlewares/permission/permissionMiddleware");
 var router = express_1.default.Router();
 router.route('/signUp').post((0, errorCatcher_1.default)(userControllers_1.userSignUp));
 router.route('/signUp/verify').post((0, errorCatcher_1.default)(userControllers_1.userVerify));
 router.route('/signIn').post((0, errorCatcher_1.default)(userControllers_1.userSignIn));
-router
-    .route('/signUp/setPassword')
-    .post(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.changePassword)); // Use changePassword to implement new user setPassword
+router.route('/signUp/setPassword').post(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.changePassword)); // Use changePassword to implement new user setPassword
 router
     .route('/googleOAuth')
     .get(passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
@@ -34,11 +33,20 @@ router
     .route('/avatar')
     .get(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.userGetAvatarUploadUrl))
     .delete(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.deleteAvatar));
-router
-    .route('/changePassword')
-    .put(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.changePassword));
+router.route('/changePassword').put(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.changePassword));
 router
     .route('/forgetPassword')
     .post((0, errorCatcher_1.default)(userControllers_1.forgetPassword))
     .put((0, errorCatcher_1.default)(userControllers_1.resetPassword));
+router
+    .route('/workers')
+    .all(authMiddleware_1.default)
+    .get((0, permissionMiddleware_1.permission)(['user.get_workers']), userControllers_1.getWorkers);
+router
+    .route('/workers/:id')
+    .all(authMiddleware_1.default)
+    .get((0, permissionMiddleware_1.permission)(['user.get_worker']), userControllers_1.getWorker)
+    .post((0, permissionMiddleware_1.permission)(['user.create_worker']), userControllers_1.createWorker)
+    .put((0, permissionMiddleware_1.permission)(['user.update_worker']), userControllers_1.updateWorker)
+    .delete((0, permissionMiddleware_1.permission)(['user.delete_worker']), userControllers_1.deleteWorker);
 exports.default = router;

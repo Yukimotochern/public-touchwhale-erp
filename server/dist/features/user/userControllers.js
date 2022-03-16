@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.deleteAvatar = exports.userGetAvatarUploadUrl = exports.updateUser = exports.getUser = exports.userSignOut = exports.userOAuthCallback = exports.userSignIn = exports.userVerify = exports.userSignUp = void 0;
+exports.deleteWorker = exports.updateWorker = exports.createWorker = exports.getWorker = exports.getWorkers = exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.deleteAvatar = exports.userGetAvatarUploadUrl = exports.updateUser = exports.getUser = exports.userSignOut = exports.userOAuthCallback = exports.userSignIn = exports.userVerify = exports.userSignUp = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var sendEmail_1 = require("../../utils/sendEmail");
 var ajv_1 = require("../../utils/ajv");
@@ -49,7 +49,7 @@ var emailMessage_1 = require("../../utils/emailMessage");
 var b2_1 = require("../../utils/AWS/b2");
 var userHandlerIO_1 = require("./userHandlerIO");
 var apiIO_1 = require("../apiIO");
-var SignUp = userHandlerIO_1.UserIO.SignUp, Verify = userHandlerIO_1.UserIO.Verify, SignIn = userHandlerIO_1.UserIO.SignIn, GetUser = userHandlerIO_1.UserIO.GetUser, Update = userHandlerIO_1.UserIO.Update, GetAvatarUploadUrl = userHandlerIO_1.UserIO.GetAvatarUploadUrl, ChangePassword = userHandlerIO_1.UserIO.ChangePassword, ForgetPassword = userHandlerIO_1.UserIO.ForgetPassword, ResetPassword = userHandlerIO_1.UserIO.ResetPassword;
+var SignUp = userHandlerIO_1.UserIO.SignUp, Verify = userHandlerIO_1.UserIO.Verify, SignIn = userHandlerIO_1.UserIO.SignIn, GetUser = userHandlerIO_1.UserIO.GetUser, Update = userHandlerIO_1.UserIO.Update, GetAvatarUploadUrl = userHandlerIO_1.UserIO.GetAvatarUploadUrl, ChangePassword = userHandlerIO_1.UserIO.ChangePassword, ForgetPassword = userHandlerIO_1.UserIO.ForgetPassword, ResetPassword = userHandlerIO_1.UserIO.ResetPassword, GetWorker = userHandlerIO_1.UserIO.GetWorker, GetWorkers = userHandlerIO_1.UserIO.GetWorkers, CreateWorker = userHandlerIO_1.UserIO.CreateWorker, DeleteWorker = userHandlerIO_1.UserIO.DeleteWorker, UpdateWorker = userHandlerIO_1.UserIO.UpdateWorker;
 var UserAvatarKeyPrifix = 'UserAvatar';
 // @route    POST api/v1/user/signUp
 // @desc     Sign user up
@@ -510,6 +510,134 @@ var resetPassword = function (req, res, next) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.resetPassword = resetPassword;
+// @route    GET api/v1/user/workers
+// @desc     Get all workers
+// @access   Private
+var getWorkers = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var workers;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, userModel_1.default.find({
+                        owner: req.userJWT.owner,
+                        isOwner: false,
+                    })];
+            case 1:
+                workers = _a.sent();
+                GetWorkers.sendData(res, workers);
+                _a.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Internal Server Error'))];
+        }
+    });
+}); };
+exports.getWorkers = getWorkers;
+// @route    GET api/v1/user/workers/:id
+// @desc     Get worker
+// @access   Private
+var getWorker = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var worker;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, userModel_1.default.findOne({
+                        owner: req.userJWT.owner,
+                        isOwner: false,
+                        _id: req.params.id,
+                    })];
+            case 1:
+                worker = _a.sent();
+                if (worker) {
+                    GetWorker.sendData(res, worker);
+                }
+                next(new errorResponse_1.default('Worker not found.'));
+                _a.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Internal Server Error'))];
+        }
+    });
+}); };
+exports.getWorker = getWorker;
+// @route    POST api/v1/user/workers/
+// @desc     Get worker
+// @access   Private
+var createWorker = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var worker;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!CreateWorker.bodyValidator(req.body)) return [3 /*break*/, 3];
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, userModel_1.default.create(req.body)];
+            case 1:
+                worker = _a.sent();
+                CreateWorker.sendData(res, worker);
+                _a.label = 2;
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Internal Server Error'))];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(CreateWorker.bodyValidator.errors))];
+        }
+    });
+}); };
+exports.createWorker = createWorker;
+// @route    PUT api/v1/user/workers/:id
+// @desc     Update a worker
+// @access   Private
+var updateWorker = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var worker;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!UpdateWorker.bodyValidator(req.body)) return [3 /*break*/, 3];
+                if (!req.userJWT) return [3 /*break*/, 2];
+                return [4 /*yield*/, userModel_1.default.findOneAndUpdate({
+                        owner: req.userJWT.owner,
+                        _id: req.params.id,
+                    }, req.body, { runValidators: true, new: true })];
+            case 1:
+                worker = _a.sent();
+                if (worker) {
+                    return [2 /*return*/, UpdateWorker.sendData(res, worker)];
+                }
+                return [2 /*return*/, next(new errorResponse_1.default('The worker does not exist or you do not have the correct access permission.', 400))];
+            case 2: return [2 /*return*/, next(new errorResponse_1.default('Internal Server Error'))];
+            case 3: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(UpdateWorker.bodyValidator.errors))];
+        }
+    });
+}); };
+exports.updateWorker = updateWorker;
+// @route    DELETE api/v1/user/workers/:id
+// @desc     Delete a worker
+// @access   Private
+var deleteWorker = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var idToDelete, worker;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.userJWT) return [3 /*break*/, 4];
+                idToDelete = req.params.id;
+                if (req.params.id === idToDelete) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Your cannot delete yourself.'))];
+                }
+                return [4 /*yield*/, userModel_1.default.findOne({
+                        owner: req.userJWT.owner,
+                        _id: idToDelete,
+                    })];
+            case 1:
+                worker = _a.sent();
+                if (!worker) return [3 /*break*/, 3];
+                return [4 /*yield*/, worker.delete()];
+            case 2:
+                _a.sent();
+                DeleteWorker.sendData(res, worker, {
+                    message: 'The user in the data is successfully deleted.',
+                });
+                _a.label = 3;
+            case 3: return [2 /*return*/, next(new errorResponse_1.default('Worker not found or you may not have the correct access right.'))];
+            case 4: return [2 /*return*/, next(new errorResponse_1.default('Internal Server Error'))];
+        }
+    });
+}); };
+exports.deleteWorker = deleteWorker;
 /*
 // @route    POST api/v1/user/
 // @desc

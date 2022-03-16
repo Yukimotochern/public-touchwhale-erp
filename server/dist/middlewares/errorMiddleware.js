@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var mongoose_1 = require("mongoose");
-mongoose_1.mongo.MongoError;
 var errorHandler = function (err, req, res, next) {
     // Log to console for dev
     if (!(err instanceof errorResponse_1.default) || err.statusCode !== 401) {

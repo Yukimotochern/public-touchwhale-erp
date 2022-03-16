@@ -39,20 +39,25 @@ var permissionType_1 = require("../../middlewares/permission/permissionType");
 */
 var UserIO;
 (function (UserIO) {
-    var plainUserSchema = {
-        type: 'object',
-        properties: __assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true, format: 'email' }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true }, role: { type: 'string', nullable: true }, permission_groups: {
-                type: 'array',
-                items: {
-                    type: 'string',
-                    enum: permissionType_1.TwPermissons.permissionGroupNameSet,
-                },
-                nullable: true,
-            }, role_type: {
+    var permissionFields = {
+        role: { type: 'string', nullable: true },
+        permission_groups: {
+            type: 'array',
+            items: {
                 type: 'string',
-                enum: ['default', 'custom'],
-                nullable: true,
-            } }),
+                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+            },
+            nullable: true,
+        },
+        role_type: {
+            type: 'string',
+            enum: ['default', 'custom'],
+            nullable: true,
+        },
+    };
+    UserIO.plainUserSchema = {
+        type: 'object',
+        properties: __assign(__assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true, format: 'email' }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true } }), permissionFields),
         required: ['isOwner', 'isActive', 'provider', 'createdAt', 'updatedAt'],
         additionalProperties: false,
     };
@@ -124,7 +129,7 @@ var UserIO;
         }
         var _d;
         _d = GetUser;
-        GetUser.sendData = _super.sendDataCreator.call(_d, plainUserSchema);
+        GetUser.sendData = _super.sendDataCreator.call(_d, UserIO.plainUserSchema);
         return GetUser;
     }(apiIO_1.HandlerIO));
     UserIO.GetUser = GetUser;
@@ -145,7 +150,7 @@ var UserIO;
             required: [],
             additionalProperties: false,
         });
-        Update.sendData = _super.sendDataCreator.call(_e, plainUserSchema);
+        Update.sendData = _super.sendDataCreator.call(_e, UserIO.plainUserSchema);
         return Update;
     }(apiIO_1.HandlerIO));
     UserIO.Update = Update;
@@ -224,4 +229,79 @@ var UserIO;
         return ResetPassword;
     }(apiIO_1.HandlerIO));
     UserIO.ResetPassword = ResetPassword;
+    var GetWorkers = /** @class */ (function (_super) {
+        __extends(GetWorkers, _super);
+        function GetWorkers() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _k;
+        _k = GetWorkers;
+        GetWorkers.sendData = _super.sendDataCreator.call(_k, {
+            type: 'array',
+            items: UserIO.plainUserSchema,
+        });
+        return GetWorkers;
+    }(apiIO_1.HandlerIO));
+    UserIO.GetWorkers = GetWorkers;
+    var GetWorker = /** @class */ (function (_super) {
+        __extends(GetWorker, _super);
+        function GetWorker() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _l;
+        _l = GetWorker;
+        GetWorker.sendData = _super.sendDataCreator.call(_l, UserIO.plainUserSchema);
+        return GetWorker;
+    }(apiIO_1.HandlerIO));
+    UserIO.GetWorker = GetWorker;
+    var CreateWorker = /** @class */ (function (_super) {
+        __extends(CreateWorker, _super);
+        function CreateWorker() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _m;
+        _m = CreateWorker;
+        CreateWorker.bodyValidator = _super.bodyValidatorCreator.call(_m, {
+            type: 'object',
+            properties: __assign({ login_name: { type: 'string' }, password: { type: 'string' } }, permissionFields),
+            required: [
+                'login_name',
+                'password',
+                'role',
+                'role_type',
+                'permission_groups',
+            ],
+            additionalProperties: false,
+        });
+        CreateWorker.sendData = _super.sendDataCreator.call(_m, UserIO.plainUserSchema);
+        return CreateWorker;
+    }(apiIO_1.HandlerIO));
+    UserIO.CreateWorker = CreateWorker;
+    var UpdateWorker = /** @class */ (function (_super) {
+        __extends(UpdateWorker, _super);
+        function UpdateWorker() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _o;
+        _o = UpdateWorker;
+        UpdateWorker.bodyValidator = _super.bodyValidatorCreator.call(_o, {
+            type: 'object',
+            properties: __assign({ password: { type: 'string', nullable: true } }, permissionFields),
+            additionalProperties: false,
+        });
+        UpdateWorker.sendData = _super.sendDataCreator.call(_o, UserIO.plainUserSchema);
+        return UpdateWorker;
+    }(apiIO_1.HandlerIO));
+    UserIO.UpdateWorker = UpdateWorker;
+    var DeleteWorker = /** @class */ (function (_super) {
+        __extends(DeleteWorker, _super);
+        function DeleteWorker() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        var _p;
+        _p = DeleteWorker;
+        DeleteWorker.sendData = _super.sendDataCreator.call(_p, UserIO.plainUserSchema);
+        return DeleteWorker;
+    }(apiIO_1.HandlerIO));
+    UserIO.DeleteWorker = DeleteWorker;
 })(UserIO = exports.UserIO || (exports.UserIO = {}));

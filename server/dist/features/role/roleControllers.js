@@ -50,12 +50,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRole = exports.getRole = exports.getRoles = void 0;
+exports.deleteRole = exports.updateRole = exports.createRole = exports.getRole = exports.getRoles = void 0;
 var ajv_1 = require("../../utils/ajv");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
 var roleModels_1 = __importDefault(require("./roleModels"));
 var roleHandlerIO_1 = require("./roleHandlerIO");
-var GetRoles = roleHandlerIO_1.RoleIO.GetRoles, GetRole = roleHandlerIO_1.RoleIO.GetRole, CreateRole = roleHandlerIO_1.RoleIO.CreateRole;
+var userModel_1 = __importDefault(require("../user/userModel"));
+var GetRoles = roleHandlerIO_1.RoleIO.GetRoles, GetRole = roleHandlerIO_1.RoleIO.GetRole, CreateRole = roleHandlerIO_1.RoleIO.CreateRole, UpdateRole = roleHandlerIO_1.RoleIO.UpdateRole, DeleteRole = roleHandlerIO_1.RoleIO.DeleteRole;
 // @route    GET api/v1/roles
 // @desc     Get all created and default(TODO) roles
 // @access   Private
@@ -120,7 +121,7 @@ var createRole = function (req, res, next) { return __awaiter(void 0, void 0, vo
             case 1:
                 role = _b.sent();
                 if (role) {
-                    CreateRole.sendData(res, role);
+                    return [2 /*return*/, CreateRole.sendData(res, role)];
                 }
                 next(new errorResponse_1.default('Internal Server error'));
                 _b.label = 2;
@@ -134,9 +135,159 @@ var createRole = function (req, res, next) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.createRole = createRole;
-// @route    PUT api/v1/roles
+// @route    PUT api/v1/roles/:id
 // @desc     Update a role
 // @access   Private
+var updateRole = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, shouldCascade, updates, roleQuery, role, new_role, new_p_groups_1, old_p_groups_1, p_groups_to_add_1, p_groups_to_remove_1, users, userAffected, anyoneAffected, i, updatedRole;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                if (!((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.owner)) return [3 /*break*/, 6];
+                if (!UpdateRole.bodyValidator(req.body)) return [3 /*break*/, 5];
+                _a = req.body, shouldCascade = _a.shouldCascade, updates = _a.updates;
+                roleQuery = {
+                    owner: req.userJWT.owner,
+                    _id: req.params.id,
+                };
+                return [4 /*yield*/, roleModels_1.default.findOne(roleQuery)];
+            case 1:
+                role = _c.sent();
+                if (!role) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Role not found.'))];
+                }
+                new_role = updates;
+                new_p_groups_1 = new_role.permission_groups;
+                if (!new_p_groups_1) return [3 /*break*/, 3];
+                old_p_groups_1 = role.permission_groups;
+                p_groups_to_add_1 = new_p_groups_1.filter(function (npg) { return !old_p_groups_1.includes(npg); });
+                p_groups_to_remove_1 = old_p_groups_1.filter(function (opg) { return !new_p_groups_1.includes(opg); });
+                if (!(p_groups_to_add_1.length !== 0 || p_groups_to_remove_1.length !== 0)) return [3 /*break*/, 3];
+                return [4 /*yield*/, userModel_1.default.find({
+                        owner: req.userJWT.owner,
+                        role: role._id,
+                    })];
+            case 2:
+                users = _c.sent();
+                if (users.length !== 0) {
+                    userAffected = users
+                        .map(function (user) {
+                        var shouldAdd = [];
+                        var shouldRemove = [];
+                        if (user.permission_groups) {
+                            shouldRemove = user.permission_groups.filter(function (permission_group) {
+                                return p_groups_to_remove_1.includes(permission_group);
+                            });
+                            shouldAdd = p_groups_to_add_1.filter(function (permission_group) {
+                                // below check is redundant but the type check is breaking ...
+                                return user.permission_groups
+                                    ? !user.permission_groups.includes(permission_group)
+                                    : true;
+                            });
+                        }
+                        else {
+                            shouldAdd = p_groups_to_add_1;
+                            shouldRemove = p_groups_to_remove_1;
+                        }
+                        if (shouldAdd.length !== 0 || shouldRemove.length !== 0) {
+                            if (user.permission_groups) {
+                                user.permission_groups = user.permission_groups
+                                    .filter(function (pg) { return !shouldRemove.includes(pg); })
+                                    .concat(shouldAdd);
+                            }
+                            else {
+                                user.permission_groups = shouldAdd;
+                            }
+                        }
+                        return {
+                            user: user,
+                            shouldAdd: shouldAdd,
+                            shouldRemove: shouldRemove,
+                        };
+                    })
+                        .filter(function (ua) {
+                        return ua.shouldAdd.length !== 0 || ua.shouldRemove.length !== 0;
+                    });
+                    anyoneAffected = userAffected.length !== 0;
+                    if (anyoneAffected && !shouldCascade) {
+                        return [2 /*return*/, UpdateRole.sendData(res, {
+                                isUpdateDone: false,
+                                userAffected: userAffected,
+                            })];
+                    }
+                    if (anyoneAffected && shouldCascade) {
+                        // cascade
+                        for (i = 0; i < userAffected.length; i++) {
+                            userAffected[i].user.save();
+                        }
+                    }
+                }
+                _c.label = 3;
+            case 3: return [4 /*yield*/, roleModels_1.default.findByIdAndUpdate(roleQuery, new_role, {
+                    runValidators: true,
+                    new: true,
+                })];
+            case 4:
+                updatedRole = _c.sent();
+                if (updatedRole) {
+                    return [2 /*return*/, UpdateRole.sendData(res, {
+                            isUpdateDone: true,
+                            updatedRole: updatedRole,
+                        })];
+                }
+                return [2 /*return*/, next(new errorResponse_1.default('Role not found.'))];
+            case 5:
+                next((0, ajv_1.avjErrorWrapper)(UpdateRole.bodyValidator.errors));
+                _c.label = 6;
+            case 6:
+                next(new errorResponse_1.default('Internal Server error'));
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.updateRole = updateRole;
 // @route    DELETE api/v1/roles/:id
 // @desc     Delete a role
 // @access   Private
+var deleteRole = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var role, users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.userJWT) return [3 /*break*/, 4];
+                return [4 /*yield*/, roleModels_1.default.findOne({
+                        owner: req.userJWT.owner,
+                        _id: req.params.id,
+                    })];
+            case 1:
+                role = _a.sent();
+                if (!role) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Role not found.'))];
+                }
+                return [4 /*yield*/, userModel_1.default.find({
+                        owner: req.userJWT.owner,
+                        role: role._id,
+                    })];
+            case 2:
+                users = _a.sent();
+                if (users.length !== 0) {
+                    return [2 /*return*/, DeleteRole.sendData(res, {
+                            deleted: false,
+                            usersOfThisRole: users,
+                        })];
+                }
+                return [4 /*yield*/, role.delete()];
+            case 3:
+                _a.sent();
+                return [2 /*return*/, DeleteRole.sendData(res, {
+                        deleted: true,
+                        deletedRole: role,
+                    })];
+            case 4:
+                next(new errorResponse_1.default('Internal Server error'));
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteRole = deleteRole;

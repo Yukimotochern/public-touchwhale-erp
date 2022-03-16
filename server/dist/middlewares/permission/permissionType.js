@@ -11,26 +11,35 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TwPermissons = void 0;
 var userPermissions_1 = require("../../features/user/userPermissions");
+var rolePermissions_1 = require("../../features/role/rolePermissions");
 // To add a permission for feature:
 // 1. include XXX.Permissions into Permissions
 // 2. add the permission strings to relevant permission group in permissionGroup set
 // 3. make sure the permission group resides somewhere in the permission tree
 var TwPermissons;
 (function (TwPermissons) {
+    // union of all the permissions to controllers
     TwPermissons.permissionSet = __spreadArray([], userPermissions_1.UserPermissions.permissionSet, true);
-    // union of all the permission group
-    TwPermissons.permissionGroupNameSet = ['basic', 'human resource'];
+    // ***
+    // *** Then, ADD GROUP NAME HERE!!!
+    TwPermissons.permissionGroupNameSet = ['admin', 'human resource'];
+    // *** Third, ADD PERMISSIONS IN GROUP HERE
     TwPermissons.permissionGroupSet = [
         {
-            name: 'basic',
-            permissions: [
-            // user
-            ],
-            description: 'Can perform some basic CRUD actions to the ',
+            name: 'admin',
+            permissions: __spreadArray(__spreadArray([], userPermissions_1.UserPermissions.permissionSet, true), rolePermissions_1.RolePermissions.permissionSet, true),
+            description: 'Can perform some basic CRUD actions to the twItem',
         },
         {
             name: 'human resource',
-            permissions: ['role.get_role', 'role.get_roles', 'role.create_role'],
+            permissions: __spreadArray([
+                // Worker CRUD
+                'user.create_worker',
+                'user.delete_worker',
+                'user.get_worker',
+                'user.get_workers',
+                'user.update_worker'
+            ], rolePermissions_1.RolePermissions.permissionSet, true),
             description: '',
         },
     ];
@@ -38,7 +47,7 @@ var TwPermissons;
         {
             name: 'admin',
             description: 'Have access to all functionality.',
-            permission_groups: ['basic', 'human resource'],
+            permission_groups: ['admin', 'human resource'],
         },
     ];
 })(TwPermissons = exports.TwPermissons || (exports.TwPermissons = {}));
