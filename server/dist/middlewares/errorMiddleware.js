@@ -7,6 +7,9 @@ exports.errorHandler = void 0;
 var errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 var mongoose_1 = require("mongoose");
 var errorHandler = function (err, req, res, next) {
+    // catch error that has definite type
+    // mongo.Error
+    // Error... from mongoose
     // Log to console for dev
     if (!(err instanceof errorResponse_1.default) || err.statusCode !== 401) {
         // Don't log 401

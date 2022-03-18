@@ -1,5 +1,3 @@
-import { mongo } from 'mongoose'
-
 type NullaryFn<T = void> = () => T
 export type UnaryFn<T = void, U = void> = (arg: T) => U
 export type OnRejectFn<ErrorAccept = Error> =
@@ -13,11 +11,6 @@ declare namespace ApiPromise {
     reject: UnaryFn<Error | unknown>
   ) => void
 }
-
-// typed error handling types
-// type OnMongoError = (cb: Function = ()=>{}, error: )=>{
-
-// }
 
 /**
  * A promise that can catch errors with type-safe method.
@@ -46,9 +39,19 @@ export class ApiPromise<T> implements Promise<T> {
   public finally(onfinally?: NullaryFn | undefined | null): Promise<T> {
     return this.promise.finally(onfinally)
   }
-  //
-  public onMongoError<TF = never>(onrejected?: OnRejectFn): ApiPromise<T | TF> {
-    this.catch()
+
+  public onMongoError<TF = never>(
+    code: number,
+    onrejected: Function
+  ): ApiPromise<T | TF> {
+    this.catch((err: unknown) => {
+      // if (err instanceof Error) {
+      //   console.log(`Error of ${err} is catched: `)
+      //   console.error(err)
+      //   onrejected()
+      // }
+      return this.promise.then()
+    })
     return this
   }
 }
