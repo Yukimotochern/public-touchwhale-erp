@@ -1,16 +1,16 @@
 import express from 'express'
 import authMiddleware from '../../middlewares/authMiddleware'
-import itemOwnerMiddleware from '../../middlewares/itemOwnerMiddleware'
+// import itemOwnerMiddleware from '../../middlewares/itemOwnerMiddleware'  2022/3/18 deprecated
 import advancedResult from '../../middlewares/advancedResult'
 import errorCatcher from '../../middlewares/errorCatcher'
 
 import {
-  addItem,
-  getItems,
-  getItem,
-  updateItem,
-  deleteItem,
-  getB2URL,
+	addItem,
+	getItems,
+	getItem,
+	updateItem,
+	deleteItem,
+	getB2URL,
 } from './twItemController'
 import { TwItem } from './twItemModel'
 
@@ -18,21 +18,18 @@ const router = express.Router()
 
 // @todo twItem routes supposed to handle diff user access right.
 router
-  .route('/')
-  .get(
-    [authMiddleware, advancedResult(TwItem, 'setOfElement')],
-    errorCatcher(getItems)
-  )
-  .post(authMiddleware, errorCatcher(addItem))
+	.route('/')
+	.all(authMiddleware)
+	.get([advancedResult(TwItem, 'setOfElement')], errorCatcher(getItems))
+	.post(errorCatcher(addItem))
 
 router
-  .route('/:id')
-  .get([authMiddleware, itemOwnerMiddleware], errorCatcher(getItem))
-  .put([authMiddleware, itemOwnerMiddleware], errorCatcher(updateItem))
-  .delete([authMiddleware, itemOwnerMiddleware], errorCatcher(deleteItem))
+	.route('/:id')
+	.all(authMiddleware)
+	.get(errorCatcher(getItem))
+	.put(errorCatcher(updateItem))
+	.delete(errorCatcher(deleteItem))
 
-router
-  .route('/uploadImage/:id')
-  .get([authMiddleware, itemOwnerMiddleware], errorCatcher(getB2URL))
+router.route('/uploadImage/:id').get([authMiddleware], errorCatcher(getB2URL))
 
 export default router

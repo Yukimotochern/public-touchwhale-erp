@@ -46,8 +46,11 @@ var twItemModel_2 = require("./twItemModel");
 // Utils modules
 var b2_1 = require("../../utils/AWS/b2");
 var errorResponse_1 = __importDefault(require("../../utils/errorResponse"));
-// Validator
-var twItemValidate_1 = require("./twItemValidate");
+var twItemHandlerIO_1 = require("./twItemHandlerIO");
+var apiIO_1 = require("../apiIO");
+var ajv_1 = require("../../utils/ajv");
+var AddItem = twItemHandlerIO_1.ItemIO.AddItem, UpdateItem = twItemHandlerIO_1.ItemIO.UpdateItem, GetItem = twItemHandlerIO_1.ItemIO.GetItem, GetImageUploadUrl = twItemHandlerIO_1.ItemIO.GetImageUploadUrl;
+var ItemImageKeyPrifix = 'TwItemImage';
 // @route    GET api/v1/twItem/
 // @desc     Get all items with specific user
 // @access   Private
@@ -67,7 +70,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 6];
+                if (!(AddItem.bodyValidator(req.body) && ((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id))) return [3 /*break*/, 6];
                 _a = req.body, name_1 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
                 return [4 /*yield*/, twItemModel_1.TwItem.findOne({
                         user: req.userJWT.id,
@@ -82,7 +85,7 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
                     return [2 /*return*/, next(new errorResponse_1.default('You can not set element into single item.'))];
                 }
                 item = new twItemModel_1.TwItem({
-                    user: req.userJWT.id,
+                    owner: req.userJWT.id,
                     name: name_1,
                     unit: unit,
                     custom_id: custom_id,
@@ -105,10 +108,8 @@ var addItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
             case 4:
                 _c.sent();
                 _c.label = 5;
-            case 5:
-                res.status(200).json({ data: item });
-                _c.label = 6;
-            case 6: return [2 /*return*/];
+            case 5: return [2 /*return*/, AddItem.sendData(res, item)];
+            case 6: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(AddItem.bodyValidator.errors))];
         }
     });
 }); };
@@ -118,10 +119,28 @@ exports.addItem = addItem;
 // @desc     Get single item by item's id
 // @access   Private
 var getItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        // itemOwnerMiddleware result will ensure res.item will not be null
-        res.status(200).json({ data: res.item });
-        return [2 /*return*/];
+    var populate, query, item;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                populate = req.query.populate;
+                query = twItemModel_1.TwItem.findOne({
+                    owner: (_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.owner,
+                    _id: req.params.id,
+                });
+                if (populate) {
+                    query = query.populate('setOfElement', 'element');
+                }
+                return [4 /*yield*/, query];
+            case 1:
+                item = _b.sent();
+                if (!item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Item not found.', 404))];
+                }
+                GetItem.sendData(res, item);
+                return [2 /*return*/];
+        }
     });
 }); };
 exports.getItem = getItem;
@@ -129,22 +148,33 @@ exports.getItem = getItem;
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var itemId, result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var itemId, item, _a, Key, url, image;
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
                 itemId = req.params.id;
-                return [4 /*yield*/, (0, b2_1.uploadImage)('TwItemImage', itemId)];
+                return [4 /*yield*/, twItemModel_1.TwItem.findOne({
+                        owner: (_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.owner,
+                        _id: req.params.id,
+                    })];
             case 1:
-                result = _a.sent();
-                if (!res.item) {
-                    return [2 /*return*/, next(new errorResponse_1.default('B2 can not set image to item.', 500))];
+                item = _c.sent();
+                if (!item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Item not found.', 404))];
                 }
-                res.item.image = result.Key;
-                return [4 /*yield*/, res.item.save()];
+                return [4 /*yield*/, (0, b2_1.uploadImage)(ItemImageKeyPrifix, itemId)];
             case 2:
-                _a.sent();
-                res.status(200).send({ msg: result });
+                _a = _c.sent(), Key = _a.Key, url = _a.url;
+                image = "https://tw-user-data.s3.us-west-000.backblazeb2.com/".concat(Key);
+                item.image = image;
+                return [4 /*yield*/, item.save()
+                    // res.status(200).send({ msg: result })
+                ];
+            case 3:
+                _c.sent();
+                // res.status(200).send({ msg: result })
+                GetImageUploadUrl.sendData(res, { uploadUrl: url, image: image });
                 return [2 /*return*/];
         }
     });
@@ -154,24 +184,32 @@ exports.getB2URL = getB2URL;
 // @desc     Update item by item's id
 // @access   Private
 var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name_2, unit, custom_id, count_stock, item_type, element, item, item_for_user, _b, itemSetElement, set, err_1;
-    var _c;
+    var item, _a, name_2, unit, custom_id, count_stock, item_type, element, item_for_user, itemSetElement, set, err_1;
+    var _b, _c;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
-                if (!((_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.id)) {
+                if (!((_b = req.userJWT) === null || _b === void 0 ? void 0 : _b.id)) {
                     return [2 /*return*/, next(new errorResponse_1.default('Invalid credentials.', 401))];
                 }
-                if (!((0, twItemValidate_1.addItemValidator)(req.body) && res.item)) return [3 /*break*/, 13];
+                if (!UpdateItem.bodyValidator(req.body)) return [3 /*break*/, 15];
+                return [4 /*yield*/, twItemModel_1.TwItem.findOne({
+                        owner: (_c = req.userJWT) === null || _c === void 0 ? void 0 : _c.owner,
+                        _id: req.params.id,
+                    })];
+            case 1:
+                item = _d.sent();
+                if (!item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Item not found.', 404))];
+                }
                 _a = req.body, name_2 = _a.name, unit = _a.unit, custom_id = _a.custom_id, count_stock = _a.count_stock, item_type = _a.item_type, element = _a.element;
-                item = res.item;
                 return [4 /*yield*/, twItemModel_1.TwItem.findOne({
                         user: req.userJWT.id,
                         name: name_2.trim(),
                     })
                     // Check if that item not equal with item(/:id)
                 ];
-            case 1:
+            case 2:
                 item_for_user = _d.sent();
                 // Check if that item not equal with item(/:id)
                 if ((item_for_user === null || item_for_user === void 0 ? void 0 : item_for_user.custom_id) &&
@@ -186,45 +224,52 @@ var updateItem = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 item.custom_id = custom_id ? custom_id : item.custom_id;
                 item.count_stock = count_stock ? count_stock : item.count_stock;
                 item.item_type = item_type ? item_type : item.item_type;
-                _d.label = 2;
-            case 2:
-                _d.trys.push([2, 12, , 13]);
-                _b = element;
-                if (!_b) return [3 /*break*/, 4];
-                return [4 /*yield*/, check_no_loop(element, item.id)];
+                console.log(element);
+                _d.label = 3;
             case 3:
-                _b = (_d.sent());
-                _d.label = 4;
+                _d.trys.push([3, 13, , 14]);
+                if (!element) return [3 /*break*/, 11];
+                return [4 /*yield*/, check_no_loop(element, item.id)];
             case 4:
-                if (!_b) return [3 /*break*/, 9];
-                if (!res.itemSetElement) return [3 /*break*/, 6];
-                itemSetElement = res.itemSetElement;
+                if (!_d.sent()) return [3 /*break*/, 10];
+                return [4 /*yield*/, twItemModel_2.TwItemSetDetail.findOne({
+                        owner: req.userJWT.owner,
+                        parentItem: item.id,
+                    })];
+            case 5:
+                itemSetElement = _d.sent();
+                if (!itemSetElement) return [3 /*break*/, 7];
                 itemSetElement.element = element;
                 return [4 /*yield*/, itemSetElement.save()];
-            case 5:
-                _d.sent();
-                return [3 /*break*/, 8];
             case 6:
+                _d.sent();
+                return [3 /*break*/, 9];
+            case 7:
                 set = new twItemModel_2.TwItemSetDetail({
-                    user: req.userJWT.id,
+                    owner: req.userJWT.id,
                     parentItem: item._id,
                     element: element,
                 });
                 return [4 /*yield*/, set.save()];
-            case 7:
+            case 8:
                 _d.sent();
-                _d.label = 8;
-            case 8: return [3 /*break*/, 10];
-            case 9: return [2 /*return*/, next(new errorResponse_1.default('Items element has a loop. '))];
-            case 10: return [4 /*yield*/, item.save()];
-            case 11:
-                _d.sent();
-                res.status(200).json({ data: item });
-                return [3 /*break*/, 13];
+                _d.label = 9;
+            case 9: return [3 /*break*/, 11];
+            case 10: return [2 /*return*/, next(new errorResponse_1.default('Items element has a loop. '))];
+            case 11: return [4 /*yield*/, item.save()
+                // res.status(200).json({ data: item })
+            ];
             case 12:
+                _d.sent();
+                // res.status(200).json({ data: item })
+                UpdateItem.sendData(res, item);
+                return [3 /*break*/, 14];
+            case 13:
                 err_1 = _d.sent();
                 return [2 /*return*/, next(new errorResponse_1.default('Something wrong. Maybe there has duplicate field in your items', 401, err_1))];
-            case 13: return [2 /*return*/];
+            case 14: return [3 /*break*/, 16];
+            case 15: return [2 /*return*/, next((0, ajv_1.avjErrorWrapper)(UpdateItem.bodyValidator.errors))];
+            case 16: return [2 /*return*/];
         }
     });
 }); };
@@ -233,11 +278,22 @@ exports.updateItem = updateItem;
 // @desc     Update item by item's id
 // @access   Private
 var deleteItem = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var item;
     var _a;
     return __generator(this, function (_b) {
-        (_a = res.item) === null || _a === void 0 ? void 0 : _a.delete();
-        res.status(200).json({ msg: 'Item deleted.' });
-        return [2 /*return*/];
+        switch (_b.label) {
+            case 0: return [4 /*yield*/, twItemModel_1.TwItem.findOne({
+                    owner: (_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.owner,
+                    _id: req.params.id,
+                })];
+            case 1:
+                item = _b.sent();
+                if (!item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Item not found.', 404))];
+                }
+                item.delete();
+                return [2 /*return*/, apiIO_1.HandlerIO.send(res, 200, { message: 'Item deleted.' })];
+        }
     });
 }); };
 exports.deleteItem = deleteItem;
