@@ -86,7 +86,12 @@ var TwItemSchema = new mongoose_1.default.Schema({
     item_type: { type: 'string', enum: ['set', 'element'] },
 }, {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+        virtuals: true,
+        transform: function (doc, ret) {
+            delete ret.id;
+        },
+    },
     toObject: { virtuals: true },
 });
 TwItemSchema.index({ user: 1, custom_id: 1 }, { unique: true });
