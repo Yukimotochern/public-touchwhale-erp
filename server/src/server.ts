@@ -69,7 +69,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: any, promise) => {
-  if (typeof err.message === 'string') {
+  if (err instanceof Error) {
     console.log(`Unhandled Rejection: ${err.message}`)
   } else {
     console.error(`Unknown thing thrown: ${err}`)

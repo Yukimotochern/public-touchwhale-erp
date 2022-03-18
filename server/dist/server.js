@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 // Handle unhandled promise rejections
 process.on('unhandledRejection', function (err, promise) {
-    if (typeof err.message === 'string') {
+    if (err instanceof Error) {
         console.log("Unhandled Rejection: ".concat(err.message));
     }
     else {

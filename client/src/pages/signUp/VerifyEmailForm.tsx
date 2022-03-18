@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // count down
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import useCountDown from 'react-countdown-hook'
-import api from '../../utils/api'
+import api from '../../api/api'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 const initialTime = 30 * 1000

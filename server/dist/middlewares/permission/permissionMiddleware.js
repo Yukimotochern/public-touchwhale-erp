@@ -69,6 +69,7 @@ var permission = function (requiredPermissions) {
                         return prev;
                     }, []);
                     if (requiredPermissions.every(function (rp) { return totalPermissions_1.includes(rp); })) {
+                        next();
                     }
                     _b.label = 2;
                 case 2: return [2 /*return*/, next(new errorResponse_1.default('Permission middleware should only be added after auth middleware.'))];

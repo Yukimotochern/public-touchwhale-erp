@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Input, Button, Divider, Typography, message } from 'antd'
 import styles from './EmailEnterForm.module.css'
 import { UseStateForSignUpPageProps } from './SignUpPage'
-import api from '../../utils/api'
+import api from '../../api/api'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 

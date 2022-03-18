@@ -19,7 +19,7 @@ var rolePermissions_1 = require("../../features/role/rolePermissions");
 var TwPermissons;
 (function (TwPermissons) {
     // union of all the permissions to controllers
-    TwPermissons.permissionSet = __spreadArray([], userPermissions_1.UserPermissions.permissionSet, true);
+    TwPermissons.permissionSet = __spreadArray(__spreadArray([], userPermissions_1.UserPermissions.permissionSet, true), rolePermissions_1.RolePermissions.permissionSet, true);
     // ***
     // *** Then, ADD GROUP NAME HERE!!!
     TwPermissons.permissionGroupNameSet = ['admin', 'human resource'];

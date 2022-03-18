@@ -24,9 +24,9 @@ export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
         return prev
       }, <TwPermissons.Permissions[]>[])
       if (requiredPermissions.every((rp) => totalPermissions.includes(rp))) {
+        next()
       }
     }
-
     return next(
       new ErrorResponse(
         'Permission middleware should only be added after auth middleware.'

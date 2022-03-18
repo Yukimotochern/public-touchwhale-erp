@@ -56,6 +56,18 @@ router
   .get(auth, errorCatcher(getUser))
   .put(auth, errorCatcher(updateUser))
 
+router.route('/111').get(
+  errorCatcher(async (req, res, next) => {
+    return new Promise<string>((resolve, reject) => {
+      setTimeout(() => {
+        console.log('Your work done.')
+        res.send('your res here')
+        resolve('foo')
+      }, 5000)
+    })
+  })
+)
+
 router
   .route('/avatar')
   .get(auth, errorCatcher(userGetAvatarUploadUrl))

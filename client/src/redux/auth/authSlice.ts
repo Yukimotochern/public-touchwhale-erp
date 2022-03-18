@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import api from '../../utils/api'
+import api from '../../api/api'
 import {
   getRegularUserResValidator,
   IRegularUserRes,

@@ -13,7 +13,10 @@ export namespace TwPermissons {
   export type Permissions =
     | UserPermissions.Permissions
     | RolePermissions.Permissions
-  export const permissionSet: Permissions[] = [...UserPermissions.permissionSet]
+  export const permissionSet: Permissions[] = [
+    ...UserPermissions.permissionSet,
+    ...RolePermissions.permissionSet,
+  ]
   // ***
 
   // *** Then, ADD GROUP NAME HERE!!!

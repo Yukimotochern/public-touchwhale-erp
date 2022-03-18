@@ -1,6 +1,6 @@
 import { Button, Typography, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
-import api from '../../utils/api'
+import api from '../../api/api'
 
 interface ChangePasswordProp {
   edittable?: boolean

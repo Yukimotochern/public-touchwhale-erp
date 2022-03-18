@@ -1,7 +1,7 @@
 import React, { useState, cloneElement, isValidElement } from 'react'
 import { Button, Form, Input, Col, Typography } from 'antd'
 import './ProfileBlock.css'
-import api from '../../utils/api'
+import api from '../../api/api'
 import { getRegularUserResValidator } from '../../res/regularUserValidate'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'

@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import Avatar from 'antd/lib/avatar/avatar'
-import api from '../../../utils/api'
+import api from '../../../api/api'
 import { getRegularUser } from '../../../redux/auth/authSlice'
 
 const { Content } = Layout

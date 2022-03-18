@@ -1,7 +1,7 @@
 import { Typography, Form, Button, Input } from 'antd'
 import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import api from '../../utils/api'
+import api from '../../api/api'
 
 export const ForgetPassword = () => {
   const navigate = useNavigate()
