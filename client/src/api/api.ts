@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders, Method } from 'axios'
 import { useRef, useEffect } from 'react'
 import { ApiPromise } from './apiPromise'
-import { ValidateFunction } from 'ajv'
+// import { ValidateFunction } from 'ajv'
 
 // Custom Abort Controll Hook
 const initAbortController = () => new AbortController()
@@ -125,9 +125,7 @@ class api1 {
   }
 }
 
-export { api1, useAbortController }
 // export default api
-
 class api {
   static async get(url: string, cof: AxiosRequestConfig = {}) {
     return axios.get(this.apiUrl(url), { ...config, ...cof })
@@ -157,4 +155,5 @@ class api {
   }
 }
 
+export { api1, useAbortController }
 export default api

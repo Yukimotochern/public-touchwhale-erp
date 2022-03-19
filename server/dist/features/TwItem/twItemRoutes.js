@@ -3,14 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
+const express_1 = __importDefault(require("express"));
+const authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 // import itemOwnerMiddleware from '../../middlewares/itemOwnerMiddleware'  2022/3/18 deprecated
-var advancedResult_1 = __importDefault(require("../../middlewares/advancedResult"));
-var errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
-var twItemController_1 = require("./twItemController");
-var twItemModel_1 = require("./twItemModel");
-var router = express_1.default.Router();
+const advancedResult_1 = __importDefault(require("../../middlewares/advancedResult"));
+const errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
+const twItemController_1 = require("./twItemController");
+const twItemModel_1 = require("./twItemModel");
+const router = express_1.default.Router();
 // @todo twItem routes supposed to handle diff user access right.
 router
     .route('/')

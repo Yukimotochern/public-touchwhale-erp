@@ -1,17 +1,8 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TwPermissons = void 0;
-var userPermissions_1 = require("../../features/user/userPermissions");
-var rolePermissions_1 = require("../../features/role/rolePermissions");
+const userPermissions_1 = require("../../features/user/userPermissions");
+const rolePermissions_1 = require("../../features/role/rolePermissions");
 // To add a permission for feature:
 // 1. include XXX.Permissions into Permissions
 // 2. add the permission strings to relevant permission group in permissionGroup set
@@ -19,7 +10,10 @@ var rolePermissions_1 = require("../../features/role/rolePermissions");
 var TwPermissons;
 (function (TwPermissons) {
     // union of all the permissions to controllers
-    TwPermissons.permissionSet = __spreadArray(__spreadArray([], userPermissions_1.UserPermissions.permissionSet, true), rolePermissions_1.RolePermissions.permissionSet, true);
+    TwPermissons.permissionSet = [
+        ...userPermissions_1.UserPermissions.permissionSet,
+        ...rolePermissions_1.RolePermissions.permissionSet,
+    ];
     // ***
     // *** Then, ADD GROUP NAME HERE!!!
     TwPermissons.permissionGroupNameSet = ['admin', 'human resource'];
@@ -27,19 +21,24 @@ var TwPermissons;
     TwPermissons.permissionGroupSet = [
         {
             name: 'admin',
-            permissions: __spreadArray(__spreadArray([], userPermissions_1.UserPermissions.permissionSet, true), rolePermissions_1.RolePermissions.permissionSet, true),
+            permissions: [
+                ...userPermissions_1.UserPermissions.permissionSet,
+                ...rolePermissions_1.RolePermissions.permissionSet,
+            ],
             description: 'Can perform some basic CRUD actions to the twItem',
         },
         {
             name: 'human resource',
-            permissions: __spreadArray([
+            permissions: [
                 // Worker CRUD
                 'user.create_worker',
                 'user.delete_worker',
                 'user.get_worker',
                 'user.get_workers',
-                'user.update_worker'
-            ], rolePermissions_1.RolePermissions.permissionSet, true),
+                'user.update_worker',
+                // role CRUD
+                ...rolePermissions_1.RolePermissions.permissionSet,
+            ],
             description: '',
         },
     ];

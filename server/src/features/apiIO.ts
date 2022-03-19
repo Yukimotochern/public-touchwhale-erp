@@ -1,7 +1,7 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv'
 import ajv from '../utils/ajv'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import ErrorResponse from '../utils/errorResponse'
+import CustomError from '../utils/CustomError'
 import { ResBody, ResBodyWithOutData } from './apiTypes'
 
 export class HandlerIO {
@@ -57,7 +57,7 @@ export class HandlerIO {
           }
           if (ArrayWithOwner.length !== 0) {
             if (!ArrayWithOwner.every((item) => item.owner === res.owner)) {
-              return new ErrorResponse(
+              return new CustomError(
                 'Controller has returned something that is not owned by this user or the owner of this user.'
               )
             }
@@ -67,10 +67,10 @@ export class HandlerIO {
           if (!validator(clientObtainedThing)) {
             console.log(clientObtainedThing)
             console.log(validator.errors)
-            throw new ErrorResponse('Unexpected response body from server.')
+            throw new CustomError('Unexpected response body from server.')
           }
         } else {
-          throw new ErrorResponse('Unexpected response from server.')
+          throw new CustomError('Unexpected response from server.')
         }
       }
       return res.status(statusCode).json(resBody)

@@ -1,7 +1,7 @@
 import { Model } from 'mongoose'
 import { Request, Response, NextFunction } from 'express'
 
-import ErrorResponse from '../utils/errorResponse'
+import CustomError from '../utils/CustomError'
 
 interface advancedResultResponse extends Response {
   advancedResults?: Object
@@ -18,7 +18,7 @@ const advancedResult =
   (model: Model<any>, populateStr?: any) =>
   async (req: Request, res: advancedResultResponse, next: NextFunction) => {
     if (!req.userJWT?.id) {
-      return next(new ErrorResponse('Invalid credentials.', 401))
+      return next(new CustomError('Invalid credentials.', 401))
     }
 
     const { id } = req.userJWT

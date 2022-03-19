@@ -8,7 +8,7 @@ import { RequestHandler } from 'express'
 
 // Utils modules
 import { uploadImage } from '../../utils/AWS/b2'
-import ErrorResponse from '../../utils/errorResponse'
+import CustomError from '../../utils/CustomError'
 
 // Type definition
 import { ItemSetDetailType } from './twItemType'
@@ -25,59 +25,57 @@ const ItemImageKeyPrifix = 'TwItemImage'
 // @desc     Get all items with specific user
 // @access   Private
 export const getItems: RequestHandler = async (
-	req,
-	res: advancedResultResponse,
-	next
+  req,
+  res: advancedResultResponse,
+  next
 ) => {
-	res.status(200).json(res.advancedResults)
+  res.status(200).json(res.advancedResults)
 }
 
 // @route    POST api/v1/twItem/
 // @desc     Add a item and ref to user
 // @access   Private
 export const addItem: RequestHandler = async (req, res, next) => {
-	if (AddItem.bodyValidator(req.body) && req.userJWT?.id) {
-		const { name, unit, custom_id, count_stock, item_type, element } = req.body
-		const item_for_user = await TwItem.findOne({
-			user: req.userJWT.id,
-			name: name.trim(),
-		})
-		if (item_for_user) {
-			return next(
-				new ErrorResponse(`You have a item with same name: \'${name}\' `)
-			)
-		}
-		if (item_type === 'element' && element) {
-			return next(
-				new ErrorResponse('You can not set element into single item.')
-			)
-		}
+  if (AddItem.bodyValidator(req.body) && req.userJWT?.id) {
+    const { name, unit, custom_id, count_stock, item_type, element } = req.body
+    const item_for_user = await TwItem.findOne({
+      user: req.userJWT.id,
+      name: name.trim(),
+    })
+    if (item_for_user) {
+      return next(
+        new CustomError(`You have a item with same name: \'${name}\' `)
+      )
+    }
+    if (item_type === 'element' && element) {
+      return next(new CustomError('You can not set element into single item.'))
+    }
 
-		const item = new TwItem({
-			owner: req.userJWT.id,
-			name,
-			unit,
-			custom_id,
-			count_stock,
-			item_type,
-		})
-		await item.save()
+    const item = new TwItem({
+      owner: req.userJWT.id,
+      name,
+      unit,
+      custom_id,
+      count_stock,
+      item_type,
+    })
+    await item.save()
 
-		if (item_type === 'set') {
-			await item.save()
+    if (item_type === 'set') {
+      await item.save()
 
-			const set = new TwItemSetDetail({
-				user: req.userJWT.id,
-				parentItem: item._id,
-				element,
-			})
-			await set.save()
-		}
+      const set = new TwItemSetDetail({
+        user: req.userJWT.id,
+        parentItem: item._id,
+        element,
+      })
+      await set.save()
+    }
 
-		return AddItem.sendData(res, item)
-	} else {
-		return next(avjErrorWrapper(AddItem.bodyValidator.errors))
-	}
+    return AddItem.sendData(res, item)
+  } else {
+    return next(avjErrorWrapper(AddItem.bodyValidator.errors))
+  }
 }
 
 // "element": [{"qty": 2, "id": "62241c8f7096ddea6783e41a"}, {"qty": 3, "id": "622392fbafbb949826bd2a07"}]
@@ -86,144 +84,142 @@ export const addItem: RequestHandler = async (req, res, next) => {
 // @desc     Get single item by item's id
 // @access   Private
 export const getItem: RequestHandler = async (req, res, next) => {
-	const populate = req.query.populate
-	let query = TwItem.findOne({
-		owner: req.userJWT?.owner,
-		_id: req.params.id,
-	})
-	if (populate) {
-		query = query.populate('setOfElement', 'element')
-	}
-	const item = await query
+  const populate = req.query.populate
+  let query = TwItem.findOne({
+    owner: req.userJWT?.owner,
+    _id: req.params.id,
+  })
+  if (populate) {
+    query = query.populate('setOfElement', 'element')
+  }
+  const item = await query
 
-	if (!item) {
-		return next(new ErrorResponse('Item not found.', 404))
-	}
-	GetItem.sendData(res, item)
+  if (!item) {
+    return next(new CustomError('Item not found.', 404))
+  }
+  GetItem.sendData(res, item)
 }
 
 // @route    GET api/v1/twItem/uploadAvatar/:id
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 export const getB2URL: RequestHandler = async (req, res, next) => {
-	const itemId = req.params.id
-	const item = await TwItem.findOne({
-		owner: req.userJWT?.owner,
-		_id: req.params.id,
-	})
-	if (!item) {
-		return next(new ErrorResponse('Item not found.', 404))
-	}
-	const { Key, url } = await uploadImage(ItemImageKeyPrifix, itemId)
-	let image = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
-	item.image = image
-	await item.save()
-	// res.status(200).send({ msg: result })
-	GetImageUploadUrl.sendData(res, { uploadUrl: url, image })
+  const itemId = req.params.id
+  const item = await TwItem.findOne({
+    owner: req.userJWT?.owner,
+    _id: req.params.id,
+  })
+  if (!item) {
+    return next(new CustomError('Item not found.', 404))
+  }
+  const { Key, url } = await uploadImage(ItemImageKeyPrifix, itemId)
+  let image = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
+  item.image = image
+  await item.save()
+  // res.status(200).send({ msg: result })
+  GetImageUploadUrl.sendData(res, { uploadUrl: url, image })
 }
 
 // @route    PUT api/v1/twItem/:id
 // @desc     Update item by item's id
 // @access   Private
 export const updateItem: RequestHandler = async (req, res, next) => {
-	if (!req.userJWT?.id) {
-		return next(new ErrorResponse('Invalid credentials.', 401))
-	}
-	if (UpdateItem.bodyValidator(req.body)) {
-		let item = await TwItem.findOne({
-			owner: req.userJWT?.owner,
-			_id: req.params.id,
-		})
+  if (!req.userJWT?.id) {
+    return next(new CustomError('Invalid credentials.', 401))
+  }
+  if (UpdateItem.bodyValidator(req.body)) {
+    let item = await TwItem.findOne({
+      owner: req.userJWT?.owner,
+      _id: req.params.id,
+    })
 
-		if (!item) {
-			return next(new ErrorResponse('Item not found.', 404))
-		}
-		// User want to change these fields
-		const { name, unit, custom_id, count_stock, item_type, element } = req.body
+    if (!item) {
+      return next(new CustomError('Item not found.', 404))
+    }
+    // User want to change these fields
+    const { name, unit, custom_id, count_stock, item_type, element } = req.body
 
-		// Find if user has a item's name that same with req.body
-		const item_for_user = await TwItem.findOne({
-			user: req.userJWT.id,
-			name: name.trim(),
-		})
+    // Find if user has a item's name that same with req.body
+    const item_for_user = await TwItem.findOne({
+      user: req.userJWT.id,
+      name: name.trim(),
+    })
 
-		// Check if that item not equal with item(/:id)
-		if (
-			item_for_user?.custom_id &&
-			item_for_user?.custom_id !== item.custom_id
-		) {
-			return next(
-				new ErrorResponse(`You have a item with same name: \'${name}\' `)
-			)
-		}
+    // Check if that item not equal with item(/:id)
+    if (
+      item_for_user?.custom_id &&
+      item_for_user?.custom_id !== item.custom_id
+    ) {
+      return next(
+        new CustomError(`You have a item with same name: \'${name}\' `)
+      )
+    }
 
-		if (item_type === 'element' && element) {
-			return next(
-				new ErrorResponse('You can not set element into single intem.')
-			)
-		}
+    if (item_type === 'element' && element) {
+      return next(new CustomError('You can not set element into single intem.'))
+    }
 
-		item.name = name ? name : item.name
-		item.unit = unit ? unit : item.unit
-		item.custom_id = custom_id ? custom_id : item.custom_id
-		item.count_stock = count_stock ? count_stock : item.count_stock
-		item.item_type = item_type ? item_type : item.item_type
-		console.log(element)
+    item.name = name ? name : item.name
+    item.unit = unit ? unit : item.unit
+    item.custom_id = custom_id ? custom_id : item.custom_id
+    item.count_stock = count_stock ? count_stock : item.count_stock
+    item.item_type = item_type ? item_type : item.item_type
+    console.log(element)
 
-		try {
-			if (element) {
-				if (await check_no_loop(element, item.id)) {
-					let itemSetElement = await TwItemSetDetail.findOne({
-						owner: req.userJWT.owner,
-						parentItem: item.id,
-					})
-					if (itemSetElement) {
-						itemSetElement.element = element
-						await itemSetElement.save()
-					} else {
-						const set = new TwItemSetDetail({
-							owner: req.userJWT.id,
-							parentItem: item._id,
-							element,
-						})
+    try {
+      if (element) {
+        if (await check_no_loop(element, item.id)) {
+          let itemSetElement = await TwItemSetDetail.findOne({
+            owner: req.userJWT.owner,
+            parentItem: item.id,
+          })
+          if (itemSetElement) {
+            itemSetElement.element = element
+            await itemSetElement.save()
+          } else {
+            const set = new TwItemSetDetail({
+              owner: req.userJWT.id,
+              parentItem: item._id,
+              element,
+            })
 
-						await set.save()
-					}
-				} else {
-					return next(new ErrorResponse('Items element has a loop. '))
-				}
-			}
-			await item.save()
-			// res.status(200).json({ data: item })
-			UpdateItem.sendData(res, item)
-		} catch (err) {
-			return next(
-				new ErrorResponse(
-					'Something wrong. Maybe there has duplicate field in your items',
-					401,
-					err
-				)
-			)
-		}
-	} else {
-		return next(avjErrorWrapper(UpdateItem.bodyValidator.errors))
-	}
+            await set.save()
+          }
+        } else {
+          return next(new CustomError('Items element has a loop. '))
+        }
+      }
+      await item.save()
+      // res.status(200).json({ data: item })
+      UpdateItem.sendData(res, item)
+    } catch (err) {
+      return next(
+        new CustomError(
+          'Something wrong. Maybe there has duplicate field in your items',
+          401,
+          err
+        )
+      )
+    }
+  } else {
+    return next(avjErrorWrapper(UpdateItem.bodyValidator.errors))
+  }
 }
 
 // @route    DELETE api/v1/twItem/:id
 // @desc     Update item by item's id
 // @access   Private
 export const deleteItem: RequestHandler = async (req, res, next) => {
-	const item = await TwItem.findOne({
-		owner: req.userJWT?.owner,
-		_id: req.params.id,
-	})
-	if (!item) {
-		return next(new ErrorResponse('Item not found.', 404))
-	}
-	item.delete()
+  const item = await TwItem.findOne({
+    owner: req.userJWT?.owner,
+    _id: req.params.id,
+  })
+  if (!item) {
+    return next(new CustomError('Item not found.', 404))
+  }
+  item.delete()
 
-	return HandlerIO.send(res, 200, { message: 'Item deleted.' })
+  return HandlerIO.send(res, 200, { message: 'Item deleted.' })
 }
 
 // Helper function
@@ -247,34 +243,34 @@ export const deleteItem: RequestHandler = async (req, res, next) => {
 // }
 
 const check_no_loop = async (
-	element: ItemSetDetailType.ElementObjectType[],
-	item_id: string
+  element: ItemSetDetailType.ElementObjectType[],
+  item_id: string
 ) => {
-	let elementId_array = new Array()
-	element.map((ele) => {
-		elementId_array.push(ele.id)
-	})
-	let searched = new Array()
+  let elementId_array = new Array()
+  element.map((ele) => {
+    elementId_array.push(ele.id)
+  })
+  let searched = new Array()
 
-	while (elementId_array.length) {
-		const new_element = elementId_array.shift()
+  while (elementId_array.length) {
+    const new_element = elementId_array.shift()
 
-		if (!searched.includes(new_element)) {
-			if (new_element === item_id) {
-				return false
-			} else {
-				const new_child = await TwItemSetDetail.findOne({
-					parentItem: new_element,
-				})
+    if (!searched.includes(new_element)) {
+      if (new_element === item_id) {
+        return false
+      } else {
+        const new_child = await TwItemSetDetail.findOne({
+          parentItem: new_element,
+        })
 
-				const new_array = new Array()
-				new_child?.element.map((obj) => {
-					new_array.push(obj.id)
-				})
-				elementId_array = elementId_array.concat(new_array)
-				searched.push(new_element)
-			}
-		}
-	}
-	return true
+        const new_array = new Array()
+        new_child?.element.map((obj) => {
+          new_array.push(obj.id)
+        })
+        elementId_array = elementId_array.concat(new_array)
+        searched.push(new_element)
+      }
+    }
+  }
+  return true
 }

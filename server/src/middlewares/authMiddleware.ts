@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 import { JSONSchemaType } from 'ajv'
 import ajv from '../utils/ajv'
-import ErrorResponse from '../utils/errorResponse'
+import CustomError from '../utils/CustomError'
 
 export interface AuthJWT {
   id: string
@@ -45,7 +45,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     token = req.cookies.token
   }
   if (!token) {
-    return next(new ErrorResponse('No token, authorization denied.', 401))
+    return next(new CustomError('No token, authorization denied.', 401))
   }
   try {
     const decode = jwt.verify(token, process.env.JWTSECRET)
@@ -55,11 +55,11 @@ const authMiddleware: RequestHandler = (req, res, next) => {
       res.owner = decode.owner
       return next()
     } else {
-      return next(new ErrorResponse('Token is invalid.', 401))
+      return next(new CustomError('Token is invalid.', 401))
     }
   } catch (err) {
     console.log('Token is invalid.')
-    return next(new ErrorResponse('Token is invalid.', 401, err))
+    return next(new CustomError('Token is invalid.', 401, err))
   }
 }
 

@@ -69,7 +69,7 @@ export const PageWithHeader: React.FC<Props> = ({
           key='log_out'
           onClick={async () => {
             try {
-              await api.get('/regularUser/signOut')
+              await api.get('/user/signOut')
               dispatch(getRegularUser())
             } catch (err) {
               // refresh

@@ -1,35 +1,9 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserIO = void 0;
-var mongodb_1 = require("../../utils/mongodb");
-var apiIO_1 = require("../apiIO");
-var permissionType_1 = require("../../middlewares/permission/permissionType");
+const mongodb_1 = require("../../utils/mongodb");
+const apiIO_1 = require("../apiIO");
+const permissionType_1 = require("../../middlewares/permission/permissionType");
 /*
   TEMPLATE HERE
   export class XXX extends HandlerIO {
@@ -39,7 +13,8 @@ var permissionType_1 = require("../../middlewares/permission/permissionType");
 */
 var UserIO;
 (function (UserIO) {
-    var permissionFields = {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3;
+    const permissionFields = {
         role: { type: 'string', nullable: true },
         permission_groups: {
             type: 'array',
@@ -57,11 +32,24 @@ var UserIO;
     };
     UserIO.plainUserSchema = {
         type: 'object',
-        properties: __assign(__assign(__assign(__assign({}, mongodb_1.MongooseStaticsJSONSchema), mongodb_1.MongooseStampsJSONSchema), { isOwner: { type: 'boolean' }, owner: { type: 'string', nullable: true }, isActive: { type: 'boolean' }, provider: { type: 'string', enum: ['Google', 'TouchWhale'] }, email: { type: 'string', nullable: true, format: 'email' }, login_name: { type: 'string', nullable: true }, username: { type: 'string', nullable: true }, company: { type: 'string', nullable: true }, avatar: { type: 'string', nullable: true } }), permissionFields),
+        properties: {
+            ...mongodb_1.MongooseStaticsJSONSchema,
+            ...mongodb_1.MongooseStampsJSONSchema,
+            isOwner: { type: 'boolean' },
+            owner: { type: 'string', nullable: true },
+            isActive: { type: 'boolean' },
+            provider: { type: 'string', enum: ['Google', 'TouchWhale'] },
+            email: { type: 'string', nullable: true, format: 'email' },
+            login_name: { type: 'string', nullable: true },
+            username: { type: 'string', nullable: true },
+            company: { type: 'string', nullable: true },
+            avatar: { type: 'string', nullable: true },
+            ...permissionFields,
+        },
         required: ['isOwner', 'isActive', 'provider', 'createdAt', 'updatedAt'],
         additionalProperties: false,
     };
-    var submitEmailSchema = {
+    const submitEmailSchema = {
         type: 'object',
         properties: {
             email: { type: 'string', format: 'email' },
@@ -69,239 +57,162 @@ var UserIO;
         required: ['email'],
         additionalProperties: false,
     };
-    var SignUp = /** @class */ (function (_super) {
-        __extends(SignUp, _super);
-        function SignUp() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _a;
-        _a = SignUp;
-        SignUp.bodyValidator = _super.bodyValidatorCreator.call(_a, submitEmailSchema);
-        return SignUp;
-    }(apiIO_1.HandlerIO));
+    class SignUp extends (_b = apiIO_1.HandlerIO) {
+    }
+    _a = SignUp;
+    SignUp.bodyValidator = Reflect.get(_b, "bodyValidatorCreator", _a).call(_a, submitEmailSchema);
     UserIO.SignUp = SignUp;
-    var Verify = /** @class */ (function (_super) {
-        __extends(Verify, _super);
-        function Verify() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _b;
-        _b = Verify;
-        Verify.bodyValidator = _super.bodyValidatorCreator.call(_b, {
-            type: 'object',
-            properties: {
-                email: { type: 'string', format: 'email' },
-                password: { type: 'string' },
-            },
-            required: ['email', 'password'],
-            additionalProperties: false,
-        });
-        Verify.sendData = _super.sendDataCreator.call(_b, {
-            type: 'string',
-        });
-        return Verify;
-    }(apiIO_1.HandlerIO));
+    class Verify extends (_d = apiIO_1.HandlerIO) {
+    }
+    _c = Verify;
+    Verify.bodyValidator = Reflect.get(_d, "bodyValidatorCreator", _c).call(_c, {
+        type: 'object',
+        properties: {
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string' },
+        },
+        required: ['email', 'password'],
+        additionalProperties: false,
+    });
+    Verify.sendData = Reflect.get(_d, "sendDataCreator", _c).call(_c, {
+        type: 'string',
+    });
     UserIO.Verify = Verify;
-    var SignIn = /** @class */ (function (_super) {
-        __extends(SignIn, _super);
-        function SignIn() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _c;
-        _c = SignIn;
-        SignIn.bodyValidator = _super.bodyValidatorCreator.call(_c, {
-            type: 'object',
-            properties: {
-                email: { type: 'string', format: 'email', nullable: true },
-                login_name: { type: 'string', format: 'email', nullable: true },
-                password: { type: 'string' },
-            },
-            required: ['password'],
-            additionalProperties: false,
-        });
-        return SignIn;
-    }(apiIO_1.HandlerIO));
+    class SignIn extends (_f = apiIO_1.HandlerIO) {
+    }
+    _e = SignIn;
+    SignIn.bodyValidator = Reflect.get(_f, "bodyValidatorCreator", _e).call(_e, {
+        type: 'object',
+        properties: {
+            email: { type: 'string', format: 'email', nullable: true },
+            login_name: { type: 'string', format: 'email', nullable: true },
+            password: { type: 'string' },
+        },
+        required: ['password'],
+        additionalProperties: false,
+    });
     UserIO.SignIn = SignIn;
-    var GetUser = /** @class */ (function (_super) {
-        __extends(GetUser, _super);
-        function GetUser() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _d;
-        _d = GetUser;
-        GetUser.sendData = _super.sendDataCreator.call(_d, UserIO.plainUserSchema);
-        return GetUser;
-    }(apiIO_1.HandlerIO));
+    class GetUser extends (_h = apiIO_1.HandlerIO) {
+    }
+    _g = GetUser;
+    GetUser.sendData = Reflect.get(_h, "sendDataCreator", _g).call(_g, UserIO.plainUserSchema);
     UserIO.GetUser = GetUser;
-    var Update = /** @class */ (function (_super) {
-        __extends(Update, _super);
-        function Update() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _e;
-        _e = Update;
-        Update.bodyValidator = _super.bodyValidatorCreator.call(_e, {
-            type: 'object',
-            properties: {
-                username: { type: 'string', nullable: true },
-                company: { type: 'string', nullable: true },
-                avatar: { type: 'string', nullable: true },
-            },
-            required: [],
-            additionalProperties: false,
-        });
-        Update.sendData = _super.sendDataCreator.call(_e, UserIO.plainUserSchema);
-        return Update;
-    }(apiIO_1.HandlerIO));
+    class Update extends (_k = apiIO_1.HandlerIO) {
+    }
+    _j = Update;
+    Update.bodyValidator = Reflect.get(_k, "bodyValidatorCreator", _j).call(_j, {
+        type: 'object',
+        properties: {
+            username: { type: 'string', nullable: true },
+            company: { type: 'string', nullable: true },
+            avatar: { type: 'string', nullable: true },
+        },
+        required: [],
+        additionalProperties: false,
+    });
+    Update.sendData = Reflect.get(_k, "sendDataCreator", _j).call(_j, UserIO.plainUserSchema);
     UserIO.Update = Update;
-    var GetAvatarUploadUrl = /** @class */ (function (_super) {
-        __extends(GetAvatarUploadUrl, _super);
-        function GetAvatarUploadUrl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _f;
-        _f = GetAvatarUploadUrl;
-        GetAvatarUploadUrl.sendData = _super.sendDataCreator.call(_f, {
-            type: 'object',
-            properties: {
-                avatar: { type: 'string' },
-                uploadUrl: { type: 'string' },
-            },
-            required: ['avatar', 'uploadUrl'],
-            additionalProperties: false,
-        });
-        return GetAvatarUploadUrl;
-    }(apiIO_1.HandlerIO));
+    class GetAvatarUploadUrl extends (_m = apiIO_1.HandlerIO) {
+    }
+    _l = GetAvatarUploadUrl;
+    GetAvatarUploadUrl.sendData = Reflect.get(_m, "sendDataCreator", _l).call(_l, {
+        type: 'object',
+        properties: {
+            avatar: { type: 'string' },
+            uploadUrl: { type: 'string' },
+        },
+        required: ['avatar', 'uploadUrl'],
+        additionalProperties: false,
+    });
     UserIO.GetAvatarUploadUrl = GetAvatarUploadUrl;
-    var ChangePassword = /** @class */ (function (_super) {
-        __extends(ChangePassword, _super);
-        function ChangePassword() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _g;
-        _g = ChangePassword;
-        ChangePassword.bodyValidator = _super.bodyValidatorCreator.call(_g, {
-            type: 'object',
-            properties: {
-                currentPassword: { type: 'string', nullable: true },
-                newPassword: { type: 'string' },
-                token: { type: 'string', nullable: true },
-            },
-            required: ['newPassword'],
-            additionalProperties: false,
-        });
-        return ChangePassword;
-    }(apiIO_1.HandlerIO));
+    class ChangePassword extends (_p = apiIO_1.HandlerIO) {
+    }
+    _o = ChangePassword;
+    ChangePassword.bodyValidator = Reflect.get(_p, "bodyValidatorCreator", _o).call(_o, {
+        type: 'object',
+        properties: {
+            currentPassword: { type: 'string', nullable: true },
+            newPassword: { type: 'string' },
+            token: { type: 'string', nullable: true },
+        },
+        required: ['newPassword'],
+        additionalProperties: false,
+    });
     UserIO.ChangePassword = ChangePassword;
-    var ForgetPassword = /** @class */ (function (_super) {
-        __extends(ForgetPassword, _super);
-        function ForgetPassword() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _h;
-        _h = ForgetPassword;
-        ForgetPassword.bodyValidator = _super.bodyValidatorCreator.call(_h, submitEmailSchema);
-        return ForgetPassword;
-    }(apiIO_1.HandlerIO));
+    class ForgetPassword extends (_r = apiIO_1.HandlerIO) {
+    }
+    _q = ForgetPassword;
+    ForgetPassword.bodyValidator = Reflect.get(_r, "bodyValidatorCreator", _q).call(_q, submitEmailSchema);
     UserIO.ForgetPassword = ForgetPassword;
-    var ResetPassword = /** @class */ (function (_super) {
-        __extends(ResetPassword, _super);
-        function ResetPassword() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _j;
-        _j = ResetPassword;
-        ResetPassword.bodyValidator = _super.bodyValidatorCreator.call(_j, {
-            type: 'object',
-            properties: {
-                token: { type: 'string' },
-                password: { type: 'string', nullable: true },
-            },
-            required: ['token'],
-            additionalProperties: false,
-        });
-        ResetPassword.sendData = _super.sendDataCreator.call(_j, {
-            type: 'object',
-            properties: {
-                token: { type: 'string', nullable: true },
-            },
-        });
-        return ResetPassword;
-    }(apiIO_1.HandlerIO));
+    class ResetPassword extends (_t = apiIO_1.HandlerIO) {
+    }
+    _s = ResetPassword;
+    ResetPassword.bodyValidator = Reflect.get(_t, "bodyValidatorCreator", _s).call(_s, {
+        type: 'object',
+        properties: {
+            token: { type: 'string' },
+            password: { type: 'string', nullable: true },
+        },
+        required: ['token'],
+        additionalProperties: false,
+    });
+    ResetPassword.sendData = Reflect.get(_t, "sendDataCreator", _s).call(_s, {
+        type: 'object',
+        properties: {
+            token: { type: 'string', nullable: true },
+        },
+    });
     UserIO.ResetPassword = ResetPassword;
-    var GetWorkers = /** @class */ (function (_super) {
-        __extends(GetWorkers, _super);
-        function GetWorkers() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _k;
-        _k = GetWorkers;
-        GetWorkers.sendData = _super.sendDataCreator.call(_k, {
-            type: 'array',
-            items: UserIO.plainUserSchema,
-        });
-        return GetWorkers;
-    }(apiIO_1.HandlerIO));
+    class GetWorkers extends (_v = apiIO_1.HandlerIO) {
+    }
+    _u = GetWorkers;
+    GetWorkers.sendData = Reflect.get(_v, "sendDataCreator", _u).call(_u, {
+        type: 'array',
+        items: UserIO.plainUserSchema,
+    });
     UserIO.GetWorkers = GetWorkers;
-    var GetWorker = /** @class */ (function (_super) {
-        __extends(GetWorker, _super);
-        function GetWorker() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _l;
-        _l = GetWorker;
-        GetWorker.sendData = _super.sendDataCreator.call(_l, UserIO.plainUserSchema);
-        return GetWorker;
-    }(apiIO_1.HandlerIO));
+    class GetWorker extends (_x = apiIO_1.HandlerIO) {
+    }
+    _w = GetWorker;
+    GetWorker.sendData = Reflect.get(_x, "sendDataCreator", _w).call(_w, UserIO.plainUserSchema);
     UserIO.GetWorker = GetWorker;
-    var CreateWorker = /** @class */ (function (_super) {
-        __extends(CreateWorker, _super);
-        function CreateWorker() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _m;
-        _m = CreateWorker;
-        CreateWorker.bodyValidator = _super.bodyValidatorCreator.call(_m, {
-            type: 'object',
-            properties: __assign({ login_name: { type: 'string' }, password: { type: 'string' } }, permissionFields),
-            required: [
-                'login_name',
-                'password',
-                'role',
-                'role_type',
-                'permission_groups',
-            ],
-            additionalProperties: false,
-        });
-        CreateWorker.sendData = _super.sendDataCreator.call(_m, UserIO.plainUserSchema);
-        return CreateWorker;
-    }(apiIO_1.HandlerIO));
+    class CreateWorker extends (_z = apiIO_1.HandlerIO) {
+    }
+    _y = CreateWorker;
+    CreateWorker.bodyValidator = Reflect.get(_z, "bodyValidatorCreator", _y).call(_y, {
+        type: 'object',
+        properties: {
+            login_name: { type: 'string' },
+            password: { type: 'string' },
+            ...permissionFields,
+        },
+        required: [
+            'login_name',
+            'password',
+            'role',
+            'role_type',
+            'permission_groups',
+        ],
+        additionalProperties: false,
+    });
+    CreateWorker.sendData = Reflect.get(_z, "sendDataCreator", _y).call(_y, UserIO.plainUserSchema);
     UserIO.CreateWorker = CreateWorker;
-    var UpdateWorker = /** @class */ (function (_super) {
-        __extends(UpdateWorker, _super);
-        function UpdateWorker() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _o;
-        _o = UpdateWorker;
-        UpdateWorker.bodyValidator = _super.bodyValidatorCreator.call(_o, {
-            type: 'object',
-            properties: __assign({ password: { type: 'string', nullable: true } }, permissionFields),
-            additionalProperties: false,
-        });
-        UpdateWorker.sendData = _super.sendDataCreator.call(_o, UserIO.plainUserSchema);
-        return UpdateWorker;
-    }(apiIO_1.HandlerIO));
+    class UpdateWorker extends (_1 = apiIO_1.HandlerIO) {
+    }
+    _0 = UpdateWorker;
+    UpdateWorker.bodyValidator = Reflect.get(_1, "bodyValidatorCreator", _0).call(_0, {
+        type: 'object',
+        properties: {
+            password: { type: 'string', nullable: true },
+            ...permissionFields,
+        },
+        additionalProperties: false,
+    });
+    UpdateWorker.sendData = Reflect.get(_1, "sendDataCreator", _0).call(_0, UserIO.plainUserSchema);
     UserIO.UpdateWorker = UpdateWorker;
-    var DeleteWorker = /** @class */ (function (_super) {
-        __extends(DeleteWorker, _super);
-        function DeleteWorker() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        var _p;
-        _p = DeleteWorker;
-        DeleteWorker.sendData = _super.sendDataCreator.call(_p, UserIO.plainUserSchema);
-        return DeleteWorker;
-    }(apiIO_1.HandlerIO));
+    class DeleteWorker extends (_3 = apiIO_1.HandlerIO) {
+    }
+    _2 = DeleteWorker;
+    DeleteWorker.sendData = Reflect.get(_3, "sendDataCreator", _2).call(_2, UserIO.plainUserSchema);
     UserIO.DeleteWorker = DeleteWorker;
 })(UserIO = exports.UserIO || (exports.UserIO = {}));

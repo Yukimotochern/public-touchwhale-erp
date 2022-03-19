@@ -1,5 +1,5 @@
 import errorCatcher from '../errorCatcher'
-import ErrorResponse from '../../utils/errorResponse'
+import CustomError from '../../utils/CustomError'
 import { TwPermissons } from './permissionType'
 import UserModel from '../../features/user/userModel'
 const { permissionGroupSet } = TwPermissons
@@ -13,7 +13,7 @@ export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
       }
       const user = await UserModel.findById(id)
       if (!user || !user.permission_groups)
-        return next(new ErrorResponse('Invalid user.'))
+        return next(new CustomError('Invalid user.'))
       const totalPermissions = user.permission_groups.reduce((prev, curr) => {
         const permissionsInGroup = permissionGroupSet.find(
           (ob) => ob.name === curr
@@ -28,7 +28,7 @@ export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
       }
     }
     return next(
-      new ErrorResponse(
+      new CustomError(
         'Permission middleware should only be added after auth middleware.'
       )
     )

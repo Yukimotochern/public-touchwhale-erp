@@ -33,6 +33,7 @@ export const EmailEnterForm = ({
       console.error(err)
       if (axios.isAxiosError(err)) {
         if (err.response?.data) {
+          console.log(err.response?.data)
           // error with response
           switch (err.response?.data?.error?.message) {
             case 'Email has been taken.':
