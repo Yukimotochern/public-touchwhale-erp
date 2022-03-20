@@ -23,5 +23,9 @@ router
     .get((0, errorCatcher_1.default)(twItemController_1.getItem))
     .put((0, errorCatcher_1.default)(twItemController_1.updateItem))
     .delete((0, errorCatcher_1.default)(twItemController_1.deleteItem));
-router.route('/uploadImage/:id').get([authMiddleware_1.default], (0, errorCatcher_1.default)(twItemController_1.getB2URL));
+router
+    .route('/uploadImage/:id')
+    .all(authMiddleware_1.default)
+    .get((0, errorCatcher_1.default)(twItemController_1.getB2URL))
+    .delete((0, errorCatcher_1.default)(twItemController_1.deleteItemImage));
 exports.default = router;

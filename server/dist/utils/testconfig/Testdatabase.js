@@ -39,54 +39,86 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MongooseStampsJSONSchema = exports.MongooseStaticsJSONSchema = void 0;
 var mongoose_1 = __importDefault(require("mongoose"));
-var connectDB = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var connect, err_1;
+var mongodb_memory_server_1 = require("mongodb-memory-server");
+var mongodb_1 = require("mongodb");
+var connection;
+var mongoServer;
+var connect = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var uri, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
-                connect = void 0;
-                if (!(process.env.NODE_ENV === 'test')) return [3 /*break*/, 2];
-                console.log('------Test Mode------'.bgYellow);
-                return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI_TEST)];
+                _a.trys.push([0, 4, , 5]);
+                return [4 /*yield*/, mongodb_memory_server_1.MongoMemoryServer.create()];
             case 1:
-                connect = _a.sent();
-                return [3 /*break*/, 4];
-            case 2: return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
+                mongoServer = _a.sent();
+                return [4 /*yield*/, mongoServer.getUri()];
+            case 2:
+                uri = _a.sent();
+                return [4 /*yield*/, mongodb_1.MongoClient.connect(uri, {}, function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    })];
             case 3:
-                connect = _a.sent();
-                _a.label = 4;
+                connection = _a.sent();
+                console.log(connection);
+                return [3 /*break*/, 5];
             case 4:
-                console.log("[server] MongoDB Connected: ".concat(connect.connection.host).cyan.underline
-                    .bold);
-                return [3 /*break*/, 6];
-            case 5:
                 err_1 = _a.sent();
-                if (typeof err_1.message === 'string') {
-                    console.error('Cannot Start MongoDB Connection With the Following Error: ', err_1.message);
-                }
-                else {
-                    console.error("Unknown thing thrown: ".concat(err_1));
-                }
-                // Exit process with failure
-                process.exit(1);
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                console.log('Mongodb memory server Error', err_1);
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
-exports.MongooseStaticsJSONSchema = {
-    _id: { type: 'string' },
-    __v: { type: 'number' },
-};
-exports.MongooseStampsJSONSchema = {
-    createdAt: {
-        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
-    },
-    updatedAt: {
-        anyOf: [{ type: 'object', required: [] }, { type: 'string' }],
-    },
-};
-exports.default = connectDB;
+var close = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 4, , 5]);
+                return [4 /*yield*/, mongoose_1.default.connection.dropDatabase()];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, mongoose_1.default.disconnect()];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, mongoServer.stop()];
+            case 3:
+                _a.sent();
+                return [3 /*break*/, 5];
+            case 4:
+                err_2 = _a.sent();
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); };
+var clear = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var collections, _a, _b, _i, key;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                collections = mongoose_1.default.connection.collections;
+                _a = [];
+                for (_b in collections)
+                    _a.push(_b);
+                _i = 0;
+                _c.label = 1;
+            case 1:
+                if (!(_i < _a.length)) return [3 /*break*/, 4];
+                key = _a[_i];
+                return [4 /*yield*/, collections[key].deleteMany({})];
+            case 2:
+                _c.sent();
+                _c.label = 3;
+            case 3:
+                _i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.default = { connect: connect, close: close, clear: clear };
