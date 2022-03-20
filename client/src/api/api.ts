@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders, Method } from 'axios'
 import { useRef, useEffect } from 'react'
-import { UserIO } from '@api/user/userHandlerIO'
 import { ApiPromise } from './apiPromise'
+import { ValidateFunction } from 'ajv'
 
 // Custom Abort Controll Hook
 const initAbortController = () => new AbortController()
-export const useAbortController = (shouldAutoRestart = false) => {
+const useAbortController = (shouldAutoRestart = false) => {
   const abortController = useRef(initAbortController())
 
   useEffect(() => {
@@ -24,12 +24,6 @@ let config: AxiosRequestConfig = {
   baseURL: process.env.REACT_APP_URL,
   headers: { 'content-type': 'application/json' },
 }
-
-// class ApiPromise<T = any> extends Promise<T> {
-//   async onMongooseError(cb: Function = () => {}): ApiPromise {
-//     return new ApiPromise((resolve, reject) => reject(this))
-//   }
-// }
 
 class api1 {
   static Request() {
@@ -50,7 +44,6 @@ class api1 {
     cof: AxiosRequestConfig = {}
   ) {
     try {
-      // avj req check
       // make the actural request
       const res = await axios.request<
         DataType,
@@ -65,7 +58,6 @@ class api1 {
         signal: abortController?.signal || undefined,
       })
       console.log(res.data)
-      // ajv res check
     } catch (err) {
       this.errorCatcher(err)
     }
@@ -133,11 +125,8 @@ class api1 {
   }
 }
 
-async function k() {
-  const a = await api1.Request().onMongoError().onMongoError()
-}
-
-export { api1 }
+export { api1, useAbortController }
+// export default api
 
 class api {
   static async get(url: string, cof: AxiosRequestConfig = {}) {

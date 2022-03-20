@@ -5,11 +5,14 @@ import { ErrorRequestHandler } from 'express'
 import { Error, mongo } from 'mongoose'
 
 const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
+  // catch error that has definite type
+  // mongo.Error
+  // Error... from mongoose
+
   // Log to console for dev
   if (!(err instanceof ErrorResponse) || err.statusCode !== 401) {
     // Don't log 401
   }
-
   let error = new ErrorResponse(
     err.message || 'Server Error',
     err.statusCode || 500,

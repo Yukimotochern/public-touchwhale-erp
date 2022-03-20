@@ -1,7 +1,7 @@
 import { DefinedError } from 'ajv'
 import { Error as mgError } from 'mongoose'
 export default class ErrorResponse extends Error {
-  public name: 'CustomError' = 'CustomError'
+  public name = 'CustomError' as const
   constructor(
     msg: string = 'Unspecified Error Message',
     public statusCode: number = 500,
