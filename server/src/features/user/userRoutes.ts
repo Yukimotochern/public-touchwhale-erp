@@ -1,23 +1,23 @@
 import express from 'express'
 import passport from 'passport'
 import {
-  userOAuthCallback,
-  userSignIn,
-  userSignUp,
-  userVerify,
-  userSignOut,
-  getUser,
-  updateUser,
-  userGetAvatarUploadUrl,
-  deleteAvatar,
-  changePassword,
-  forgetPassword,
-  resetPassword,
-  getWorkers,
-  getWorker,
-  createWorker,
-  updateWorker,
-  deleteWorker,
+	userOAuthCallback,
+	userSignIn,
+	userSignUp,
+	userVerify,
+	userSignOut,
+	getUser,
+	updateUser,
+	userGetAvatarUploadUrl,
+	deleteAvatar,
+	changePassword,
+	forgetPassword,
+	resetPassword,
+	getWorkers,
+	getWorker,
+	createWorker,
+	updateWorker,
+	deleteWorker,
 } from './userControllers'
 
 // Middleware
@@ -36,61 +36,61 @@ router.route('/signIn').post(errorCatcher(userSignIn))
 router.route('/signUp/setPassword').post(auth, errorCatcher(changePassword)) // Use changePassword to implement new user setPassword
 
 router
-  .route('/googleOAuth')
-  .get(passport.authenticate('google', { scope: ['profile', 'email'] }))
+	.route('/googleOAuth')
+	.get(passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 router.route('/googleOAuth/callback').get(
-  passport.authenticate('google', {
-    failureRedirect:
-      process.env.NODE_ENV === 'production'
-        ? '/signIn'
-        : `${process.env.FRONTEND_DEV_URL}signIN`,
-  }), //failureRedirect need to be changed
-  errorCatcher(userOAuthCallback)
+	passport.authenticate('google', {
+		failureRedirect:
+			process.env.NODE_ENV === 'production'
+				? '/signIn'
+				: `${process.env.FRONTEND_DEV_URL}signIN`,
+	}), //failureRedirect need to be changed
+	errorCatcher(userOAuthCallback)
 )
 
 router.route('/signOut').get(errorCatcher(userSignOut))
 
 router
-  .route('/')
-  .get(auth, errorCatcher(getUser))
-  .put(auth, errorCatcher(updateUser))
+	.route('/')
+	.get(auth, errorCatcher(getUser))
+	.put(auth, errorCatcher(updateUser))
 
 router.route('/111').get(
-  errorCatcher(async (req, res, next) => {
-    return new Promise<string>((resolve, reject) => {
-      setTimeout(() => {
-        console.log('Your work done.')
-        res.send('your res here')
-        resolve('foo')
-      }, 5000)
-    })
-  })
+	errorCatcher(async (req, res, next) => {
+		return new Promise<string>((resolve, reject) => {
+			setTimeout(() => {
+				console.log('Your work done.')
+				res.send('your res here')
+				resolve('foo')
+			}, 5000)
+		})
+	})
 )
 
 router
-  .route('/avatar')
-  .get(auth, errorCatcher(userGetAvatarUploadUrl))
-  .delete(auth, errorCatcher(deleteAvatar))
+	.route('/avatar')
+	.get(auth, errorCatcher(userGetAvatarUploadUrl))
+	.delete(auth, errorCatcher(deleteAvatar))
 
 router.route('/changePassword').put(auth, errorCatcher(changePassword))
 
 router
-  .route('/forgetPassword')
-  .post(errorCatcher(forgetPassword))
-  .put(errorCatcher(resetPassword))
+	.route('/forgetPassword')
+	.post(errorCatcher(forgetPassword))
+	.put(errorCatcher(resetPassword))
 
 router
-  .route('/workers')
-  .all(auth)
-  .get(permission(['user.get_workers']), getWorkers)
+	.route('/workers')
+	.all(auth)
+	.post(permission(['user.create_worker']), createWorker)
+	.get(permission(['user.get_workers']), getWorkers)
 
 router
-  .route('/workers/:id')
-  .all(auth)
-  .get(permission(['user.get_worker']), getWorker)
-  .post(permission(['user.create_worker']), createWorker)
-  .put(permission(['user.update_worker']), updateWorker)
-  .delete(permission(['user.delete_worker']), deleteWorker)
+	.route('/workers/:id')
+	.all(auth)
+	.get(permission(['user.get_worker']), getWorker)
+	.put(permission(['user.update_worker']), updateWorker)
+	.delete(permission(['user.delete_worker']), deleteWorker)
 
 export default router

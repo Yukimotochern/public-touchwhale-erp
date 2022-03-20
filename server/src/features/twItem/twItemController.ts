@@ -7,7 +7,7 @@ import { advancedResultResponse } from '../../middlewares/advancedResult'
 import { RequestHandler } from 'express'
 
 // Utils modules
-import { uploadImage } from '../../utils/AWS/b2'
+import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import ErrorResponse from '../../utils/errorResponse'
 
 // Type definition
@@ -102,7 +102,7 @@ export const getItem: RequestHandler = async (req, res, next) => {
 	GetItem.sendData(res, item)
 }
 
-// @route    GET api/v1/twItem/uploadAvatar/:id
+// @route    GET api/v1/twItem/uploadImage/:id
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 export const getB2URL: RequestHandler = async (req, res, next) => {
@@ -120,6 +120,25 @@ export const getB2URL: RequestHandler = async (req, res, next) => {
 	await item.save()
 	// res.status(200).send({ msg: result })
 	GetImageUploadUrl.sendData(res, { uploadUrl: url, image })
+}
+
+// @route    DELETE api/v1/twItem/uploadImage/:id
+// @desc     Delete item's image
+// @access   Private
+export const deleteItemImage: RequestHandler = async (req, res, next) => {
+	const item = await TwItem.findOne({
+		owner: req.userJWT?.owner,
+		_id: req.params.id,
+	})
+
+	if (!item) {
+		return next(new ErrorResponse('Item not found.', 404))
+	}
+	await deleteImage(ItemImageKeyPrifix, item.id)
+
+	item.image = ''
+	await item.save()
+	return HandlerIO.send(res, 200, { message: 'Image deleted.' })
 }
 
 // @route    PUT api/v1/twItem/:id

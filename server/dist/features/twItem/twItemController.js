@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
+exports.deleteItem = exports.updateItem = exports.deleteItemImage = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
 // Models
 var twItemModel_1 = require("./twItemModel");
 var twItemModel_2 = require("./twItemModel");
@@ -144,7 +144,7 @@ var getItem = function (req, res, next) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getItem = getItem;
-// @route    GET api/v1/twItem/uploadAvatar/:id
+// @route    GET api/v1/twItem/uploadImage/:id
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -180,6 +180,35 @@ var getB2URL = function (req, res, next) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.getB2URL = getB2URL;
+// @route    DELETE api/v1/twItem/uploadImage/:id
+// @desc     Delete item's image
+// @access   Private
+var deleteItemImage = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var item;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0: return [4 /*yield*/, twItemModel_1.TwItem.findOne({
+                    owner: (_a = req.userJWT) === null || _a === void 0 ? void 0 : _a.owner,
+                    _id: req.params.id,
+                })];
+            case 1:
+                item = _b.sent();
+                if (!item) {
+                    return [2 /*return*/, next(new errorResponse_1.default('Item not found.', 404))];
+                }
+                return [4 /*yield*/, (0, b2_1.deleteImage)(ItemImageKeyPrifix, item.id)];
+            case 2:
+                _b.sent();
+                item.image = '';
+                return [4 /*yield*/, item.save()];
+            case 3:
+                _b.sent();
+                return [2 /*return*/, apiIO_1.HandlerIO.send(res, 200, { message: 'Image deleted.' })];
+        }
+    });
+}); };
+exports.deleteItemImage = deleteItemImage;
 // @route    PUT api/v1/twItem/:id
 // @desc     Update item by item's id
 // @access   Private

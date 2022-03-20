@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.server = void 0;
 var path_1 = __importDefault(require("path"));
 var dotenv_1 = __importDefault(require("dotenv"));
 // Load env vars
@@ -36,11 +37,11 @@ app.use((0, cors_1.default)());
 app.use('/api/v1', apiRoutes_1.default);
 app.use(errorMiddleware_1.errorHandler);
 var PORT = process.env.SERVER_PORT || 5000;
-var server = app.listen(PORT, function () {
+exports.server = app.listen(PORT, function () {
     return console.log("[server] Server running in ".concat(process.env.NODE_ENV, " mode on port ").concat(PORT)
         .yellow.bold);
 });
-server.setTimeout(999999999);
+exports.server.setTimeout(999999999);
 if (process.env.NODE_ENV === 'production') {
     app.use(express_1.default.static(path_1.default.join(__dirname, '..', '..', 'client', 'build')));
     app.get('*', function (req, res) {
@@ -57,5 +58,6 @@ process.on('unhandledRejection', function (err, promise) {
         console.error("Unknown thing thrown: ".concat(err));
     }
     // Close server & exit process
-    server.close(function () { return process.exit(1); });
+    exports.server.close(function () { return process.exit(1); });
 });
+exports.default = app;

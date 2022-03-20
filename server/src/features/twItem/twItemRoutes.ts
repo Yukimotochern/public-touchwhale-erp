@@ -11,6 +11,7 @@ import {
 	updateItem,
 	deleteItem,
 	getB2URL,
+	deleteItemImage,
 } from './twItemController'
 import { TwItem } from './twItemModel'
 
@@ -30,6 +31,10 @@ router
 	.put(errorCatcher(updateItem))
 	.delete(errorCatcher(deleteItem))
 
-router.route('/uploadImage/:id').get([authMiddleware], errorCatcher(getB2URL))
+router
+	.route('/uploadImage/:id')
+	.all(authMiddleware)
+	.get(errorCatcher(getB2URL))
+	.delete(errorCatcher(deleteItemImage))
 
 export default router
