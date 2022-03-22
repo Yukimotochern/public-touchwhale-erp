@@ -5,8 +5,8 @@ import { avjErrorWrapper } from '../../utils/ajv'
 import CustomError from '../../utils/CustomError'
 import UserModel from './userModel'
 import {
-  forgetPasswordMessage,
-  sixDigitsMessage,
+	forgetPasswordMessage,
+	sixDigitsMessage,
 } from '../../utils/emailMessage'
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import { UserIO } from './userHandlerIO'
@@ -15,20 +15,20 @@ import { HandlerIO } from '../apiIO'
 import { api } from 'api/dist/api'
 
 const {
-  SignUp,
-  Verify,
-  SignIn,
-  GetUser,
-  Update,
-  GetAvatarUploadUrl,
-  ChangePassword,
-  ForgetPassword,
-  ResetPassword,
-  GetWorker,
-  GetWorkers,
-  CreateWorker,
-  DeleteWorker,
-  UpdateWorker,
+	SignUp,
+	Verify,
+	SignIn,
+	GetUser,
+	Update,
+	GetAvatarUploadUrl,
+	ChangePassword,
+	ForgetPassword,
+	ResetPassword,
+	GetWorker,
+	GetWorkers,
+	CreateWorker,
+	DeleteWorker,
+	UpdateWorker,
 } = UserIO
 
 const UserAvatarKeyPrifix = 'UserAvatar'
@@ -38,7 +38,6 @@ const UserAvatarKeyPrifix = 'UserAvatar'
 // @access   Public
 export const userSignUp: RequestHandler = async (req, res, next) => {
   if (SignUp.bodyValidator(req.body)) {
-    const a = new api<any, any>({})
     const { email } = req.body
     let user = await UserModel.findOne({ email })
     const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
@@ -88,9 +87,9 @@ export const userVerify: RequestHandler = async (req, res, next) => {
       return next(new CustomError('Invalid credentials.', 401))
     }
 
-    return Verify.sendData(res, user.getSignedJWTToken())
-  }
-  next(avjErrorWrapper(Verify.bodyValidator.errors))
+		return Verify.sendData(res, user.getSignedJWTToken())
+	}
+	next(avjErrorWrapper(Verify.bodyValidator.errors))
 }
 
 // @route    POST api/v1/user/signIn
@@ -194,20 +193,20 @@ export const userOAuthCallback: RequestHandler = async (req, res, next) => {
 // @desc     Sign user out
 // @access   Public
 export const userSignOut: RequestHandler = async (req, res, next) => {
-  res.clearCookie('token', {
-    path: '/',
-    domain:
-      process.env.NODE_ENV === 'development'
-        ? process.env.DEV_DOMAIN
-        : process.env.PROD_DOMAIN,
-    httpOnly: true,
-  })
-  res.clearCookie('token', {
-    path: '/',
-    domain: '127.0.0.1',
-    httpOnly: true,
-  })
-  res.end()
+	res.clearCookie('token', {
+		path: '/',
+		domain:
+			process.env.NODE_ENV === 'development'
+				? process.env.DEV_DOMAIN
+				: process.env.PROD_DOMAIN,
+		httpOnly: true,
+	})
+	res.clearCookie('token', {
+		path: '/',
+		domain: '127.0.0.1',
+		httpOnly: true,
+	})
+	res.end()
 }
 
 // @route    GET api/v1/user/
@@ -252,9 +251,9 @@ export const updateUser: RequestHandler = async (req, res, next) => {
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 export const userGetAvatarUploadUrl: RequestHandler = async (
-  req,
-  res,
-  next
+	req,
+	res,
+	next
 ) => {
   if (req.userJWT?.id) {
     const { id } = req.userJWT
@@ -356,22 +355,22 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 // @route       PUT /api/v1/user/forgetPassword
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
-  if (ResetPassword.bodyValidator(req.body)) {
-    // case 1: body only provide token
-    // 1. validate the token
-    // 2. reset a new token and return
-    // case 2: body provide both token and new password
-    // 1. validate the token
-    // 2. reset the password
-    const forgetPasswordToken = crypto
-      .createHash('sha256')
-      .update(req.body.token)
-      .digest('hex')
+	if (ResetPassword.bodyValidator(req.body)) {
+		// case 1: body only provide token
+		// 1. validate the token
+		// 2. reset a new token and return
+		// case 2: body provide both token and new password
+		// 1. validate the token
+		// 2. reset the password
+		const forgetPasswordToken = crypto
+			.createHash('sha256')
+			.update(req.body.token)
+			.digest('hex')
 
-    const user = await UserModel.findOne({
-      forgetPasswordToken,
-      forgetPasswordExpire: { $gt: Date.now() },
-    })
+		const user = await UserModel.findOne({
+			forgetPasswordToken,
+			forgetPasswordExpire: { $gt: Date.now() },
+		})
 
     if (!user) {
       return next(new CustomError('Invalid token.', 400))
@@ -520,23 +519,26 @@ export const userXXX: RequestHandler = async (req, res, next) => {
 
 // Helper functions
 const setToken = (user: UserType.Mongoose, res: Response): any => {
-  const token = user.getSignedJWTToken()
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24
-    ), //Expires in days
-    httpOnly: true,
-  }
+	const token = user.getSignedJWTToken()
+	const options = {
+		expires: new Date(
+			Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000 * 24
+		), //Expires in days
+		httpOnly: true,
+	}
 
-  res.cookie('token', token, options)
-  return token
+	res.cookie('token', token, options)
+	return token
 }
 
 const sendTokenResponse = (
-  user: UserType.Mongoose,
-  statusCode: number,
-  res: Response
+	user: UserType.Mongoose,
+	statusCode: number,
+	res: Response
 ): void => {
-  setToken(user, res)
-  return HandlerIO.send(res, statusCode)
+	const token = setToken(user, res)
+	if (process.env.NODE_ENV === 'test') {
+		return HandlerIO.send(res, statusCode, token)
+	}
+	return HandlerIO.send(res, statusCode)
 }

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.updateItem = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
+exports.deleteItem = exports.updateItem = exports.deleteItemImage = exports.getB2URL = exports.getItem = exports.addItem = exports.getItems = void 0;
 // Models
 const twItemModel_1 = require("./twItemModel");
 const twItemModel_2 = require("./twItemModel");
@@ -83,7 +83,7 @@ const getItem = async (req, res, next) => {
     GetItem.sendData(res, item);
 };
 exports.getItem = getItem;
-// @route    GET api/v1/twItem/uploadAvatar/:id
+// @route    GET api/v1/twItem/uploadImage/:id
 // @desc     Get B2 url for frontend to make a put request
 // @access   Private
 const getB2URL = async (req, res, next) => {
@@ -103,6 +103,23 @@ const getB2URL = async (req, res, next) => {
     GetImageUploadUrl.sendData(res, { uploadUrl: url, image });
 };
 exports.getB2URL = getB2URL;
+// @route    DELETE api/v1/twItem/uploadImage/:id
+// @desc     Delete item's image
+// @access   Private
+const deleteItemImage = async (req, res, next) => {
+    const item = await twItemModel_1.TwItem.findOne({
+        owner: req.userJWT?.owner,
+        _id: req.params.id,
+    });
+    if (!item) {
+        return next(new CustomError_1.default('Item not found.', 404));
+    }
+    await (0, b2_1.deleteImage)(ItemImageKeyPrifix, item.id);
+    item.image = '';
+    await item.save();
+    return apiIO_1.HandlerIO.send(res, 200, { message: 'Image deleted.' });
+};
+exports.deleteItemImage = deleteItemImage;
 // @route    PUT api/v1/twItem/:id
 // @desc     Update item by item's id
 // @access   Private

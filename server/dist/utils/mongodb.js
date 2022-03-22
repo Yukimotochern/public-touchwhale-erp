@@ -7,7 +7,14 @@ exports.MongooseStampsJSONSchema = exports.MongooseStaticsJSONSchema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const connectDB = async () => {
     try {
-        const connect = await mongoose_1.default.connect(process.env.MONGO_URI);
+        let connect;
+        if (process.env.NODE_ENV === 'test') {
+            console.log('------Test Mode------'.bgYellow);
+            connect = await mongoose_1.default.connect(process.env.MONGO_URI_TEST);
+        }
+        else {
+            connect = await mongoose_1.default.connect(process.env.MONGO_URI);
+        }
         console.log(`[server] MongoDB Connected: ${connect.connection.host}`.cyan.underline
             .bold);
     }

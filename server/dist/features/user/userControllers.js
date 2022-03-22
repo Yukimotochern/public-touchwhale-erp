@@ -13,7 +13,6 @@ const emailMessage_1 = require("../../utils/emailMessage");
 const b2_1 = require("../../utils/AWS/b2");
 const userHandlerIO_1 = require("./userHandlerIO");
 const apiIO_1 = require("../apiIO");
-const api_1 = require("api/dist/api");
 const { SignUp, Verify, SignIn, GetUser, Update, GetAvatarUploadUrl, ChangePassword, ForgetPassword, ResetPassword, GetWorker, GetWorkers, CreateWorker, DeleteWorker, UpdateWorker, } = userHandlerIO_1.UserIO;
 const UserAvatarKeyPrifix = 'UserAvatar';
 // @route    POST api/v1/user/signUp
@@ -21,7 +20,6 @@ const UserAvatarKeyPrifix = 'UserAvatar';
 // @access   Public
 const userSignUp = async (req, res, next) => {
     if (SignUp.bodyValidator(req.body)) {
-        const a = new api_1.api({});
         const { email } = req.body;
         let user = await userModel_1.default.findOne({ email });
         const sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
@@ -478,6 +476,9 @@ const setToken = (user, res) => {
     return token;
 };
 const sendTokenResponse = (user, statusCode, res) => {
-    setToken(user, res);
+    const token = setToken(user, res);
+    if (process.env.NODE_ENV === 'test') {
+        return apiIO_1.HandlerIO.send(res, statusCode, token);
+    }
     return apiIO_1.HandlerIO.send(res, statusCode);
 };
