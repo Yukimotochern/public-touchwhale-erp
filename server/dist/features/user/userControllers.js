@@ -167,13 +167,19 @@ const userSignOut = async (req, res, next) => {
     console.log(process.env.NODE_ENV === 'production'
         ? process.env.PROD_DOMAIN
         : process.env.DEV_DOMAIN);
-    res.clearCookie('token', {
-        path: '/',
-        domain: process.env.NODE_ENV === 'production'
-            ? process.env.PROD_DOMAIN
-            : process.env.DEV_DOMAIN,
+    // res.clearCookie('token', {
+    //   path: '/',
+    //   domain:
+    //     process.env.NODE_ENV === 'production'
+    //       ? process.env.PROD_DOMAIN
+    //       : process.env.DEV_DOMAIN,
+    //   httpOnly: true,
+    // })
+    const options = {
+        expires: new Date(1),
         httpOnly: true,
-    });
+    };
+    res.cookie('token', '', options);
     res.end();
 };
 exports.userSignOut = userSignOut;
