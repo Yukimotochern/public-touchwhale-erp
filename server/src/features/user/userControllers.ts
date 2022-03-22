@@ -193,6 +193,13 @@ export const userOAuthCallback: RequestHandler = async (req, res, next) => {
 // @desc     Sign user out
 // @access   Public
 export const userSignOut: RequestHandler = async (req, res, next) => {
+  console.log(process.env.NODE_ENV)
+  console.log(process.env.PROD_DOMAIN)
+  console.log(
+    process.env.NODE_ENV === 'production'
+      ? process.env.PROD_DOMAIN
+      : process.env.DEV_DOMAIN
+  )
   res.clearCookie('token', {
     path: '/',
     domain:
