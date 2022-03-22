@@ -1,6 +1,7 @@
 node_modules
 client/node_modules
 server/node_modules
+api/node_modules
 config.env
 client/build
 .DS_Store
