@@ -116,7 +116,8 @@ export default class api<ReqestBodyType, ResponseDataType> {
     innerError: ApiErrorDealtInternallyAndThrown
   ): ApiErrorDealtInternallyAndThrown {
     let err = innerError.thrown
-    console.log(err)
+    console.log(err instanceof Error)
+    console.log((err as any).message)
     if (err instanceof AjvErrors) {
       // validate problem
     } else if (axios.isAxiosError(err)) {
@@ -128,14 +129,14 @@ export default class api<ReqestBodyType, ResponseDataType> {
         // custom error from server
         console.log('here')
       } else {
-        // unexpectedly nothing from server
-        message.error('Something seems to go wrong')
-      }
-    } else if (err instanceof DOMException) {
-      // possibly Network Error
-      console.log(err.NETWORK_ERR)
-      console.log(err.name)
-      if (err.name === '') {
+        // some intrinsic error
+        if (err instanceof Error && err.message === 'Network Error') {
+          // nework problem
+          message.error('Please check your net work connection.')
+        } else {
+          // unexpected error
+          message.error('Something seems to go wrong')
+        }
       }
     } else if (err instanceof axios.Cancel) {
       // cancel error
