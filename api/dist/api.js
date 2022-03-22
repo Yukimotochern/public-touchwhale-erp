@@ -79,7 +79,8 @@ class api {
     }
     errorProcessor(innerError) {
         let err = innerError.thrown;
-        console.log(err);
+        console.log(err instanceof Error);
+        console.log(err.message);
         if (err instanceof CustomError_1.AjvErrors) {
             // validate problem
         }
@@ -93,15 +94,15 @@ class api {
                 console.log('here');
             }
             else {
-                // unexpectedly nothing from server
-                antd_1.message.error('Something seems to go wrong');
-            }
-        }
-        else if (err instanceof DOMException) {
-            // possibly Network Error
-            console.log(err.NETWORK_ERR);
-            console.log(err.name);
-            if (err.name === '') {
+                // some intrinsic error
+                if (err instanceof Error && err.message === 'Network Error') {
+                    // nework problem
+                    antd_1.message.error('Please check your net work connection.');
+                }
+                else {
+                    // unexpected error
+                    antd_1.message.error('Something seems to go wrong');
+                }
             }
         }
         else if (err instanceof axios_1.default.Cancel) {
