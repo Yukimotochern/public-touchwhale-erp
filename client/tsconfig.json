@@ -1,11 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@api/*": ["../server/src/features/*"],
-      "@backend/mid/*": ["../server/src/middlewares/*"],
-      "@backend/*": ["../server/src/*"]
-    },
     "target": "es5",
     "noImplicitAny": false,
     "lib": ["dom", "dom.iterable", "esnext"],

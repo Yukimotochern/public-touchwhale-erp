@@ -9,7 +9,6 @@ const rolePermissions_1 = require("../../features/role/rolePermissions");
 // 3. make sure the permission group resides somewhere in the permission tree
 var TwPermissons;
 (function (TwPermissons) {
-    // union of all the permissions to controllers
     TwPermissons.permissionSet = [
         ...userPermissions_1.UserPermissions.permissionSet,
         ...rolePermissions_1.RolePermissions.permissionSet,

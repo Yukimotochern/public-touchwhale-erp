@@ -12,6 +12,7 @@ import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import { UserIO } from './userHandlerIO'
 import { UserType } from './userTypes'
 import { HandlerIO } from '../apiIO'
+import { api } from 'api/dist/api'
 
 const {
   SignUp,
@@ -37,6 +38,7 @@ const UserAvatarKeyPrifix = 'UserAvatar'
 // @access   Public
 export const userSignUp: RequestHandler = async (req, res, next) => {
   if (SignUp.bodyValidator(req.body)) {
+    const a = new api<any, any>({})
     const { email } = req.body
     let user = await UserModel.findOne({ email })
     const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
@@ -312,7 +314,7 @@ export const changePassword: RequestHandler = async (req, res, next) => {
   }
 }
 
-// @route    POST api/v1/regularUser/forgetPassword
+// @route    POST api/v1/user/forgetPassword
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {

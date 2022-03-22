@@ -8,7 +8,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "paths": { "@frontend/*": ["../client/src/api/*"] },
     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
     "lib": [
       "es2021",
@@ -23,7 +22,7 @@
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     "outDir": "./dist" /* Redirect output structure to the directory. */,
-    // "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
+    "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
     // "removeComments": true,                /* Do not emit comments to output. */
@@ -73,7 +72,6 @@
 
     /* Advanced Options */
     "skipLibCheck": true /* Skip type checking of declaration files. */,
-    "forceConsistentCasingInFileNames": false /* Disallow inconsistently-cased references to the same file. */
-  },
-  "include": ["src"]
+    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+  }
 }

@@ -1,5 +1,5 @@
 import CustomError, { MongoError } from '../utils/CustomError'
-// import { serializeError } from 'serialize-error'
+import { serializeError } from 'serialize-error'
 import { DefinedError } from 'ajv'
 import { ErrorRequestHandler } from 'express'
 import { Error as MongooseError, mongo } from 'mongoose'
@@ -31,18 +31,15 @@ const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
         error = new MongoError('', err)
       }
     } else {
-      console.log(err.message)
-      console.error(err)
       error = err
     }
   } else {
     console.error(`Unknown thing with type ${typeof err} thrown: `)
     console.error(err)
   }
-  // console.log(serializeError(error))
   return res
     .status(error.statusCode)
     .set('Content-Type', 'application/json')
-    .send(error)
+    .send(serializeError(error))
 }
 export { errorHandler }

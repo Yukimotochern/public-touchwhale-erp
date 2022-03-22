@@ -29,15 +29,6 @@ router
     .route('/')
     .get(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.getUser))
     .put(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.updateUser));
-router.route('/111').get((0, errorCatcher_1.default)(async (req, res, next) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            console.log('Your work done.');
-            res.send('your res here');
-            resolve('foo');
-        }, 5000);
-    });
-}));
 router
     .route('/avatar')
     .get(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.userGetAvatarUploadUrl))
@@ -50,12 +41,12 @@ router
 router
     .route('/workers')
     .all(authMiddleware_1.default)
-    .get((0, permissionMiddleware_1.permission)(['user.get_workers']), userControllers_1.getWorkers);
+    .get((0, permissionMiddleware_1.permission)(['user.get_workers']), userControllers_1.getWorkers)
+    .post((0, permissionMiddleware_1.permission)(['user.create_worker']), userControllers_1.createWorker);
 router
     .route('/workers/:id')
     .all(authMiddleware_1.default)
     .get((0, permissionMiddleware_1.permission)(['user.get_worker']), userControllers_1.getWorker)
-    .post((0, permissionMiddleware_1.permission)(['user.create_worker']), userControllers_1.createWorker)
     .put((0, permissionMiddleware_1.permission)(['user.update_worker']), userControllers_1.updateWorker)
     .delete((0, permissionMiddleware_1.permission)(['user.delete_worker']), userControllers_1.deleteWorker);
 exports.default = router;

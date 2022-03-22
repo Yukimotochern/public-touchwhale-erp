@@ -1,23 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders, Method } from 'axios'
-import { useRef, useEffect } from 'react'
 import { ApiPromise } from './apiPromise'
-// import { ValidateFunction } from 'ajv'
-
-// Custom Abort Controll Hook
-const initAbortController = () => new AbortController()
-const useAbortController = (shouldAutoRestart = false) => {
-  const abortController = useRef(initAbortController())
-
-  useEffect(() => {
-    if (shouldAutoRestart && abortController.current.signal.aborted) {
-      abortController.current = initAbortController()
-    }
-  }, [abortController.current.signal.aborted, shouldAutoRestart])
-
-  useEffect(() => () => abortController.current.abort(), [])
-
-  return abortController.current
-}
 
 let config: AxiosRequestConfig = {
   timeout: +process.env.REACT_APP_API_TIMEOUT,
@@ -155,5 +137,5 @@ class api {
   }
 }
 
-export { api1, useAbortController }
+export { api1 }
 export default api

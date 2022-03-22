@@ -25,6 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const serialize_error_1 = require("serialize-error");
 const mongoose_1 = require("mongoose");
 const errorHandler = (err, req, res, next) => {
     // catch error that has definite type
@@ -49,8 +50,6 @@ const errorHandler = (err, req, res, next) => {
             }
         }
         else {
-            console.log(err.message);
-            console.error(err);
             error = err;
         }
     }
@@ -58,10 +57,9 @@ const errorHandler = (err, req, res, next) => {
         console.error(`Unknown thing with type ${typeof err} thrown: `);
         console.error(err);
     }
-    // console.log(serializeError(error))
     return res
         .status(error.statusCode)
         .set('Content-Type', 'application/json')
-        .send(error);
+        .send((0, serialize_error_1.serializeError)(error));
 };
 exports.errorHandler = errorHandler;

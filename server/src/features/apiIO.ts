@@ -32,7 +32,6 @@ export class HandlerIO {
         data,
         ...extra,
       }
-
       // do some computationally intensive checks in development mode
       if (process.env.NODE_ENV === 'development') {
         if (resBodyValidator(resBody)) {
@@ -65,7 +64,9 @@ export class HandlerIO {
 
           // check with provided validator
           if (!validator(clientObtainedThing)) {
+            console.log(`Here's what client obtained: `)
             console.log(clientObtainedThing)
+            console.log(`with the following errors:`)
             console.log(validator.errors)
             throw new CustomError('Unexpected response body from server.')
           }
@@ -86,17 +87,6 @@ export class HandlerIO {
     }
   }
 }
-
-// only for type check purpose, since any type in 'data' field is not representable by JSONSchemaType
-export const bodyWithOutDataJSONSchemaType: JSONSchemaType<ResBodyWithOutData> =
-  {
-    type: 'object',
-    properties: {
-      message: { type: 'string', nullable: true },
-      // if any thing should be added here, do add it in resBodyValidator (below) !!!!!
-    },
-    additionalProperties: false,
-  }
 
 // general response body json validator
 export const resBodyValidator = ajv.compile<ResBody>({

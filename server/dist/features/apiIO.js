@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resBodyValidator = exports.bodyWithOutDataJSONSchemaType = exports.HandlerIO = void 0;
+exports.resBodyValidator = exports.HandlerIO = void 0;
 const ajv_1 = __importDefault(require("../utils/ajv"));
 const CustomError_1 = __importDefault(require("../utils/CustomError"));
 class HandlerIO {
@@ -46,7 +46,9 @@ class HandlerIO {
                     }
                     // check with provided validator
                     if (!validator(clientObtainedThing)) {
+                        console.log(`Here's what client obtained: `);
                         console.log(clientObtainedThing);
+                        console.log(`with the following errors:`);
                         console.log(validator.errors);
                         throw new CustomError_1.default('Unexpected response body from server.');
                     }
@@ -66,15 +68,6 @@ class HandlerIO {
     }
 }
 exports.HandlerIO = HandlerIO;
-// only for type check purpose, since any type in 'data' field is not representable by JSONSchemaType
-exports.bodyWithOutDataJSONSchemaType = {
-    type: 'object',
-    properties: {
-        message: { type: 'string', nullable: true },
-        // if any thing should be added here, do add it in resBodyValidator (below) !!!!!
-    },
-    additionalProperties: false,
-};
 // general response body json validator
 exports.resBodyValidator = ajv_1.default.compile({
     type: 'object',

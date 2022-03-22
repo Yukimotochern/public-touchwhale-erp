@@ -4,13 +4,6 @@ exports.UserIO = void 0;
 const mongodb_1 = require("../../utils/mongodb");
 const apiIO_1 = require("../apiIO");
 const permissionType_1 = require("../../middlewares/permission/permissionType");
-/*
-  TEMPLATE HERE
-  export class XXX extends HandlerIO {
-    static bodyValidator = super.bodyValidatorCreator<yyyType.XXXBody>({<bodySchema>})
-    static sendData = super.sendDataCreator<yyyType.XXXData>({dataSchema})
-  }
-*/
 var UserIO;
 (function (UserIO) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3;
@@ -186,13 +179,7 @@ var UserIO;
             password: { type: 'string' },
             ...permissionFields,
         },
-        required: [
-            'login_name',
-            'password',
-            'role',
-            'role_type',
-            'permission_groups',
-        ],
+        required: ['login_name', 'password', 'role_type', 'permission_groups'],
         additionalProperties: false,
     });
     CreateWorker.sendData = Reflect.get(_z, "sendDataCreator", _y).call(_y, UserIO.plainUserSchema);

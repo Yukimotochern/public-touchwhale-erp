@@ -4,7 +4,7 @@ import { JSONSchemaType, ValidateFunction } from 'ajv'
 import CustomError from '../utils/CustomError'
 
 export interface ResBody<ResBodyDataType = any> {
-  data?: ResBodyDataType | undefined
+  data?: ResBodyDataType | unknown
   message?: string
 }
 

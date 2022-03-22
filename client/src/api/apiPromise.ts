@@ -1,6 +1,6 @@
 type NullaryFn<T = void> = () => T
-export type UnaryFn<T = void, U = void> = (arg: T) => U
-export type OnRejectFn<ErrorAccept = Error> =
+type UnaryFn<T = void, U = void> = (arg: T) => U
+type OnRejectFn<ErrorAccept = Error> =
   | UnaryFn<ErrorAccept | unknown, never | PromiseLike<never>>
   | undefined
   | null
@@ -55,3 +55,4 @@ export class ApiPromise<T> implements Promise<T> {
     return this
   }
 }
+export default ApiPromise
