@@ -193,6 +193,7 @@ export const userOAuthCallback: RequestHandler = async (req, res, next) => {
 // @desc     Sign user out
 // @access   Public
 export const userSignOut: RequestHandler = async (req, res, next) => {
+  console.log('here')
   console.log(process.env.NODE_ENV)
   console.log(process.env.PROD_DOMAIN)
   console.log(
