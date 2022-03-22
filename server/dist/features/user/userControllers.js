@@ -161,6 +161,12 @@ exports.userOAuthCallback = userOAuthCallback;
 // @desc     Sign user out
 // @access   Public
 const userSignOut = async (req, res, next) => {
+    console.log('here');
+    console.log(process.env.NODE_ENV);
+    console.log(process.env.PROD_DOMAIN);
+    console.log(process.env.NODE_ENV === 'production'
+        ? process.env.PROD_DOMAIN
+        : process.env.DEV_DOMAIN);
     res.clearCookie('token', {
         path: '/',
         domain: process.env.NODE_ENV === 'production'
