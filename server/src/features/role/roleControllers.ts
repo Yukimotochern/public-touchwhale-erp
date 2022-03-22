@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import { avjErrorWrapper } from '../../utils/ajv'
-import ErrorResponse from '../../utils/errorResponse'
+import CustomError from '../../utils/CustomError'
 import RoleModel from './roleModels'
 import { RoleIO } from './roleHandlerIO'
 import UserModel from '../user/userModel'
@@ -16,7 +16,7 @@ export const getRoles: RequestHandler = async (req, res, next) => {
     const roles = await RoleModel.find({ owner: req.userJWT.owner })
     return GetRoles.sendData(res, roles)
   }
-  next(new ErrorResponse('Internal Server error'))
+  next(new CustomError('Internal Server error'))
 }
 
 // @route    GET api/v1/roles/:id
@@ -31,9 +31,9 @@ export const getRole: RequestHandler = async (req, res, next) => {
     if (role) {
       return GetRole.sendData(res, role)
     }
-    next(new ErrorResponse('Internal Server error'))
+    next(new CustomError('Internal Server error'))
   }
-  next(new ErrorResponse('Internal Server error'))
+  next(new CustomError('Internal Server error'))
 }
 
 // @route    POST api/v1/roles
@@ -50,11 +50,11 @@ export const createRole: RequestHandler = async (req, res, next) => {
       if (role) {
         return CreateRole.sendData(res, role)
       }
-      next(new ErrorResponse('Internal Server error'))
+      next(new CustomError('Internal Server error'))
     }
     next(avjErrorWrapper(CreateRole.bodyValidator.errors))
   }
-  next(new ErrorResponse('Internal Server error'))
+  next(new CustomError('Internal Server error'))
 }
 
 // @route    PUT api/v1/roles/:id
@@ -70,7 +70,7 @@ export const updateRole: RequestHandler = async (req, res, next) => {
       }
       const role = await RoleModel.findOne(roleQuery)
       if (!role) {
-        return next(new ErrorResponse('Role not found.'))
+        return next(new CustomError('Role not found.'))
       }
       const new_role = updates
       const new_p_groups = new_role.permission_groups
@@ -161,11 +161,11 @@ export const updateRole: RequestHandler = async (req, res, next) => {
           updatedRole: updatedRole,
         })
       }
-      return next(new ErrorResponse('Role not found.'))
+      return next(new CustomError('Role not found.'))
     }
     next(avjErrorWrapper(UpdateRole.bodyValidator.errors))
   }
-  next(new ErrorResponse('Internal Server error'))
+  next(new CustomError('Internal Server error'))
 }
 
 // @route    DELETE api/v1/roles/:id
@@ -180,7 +180,7 @@ export const deleteRole: RequestHandler = async (req, res, next) => {
       _id: req.params.id,
     })
     if (!role) {
-      return next(new ErrorResponse('Role not found.'))
+      return next(new CustomError('Role not found.'))
     }
     const users = await UserModel.find({
       owner: req.userJWT.owner,
@@ -198,5 +198,5 @@ export const deleteRole: RequestHandler = async (req, res, next) => {
       deletedRole: role,
     })
   }
-  next(new ErrorResponse('Internal Server error'))
+  next(new CustomError('Internal Server error'))
 }

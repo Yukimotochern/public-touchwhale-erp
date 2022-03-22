@@ -2,9 +2,11 @@ import React from 'react'
 import { Form, Input, Button, Divider, Typography, message } from 'antd'
 import styles from './EmailEnterForm.module.css'
 import { UseStateForSignUpPageProps } from './SignUpPage'
-import api from '../../api/api'
+// import api from '../../api/api'
+import { SignUp } from 'api/dist/user/userApi'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { deserializeError } from 'serialize-error'
 
 export const EmailEnterForm = ({
   signUpProcessState,
@@ -19,10 +21,12 @@ export const EmailEnterForm = ({
       loading: true,
       email,
     }))
+
     try {
-      await api.post('/user/signUp', {
-        email,
-      })
+      await SignUp.signUp(email)
+      // await api.post('/user/signUp', {
+      //   email,
+      // })
       setSignUpProcessState((state) => ({
         ...state,
         email,
@@ -30,35 +34,35 @@ export const EmailEnterForm = ({
         loading: false,
       }))
     } catch (err: any) {
-      console.error(err)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data) {
-          // error with response
-          switch (err.response?.data?.error?.message) {
-            case 'Email has been taken.':
-              form.setFields([
-                { name: 'email', errors: ['Email has been taken.'] },
-              ])
-              message.error('Email has been taken.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        } else {
-          // error without response
-          switch (err.message) {
-            case 'Network Error':
-              message.error('Please check your internet connection.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        }
-      } else {
-        message.error(`Unknown error: ${err}`)
-      }
+      // if (axios.isAxiosError(err)) {
+      //   if (err.response?.data) {
+      //     console.log(123, deserializeError(err.response))
+      //     // error with response
+      //     switch (err.response?.data?.error?.message) {
+      //       case 'Email has been taken.':
+      //         form.setFields([
+      //           { name: 'email', errors: ['Email has been taken.'] },
+      //         ])
+      //         message.error('Email has been taken.')
+      //         break
+      //       default:
+      //         message.error(`Something is wrong: ${err.message}`)
+      //         break
+      //     }
+      //   } else {
+      //     // error without response
+      //     switch (err.message) {
+      //       case 'Network Error':
+      //         message.error('Please check your internet connection.')
+      //         break
+      //       default:
+      //         message.error(`Something is wrong: ${err.message}`)
+      //         break
+      //     }
+      //   }
+      // } else {
+      //   message.error(`Unknown error: ${err}`)
+      // }
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,
@@ -74,7 +78,7 @@ export const EmailEnterForm = ({
         icon={<img src='/google_logo.png' alt='Google Logo' />}
         disabled={signUpProcessState.loading}
         onClick={() => {
-          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/regularUser/googleOAuth`
+          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/googleOAuth`
         }}
       >
         Sign up with Google

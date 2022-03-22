@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import ajv from '../utils/ajv'
 import { JSONSchemaType, ValidateFunction } from 'ajv'
-import ErrorResponse from '../utils/errorResponse'
+import CustomError from '../utils/CustomError'
 
 export interface ResBody<ResBodyDataType = any> {
-  data?: ResBodyDataType | undefined
+  data?: ResBodyDataType | unknown
   message?: string
 }
 

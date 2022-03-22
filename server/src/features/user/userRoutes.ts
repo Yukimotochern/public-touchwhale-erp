@@ -56,18 +56,6 @@ router
   .get(auth, errorCatcher(getUser))
   .put(auth, errorCatcher(updateUser))
 
-router.route('/111').get(
-  errorCatcher(async (req, res, next) => {
-    return new Promise<string>((resolve, reject) => {
-      setTimeout(() => {
-        console.log('Your work done.')
-        res.send('your res here')
-        resolve('foo')
-      }, 5000)
-    })
-  })
-)
-
 router
   .route('/avatar')
   .get(auth, errorCatcher(userGetAvatarUploadUrl))
@@ -83,13 +71,13 @@ router
 router
   .route('/workers')
   .all(auth)
+  .post(permission(['user.create_worker']), createWorker)
   .get(permission(['user.get_workers']), getWorkers)
 
 router
   .route('/workers/:id')
   .all(auth)
   .get(permission(['user.get_worker']), getWorker)
-  .post(permission(['user.create_worker']), createWorker)
   .put(permission(['user.update_worker']), updateWorker)
   .delete(permission(['user.delete_worker']), deleteWorker)
 

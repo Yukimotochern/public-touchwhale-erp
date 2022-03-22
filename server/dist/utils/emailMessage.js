@@ -1,16 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sixDigitsMessage = exports.forgetPasswordMessage = void 0;
-var forgetPasswordMessage = function (option) {
-    var protocol = option.protocol, host = option.host, token = option.token;
-    var resetUrl = "".concat(protocol, "://").concat(host, "/api/v1/user/forgetpassword/").concat(token);
-    var message = "Make a PUT request to: \n ".concat(resetUrl);
+const forgetPasswordMessage = (option) => {
+    const { protocol, host, token } = option;
+    const resetUrl = process.env.NODE_ENV === 'production'
+        ? `${protocol}://${host}/forgetpassword#${token}`
+        : `${process.env.FRONTEND_DEV_URL}/forgetpassword#${token}`;
+    const message = `Click the following link to reset password: \n ${resetUrl}`;
     return message;
 };
 exports.forgetPasswordMessage = forgetPasswordMessage;
-var sixDigitsMessage = function (option) {
-    var sixDigits = option.sixDigits;
-    var message = "Your six digits number are: ".concat(sixDigits);
+const sixDigitsMessage = (option) => {
+    const { sixDigits } = option;
+    const message = `Your six digits number are: ${sixDigits}`;
     return message;
 };
 exports.sixDigitsMessage = sixDigitsMessage;

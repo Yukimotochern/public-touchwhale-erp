@@ -1,35 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders, Method } from 'axios'
-import { useRef, useEffect } from 'react'
-import { UserIO } from '@api/user/userHandlerIO'
 import { ApiPromise } from './apiPromise'
-
-// Custom Abort Controll Hook
-const initAbortController = () => new AbortController()
-export const useAbortController = (shouldAutoRestart = false) => {
-  const abortController = useRef(initAbortController())
-
-  useEffect(() => {
-    if (shouldAutoRestart && abortController.current.signal.aborted) {
-      abortController.current = initAbortController()
-    }
-  }, [abortController.current.signal.aborted, shouldAutoRestart])
-
-  useEffect(() => () => abortController.current.abort(), [])
-
-  return abortController.current
-}
 
 let config: AxiosRequestConfig = {
   timeout: +process.env.REACT_APP_API_TIMEOUT,
   baseURL: process.env.REACT_APP_URL,
   headers: { 'content-type': 'application/json' },
 }
-
-// class ApiPromise<T = any> extends Promise<T> {
-//   async onMongooseError(cb: Function = () => {}): ApiPromise {
-//     return new ApiPromise((resolve, reject) => reject(this))
-//   }
-// }
 
 class api1 {
   static Request() {
@@ -50,7 +26,6 @@ class api1 {
     cof: AxiosRequestConfig = {}
   ) {
     try {
-      // avj req check
       // make the actural request
       const res = await axios.request<
         DataType,
@@ -65,7 +40,6 @@ class api1 {
         signal: abortController?.signal || undefined,
       })
       console.log(res.data)
-      // ajv res check
     } catch (err) {
       this.errorCatcher(err)
     }
@@ -133,12 +107,7 @@ class api1 {
   }
 }
 
-async function k() {
-  const a = await api1.Request().onMongoError().onMongoError()
-}
-
-export { api1 }
-
+// export default api
 class api {
   static async get(url: string, cof: AxiosRequestConfig = {}) {
     return axios.get(this.apiUrl(url), { ...config, ...cof })
@@ -168,4 +137,5 @@ class api {
   }
 }
 
+export { api1 }
 export default api

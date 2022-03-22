@@ -6,15 +6,6 @@ import {
 } from '../../utils/mongodb'
 import { HandlerIO } from '../apiIO'
 import { TwPermissons } from '../../middlewares/permission/permissionType'
-import { User } from 'aws-sdk/clients/budgets'
-
-/*
-  TEMPLATE HERE
-  export class XXX extends HandlerIO {
-    static bodyValidator = super.bodyValidatorCreator<yyyType.XXXBody>({<bodySchema>})
-    static sendData = super.sendDataCreator<yyyType.XXXData>({dataSchema})
-  }
-*/
 
 export namespace UserIO {
   const permissionFields = {
@@ -191,13 +182,7 @@ export namespace UserIO {
           password: { type: 'string' },
           ...permissionFields,
         },
-        required: [
-          'login_name',
-          'password',
-          'role',
-          'role_type',
-          'permission_groups',
-        ],
+        required: ['login_name', 'password', 'role_type', 'permission_groups'],
         additionalProperties: false,
       })
     static sendData = super.sendDataCreator<UserType.GetWorker.Data>(

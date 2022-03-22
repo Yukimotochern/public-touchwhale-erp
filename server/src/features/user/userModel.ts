@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { UserType } from './userTypes'
 import { AuthJWT } from '../../middlewares/authMiddleware'
-import ErrorResponse from '../../utils/errorResponse'
+import CustomError from '../../utils/CustomError'
 import { TwPermissons } from '../../middlewares/permission/permissionType'
 
 const UserSchema = new mongoose.Schema<UserType.Mongoose>(
@@ -82,7 +82,6 @@ const UserSchema = new mongoose.Schema<UserType.Mongoose>(
   },
   { timestamps: true }
 )
-
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next()
@@ -94,7 +93,7 @@ UserSchema.pre('save', async function (next) {
 
 UserSchema.methods.getSignedJWTToken = function (): string {
   if (!this.isOwner && !this.owner) {
-    throw new ErrorResponse('Unattached User.')
+    throw new CustomError('Unattached User.')
   }
 
   const token: Omit<AuthJWT, 'iat' | 'exp'> = {

@@ -19,9 +19,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = __importStar(require("mongoose"));
-var permissionType_1 = require("../../middlewares/permission/permissionType");
-var RoleSchema = new mongoose_1.Schema({
+const mongoose_1 = __importStar(require("mongoose"));
+const permissionType_1 = require("../../middlewares/permission/permissionType");
+const RoleSchema = new mongoose_1.Schema({
     owner: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'user',
@@ -45,5 +45,5 @@ var RoleSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-var RoleModel = mongoose_1.default.model('role', RoleSchema);
+const RoleModel = mongoose_1.default.model('role', RoleSchema);
 exports.default = RoleModel;

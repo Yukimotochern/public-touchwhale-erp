@@ -8,8 +8,6 @@ import { RolePermissions } from '../../features/role/rolePermissions'
 
 export namespace TwPermissons {
   // union of all the permissions to controllers
-
-  // *** First include new feature if needed
   export type Permissions =
     | UserPermissions.Permissions
     | RolePermissions.Permissions
