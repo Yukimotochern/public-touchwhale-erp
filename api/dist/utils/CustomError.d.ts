@@ -3,9 +3,8 @@ export default class CustomError extends Error {
     message: string;
     statusCode: number;
     errorData?: any;
-    messageArray?: string[] | undefined;
     name: string;
-    constructor(message?: string, statusCode?: number, errorData?: any, messageArray?: string[] | undefined);
+    constructor(message?: string, statusCode?: number, errorData?: any);
 }
 /**
  * typed wrapper for known errors
@@ -29,6 +28,7 @@ export declare class AjvErrors extends CustomError {
 export declare class ApiErrorDealtInternallyAndThrown extends CustomError {
     thrown: any;
     name: string;
+    deserializedError?: Error;
     constructor(thrown: any, statusCode?: number);
 }
 /**

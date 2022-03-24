@@ -2,12 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiErrorDealtInternallyAndThrown = exports.AjvErrors = exports.MongoError = exports.MongooseError = void 0;
 class CustomError extends Error {
-    constructor(message = 'Unspecified Error Message', statusCode = 500, errorData, messageArray) {
+    constructor(message = 'Unspecified Error Message', statusCode = 500, errorData) {
         super(message);
         this.message = message;
         this.statusCode = statusCode;
         this.errorData = errorData;
-        this.messageArray = messageArray;
         this.name = 'CustomError';
         // restore prototype chain
         this.name = new.target.name;

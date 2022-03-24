@@ -7,13 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons'
 import styles from './AvatarUpload.module.css'
 import './AvatarUpload.css'
-import api from '../../api/api'
+import { getAvatarUploadUrl, deletAvatar } from '../../api/userActions'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { authSlice } from '../../redux/auth/authSlice'
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface'
-
-interface realCustomProps {}
 
 export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
   const dispatch = useDispatch()
@@ -27,13 +25,13 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
   }: RcCustomRequestOptions) => {
     setAvatarLoading(true)
     try {
-      const { data } = await api.get('/user/avatar')
+      const data = await getAvatarUploadUrl()
       let file = fileOrigin as UploadFile
       let fileType = 'image/jpeg'
       if (file.type) {
         fileType = file.type
       }
-      const url = data.data.uploadUrl
+      const url = data.uploadUrl
       await axios.put(url, file, {
         withCredentials,
         headers: {
@@ -47,18 +45,18 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
           }
         },
       })
-      dispatch(authSlice.actions.updateRegularUserAvatar(data.data.avatar))
+      dispatch(authSlice.actions.updateRegularUserAvatar(data.avatar))
       setAvatarLoading(false)
     } catch (error) {
       setAvatarLoading(false)
       console.error(error)
-      await api.delete('/user/avatar')
+      await deletAvatar()
     }
   }
   const onDeleteAvatar = async () => {
     try {
       setAvatarLoading(true)
-      await api.delete('/user/avatar')
+      await deletAvatar()
       dispatch(authSlice.actions.updateRegularUserAvatar(''))
       setAvatarLoading(false)
     } catch (error) {

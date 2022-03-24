@@ -25,6 +25,8 @@ export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
       }, <TwPermissons.Permissions[]>[])
       if (requiredPermissions.every((rp) => totalPermissions.includes(rp))) {
         next()
+      } else {
+        return next(new CustomError('UnAuthorized', 403))
       }
     }
     return next(

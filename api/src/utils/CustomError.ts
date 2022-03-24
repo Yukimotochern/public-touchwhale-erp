@@ -5,8 +5,7 @@ export default class CustomError extends Error {
   constructor(
     public message: string = 'Unspecified Error Message',
     public statusCode: number = 500,
-    public errorData?: any,
-    public messageArray?: string[]
+    public errorData?: any
   ) {
     super(message)
     // restore prototype chain
@@ -78,6 +77,7 @@ export class AjvErrors extends CustomError {
 
 export class ApiErrorDealtInternallyAndThrown extends CustomError {
   public name = 'ApiErrorDealtInternallyAndThrown'
+  public deserializedError?: Error
   constructor(public thrown: any, statusCode: number = 500) {
     super('DO NOT CATCH THIS ERROR OUTSIDE CUSTOM API PROMISE!', statusCode)
   }
@@ -86,7 +86,6 @@ export class ApiErrorDealtInternallyAndThrown extends CustomError {
 /**
  * Copy from mongoose
  */
-
 export namespace IMongoError {
   export interface MongoError extends Error {
     code?: number | string

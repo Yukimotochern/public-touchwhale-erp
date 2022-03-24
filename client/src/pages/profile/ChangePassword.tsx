@@ -1,6 +1,6 @@
 import { Button, Typography, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
-import api from '../../api/api'
+import { changePassword } from '../../api/userActions'
 
 interface ChangePasswordProp {
   edittable?: boolean
@@ -17,7 +17,7 @@ export const ChangePassword = ({ edittable }: ChangePasswordProp) => {
     try {
       const currentPassword = form.getFieldValue('currentPassword')
       const newPassword = form.getFieldValue('newPassword')
-      await api.put('/user/changePassword', {
+      await changePassword({
         currentPassword,
         newPassword,
       })

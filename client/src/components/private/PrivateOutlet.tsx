@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAppSelector } from '../../redux/hooks'
 import { Navigate, Outlet } from 'react-router-dom'
-import { AppLoading } from '../loading/AppLoading'
+import { AppLoading } from '../../pages/loading/AppLoading'
 
 export const PrivateOutlet = () => {
   const auth = useAppSelector((s) => s.auth)

@@ -6,7 +6,7 @@ declare global {
       MONGO_URI: string
       SERVER_PORT: string
       JWTSECRET: string
-      JWT_COOKIE_EXPIRE: number
+      JWT_COOKIE_EXPIRE: string
       SMTP_PASSWORD: string
       SMTP_USERNAME: string
       SMTP_HOST: string

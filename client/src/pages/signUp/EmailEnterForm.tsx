@@ -1,12 +1,9 @@
 import React from 'react'
-import { Form, Input, Button, Divider, Typography, message } from 'antd'
+import { Form, Input, Button, Divider, Typography } from 'antd'
 import styles from './EmailEnterForm.module.css'
 import { UseStateForSignUpPageProps } from './SignUpPage'
-// import api from '../../api/api'
-import { SignUp } from 'api/dist/user/userApi'
-import axios from 'axios'
+import { signUp } from 'api/dist/user/userApi'
 import { useNavigate } from 'react-router-dom'
-import { deserializeError } from 'serialize-error'
 
 export const EmailEnterForm = ({
   signUpProcessState,
@@ -23,10 +20,7 @@ export const EmailEnterForm = ({
     }))
 
     try {
-      await SignUp.signUp(email)
-      // await api.post('/user/signUp', {
-      //   email,
-      // })
+      await signUp(email)
       setSignUpProcessState((state) => ({
         ...state,
         email,
@@ -34,35 +28,6 @@ export const EmailEnterForm = ({
         loading: false,
       }))
     } catch (err: any) {
-      // if (axios.isAxiosError(err)) {
-      //   if (err.response?.data) {
-      //     console.log(123, deserializeError(err.response))
-      //     // error with response
-      //     switch (err.response?.data?.error?.message) {
-      //       case 'Email has been taken.':
-      //         form.setFields([
-      //           { name: 'email', errors: ['Email has been taken.'] },
-      //         ])
-      //         message.error('Email has been taken.')
-      //         break
-      //       default:
-      //         message.error(`Something is wrong: ${err.message}`)
-      //         break
-      //     }
-      //   } else {
-      //     // error without response
-      //     switch (err.message) {
-      //       case 'Network Error':
-      //         message.error('Please check your internet connection.')
-      //         break
-      //       default:
-      //         message.error(`Something is wrong: ${err.message}`)
-      //         break
-      //     }
-      //   }
-      // } else {
-      //   message.error(`Unknown error: ${err}`)
-      // }
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,

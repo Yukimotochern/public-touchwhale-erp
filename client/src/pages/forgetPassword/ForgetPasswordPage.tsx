@@ -1,7 +1,7 @@
 import { Typography, Form, Button, Input } from 'antd'
 import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import api from '../../api/api'
+import { forgetPassword } from '../../api/userActions'
 
 export const ForgetPassword = () => {
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export const ForgetPassword = () => {
     try {
       setEmailFormLoading(true)
       const email = sendEmailForm.getFieldValue('email')
-      const { data } = await api.post('/user/forgetPassword', { email })
+      await forgetPassword(email)
 
       setEmailFormLoading(false)
     } catch (error) {

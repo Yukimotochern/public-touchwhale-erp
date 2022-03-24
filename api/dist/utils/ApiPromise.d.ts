@@ -14,6 +14,8 @@ export declare class ApiPromise<T> implements Promise<T> {
     then<TS = T, TF = never>(onfulfilled?: UnaryFn<T, TS | PromiseLike<TS>> | undefined | null, onrejected?: OnRejectFn): Promise<TS | TF>;
     catch<TF = never>(onrejected?: OnRejectFn): Promise<T | TF>;
     finally(onfinally?: NullaryFn | undefined | null): Promise<T>;
-    onMongoError<TF = never>(code: number, onrejected: Function): ApiPromise<T | TF>;
+    private getApiErrorDealtInternallyAndThrown;
+    onEveryErrorButCancelAndAuth<TF = never>(onrejected: Function): ApiPromise<T | TF>;
+    onEveryErrorButCancel<TF = never>(onrejected: Function): ApiPromise<T | TF>;
 }
 export default ApiPromise;

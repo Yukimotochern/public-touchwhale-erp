@@ -1,8 +1,7 @@
-import React, { useState, cloneElement, isValidElement } from 'react'
+import React, { useState } from 'react'
 import { Button, Form, Input, Col, Typography } from 'antd'
 import './ProfileBlock.css'
-import api from '../../api/api'
-import { getRegularUserResValidator } from '../../res/regularUserValidate'
+import { updateUser } from '../../api/userActions'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'
 interface ProfileBlockProps {
@@ -27,16 +26,12 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
     setLoading(true)
     try {
       // Request to update user
-      const {
-        data: { data },
-      } = await api.put('/user', {
+      const user = await updateUser({
         [fieldName]: value,
       })
       setLoading(false)
-      if (getRegularUserResValidator(data)) {
-        dispatch(authSlice.actions.updateRegularUser(data))
-        setIsEditting(false)
-      }
+      dispatch(authSlice.actions.updateRegularUser(user))
+      setIsEditting(false)
     } catch (error) {
       setLoading(false)
     }

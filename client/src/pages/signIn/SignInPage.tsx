@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, Divider, Typography, notification } from 'antd'
 import styles from './SignInPage.module.css'
 import { useNavigate, useLocation } from 'react-router-dom'
-import api from '../../api/api'
+import { signIn } from '../../api/userActions'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
-import { getRegularUser } from '../../redux/auth/authSlice'
+import { getUserThunkAction } from '../../redux/auth/authSlice'
 
 export const SignInPage = () => {
   const [form] = Form.useForm()
@@ -31,12 +31,12 @@ export const SignInPage = () => {
   const onFinish = async () => {
     setLoading(true)
     try {
-      await api.post('/user/signIn', {
+      await signIn({
         email: form.getFieldValue('email'),
         password: form.getFieldValue('password'),
       })
       setLoading(false)
-      dispatch(getRegularUser())
+      dispatch(getUserThunkAction())
     } catch (err) {
       setLoading(false)
       if (axios.isAxiosError(err)) {

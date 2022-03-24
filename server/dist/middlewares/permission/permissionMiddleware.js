@@ -28,6 +28,9 @@ const permission = (requiredPermissions) => (0, errorCatcher_1.default)(async (r
         if (requiredPermissions.every((rp) => totalPermissions.includes(rp))) {
             next();
         }
+        else {
+            return next(new CustomError_1.default('UnAuthorized', 403));
+        }
     }
     return next(new CustomError_1.default('Permission middleware should only be added after auth middleware.'));
 });

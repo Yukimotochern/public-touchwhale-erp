@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // count down
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import useCountDown from 'react-countdown-hook'
-import api from '../../api/api'
+import { verify, signUp } from '../../api/userActions'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 const initialTime = 30 * 1000
@@ -34,9 +34,7 @@ export const VerifyEmailForm = ({
     }))
     restart()
     try {
-      await api.post('/user/signUp', {
-        email,
-      })
+      await signUp(email)
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,
@@ -78,14 +76,14 @@ export const VerifyEmailForm = ({
     }))
     try {
       const password = form.getFieldValue('verify')
-      const { data } = await api.post('/user/signUp/verify', {
+      const tokenStr = await verify({
         email,
         password,
       })
       // try to decode token
       let token: any
       try {
-        token = jwt_decode(data.token)
+        token = jwt_decode(tokenStr)
         if (!token.id) {
           throw new Error('Invalid credentials.')
         }
@@ -97,7 +95,7 @@ export const VerifyEmailForm = ({
         ...state,
         stage: 'password',
         loading: false,
-        token: data.token,
+        token: tokenStr,
         password,
       }))
     } catch (err) {

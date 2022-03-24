@@ -8,7 +8,8 @@ import CustomError, {
   AjvErrors,
   ApiErrorDealtInternallyAndThrown,
 } from './utils/CustomError'
-import { message } from 'antd'
+import { deserializeError } from 'serialize-error'
+import { NavigateFunction } from 'react-router'
 
 let config: AxiosRequestConfig = {
   timeout: process.env.REACT_APP_API_TIMEOUT
@@ -30,6 +31,10 @@ export default class api<ReqestBodyType, ResponseDataType> {
     responseBodyWithAnyDataJSONSchema
   )
   public resValidator: AnyValidateFunction<ResponseBody<ResponseDataType>>
+  public onUnAuthoried?: Function = undefined
+  public onNetworkError?: Function = undefined
+  public onUnknownError?: Function = undefined
+
   constructor({
     bodySchema,
     dataSchema,
@@ -56,17 +61,24 @@ export default class api<ReqestBodyType, ResponseDataType> {
       )
     }
   }
-
+  /**
+   * * Server Things
+   * TODO: 1. send
+   * TODO: 2. sendData
+   */
+  /**
+   * * Client Things
+   */
   _reject = (rejectedError: any) =>
-    new ApiPromise((resolve, reject) => reject(rejectedError))
-  _resolve = (data: ResponseDataType | undefined) =>
-    new ApiPromise((resolve, reject) => resolve(data))
+    new ApiPromise<ResponseDataType>((resolve, reject) => reject(rejectedError))
+  _resolve = (data: ResponseDataType) =>
+    new ApiPromise<ResponseDataType>((resolve, reject) => resolve(data))
 
   async request(
     url: string,
     method: Method,
     data: ReqestBodyType | undefined,
-    abortController: AbortController | undefined = undefined,
+    abortController?: AbortController,
     cof: AxiosRequestConfig<ReqestBodyType> = {}
   ) {
     try {
@@ -84,8 +96,8 @@ export default class api<ReqestBodyType, ResponseDataType> {
       }
       // make the actural request
       const res = await axios.request<
-        ResponseDataType,
-        AxiosResponse<ResponseDataType>,
+        Required<ResponseBody<ResponseDataType>>,
+        AxiosResponse<Required<ResponseBody<ResponseDataType>>>,
         ReqestBodyType
       >({
         url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
@@ -105,7 +117,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
           500
         )
       }
-      return this._resolve(res.data)
+      return this._resolve(res.data.data)
     } catch (err) {
       let innerError = new ApiErrorDealtInternallyAndThrown(err)
       innerError = this.errorProcessor(innerError)
@@ -116,42 +128,93 @@ export default class api<ReqestBodyType, ResponseDataType> {
     innerError: ApiErrorDealtInternallyAndThrown
   ): ApiErrorDealtInternallyAndThrown {
     let err = innerError.thrown
-    console.log(err instanceof Error)
-    console.log((err as any).message)
     if (err instanceof AjvErrors) {
       // validate problem
+      console.log('Ajv errors:')
+      console.log(err.message)
+      console.log('with the following fields,')
+      console.log(err.ajvError)
     } else if (axios.isAxiosError(err)) {
-      // possibly server error
+      // server error
       if (err.response?.data) {
-        // deserialize error if possible
-        // mongoose error
-        // mongoDB error
-        // custom error from server
-        console.log('here')
+        if (err.response.status === 401) {
+          /**
+           * Unauthorized, redirect if possible
+           * Also, cancel the request.
+           */
+          if (this.onUnAuthoried) {
+            this.onUnAuthoried()
+          }
+          innerError.thrown = new axios.Cancel('Unauthorized.')
+          return innerError
+        } else {
+          // deserialize error if possible
+          const deserializedError = deserializeError(err.response.data)
+          err = err.response.data
+          innerError.deserializedError = deserializedError
+
+          // mongoose error
+          // mongoDB error
+          // custom error from server
+          console.log('The following error thrown from server,')
+          console.error(deserializedError)
+          console.log('with the following data,')
+          console.log(err.response.data)
+          console.log(
+            `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
+          )
+        }
       } else {
         // some intrinsic error
         if (err instanceof Error && err.message === 'Network Error') {
           // nework problem
-          message.error('Please check your net work connection.')
+          if (this.onNetworkError) {
+            this.onNetworkError()
+          }
         } else {
           // unexpected error
-          message.error('Something seems to go wrong')
+          if (this.onUnknownError) {
+            this.onUnknownError()
+          }
+          console.log(
+            'Receive error from axios but without any response data. This might be some unexpected server internal error or axios error.'
+          )
+          console.log(err)
+          console.error(err)
+          console.log(`with typeof ${typeof err}.`)
+          console.log(`Isinstance of Error: ${err instanceof Error}.`)
+          console.log(
+            `Isinstance of CustomError: ${err instanceof CustomError}.`
+          )
         }
       }
     } else if (err instanceof axios.Cancel) {
       // cancel error
+      console.log('Api call canceled.')
     } else {
       // Unknown Problem
+      console.log(
+        'Unknown error of thing thrown, which is neither ajv error nor axios error,'
+      )
+      console.log(err)
+      console.error(err)
+      console.log(`with typeof ${typeof err}.`)
+      console.log(`Isinstance of Error: ${err instanceof Error}.`)
+      console.log(`Isinstance of CustomError: ${err instanceof CustomError}.`)
+      if (this.onUnknownError) {
+        this.onUnknownError()
+      }
     }
     innerError.thrown = err
+
     return innerError
   }
 
-  // Belows are merely sugar, they may be SWEET~
+  // The belows are merely sugar, they may be SWEET~
   async get(
     url: string,
-    cof: AxiosRequestConfig = {},
-    abortController: AbortController | undefined = undefined
+    abortController?: AbortController,
+    cof: AxiosRequestConfig = {}
   ) {
     return this.request(url, 'GET', undefined, abortController, cof)
   }
@@ -159,8 +222,8 @@ export default class api<ReqestBodyType, ResponseDataType> {
   async post(
     url: string,
     data: ReqestBodyType,
-    cof: AxiosRequestConfig = {},
-    abortController: AbortController | undefined = undefined
+    abortController?: AbortController,
+    cof: AxiosRequestConfig = {}
   ) {
     return this.request(url, 'POST', data, abortController, cof)
   }
@@ -168,8 +231,8 @@ export default class api<ReqestBodyType, ResponseDataType> {
   async put(
     url: string,
     data: ReqestBodyType,
-    cof: AxiosRequestConfig = {},
-    abortController: AbortController | undefined = undefined
+    abortController?: AbortController,
+    cof: AxiosRequestConfig = {}
   ) {
     return this.request(url, 'PUT', data, abortController, cof)
   }
@@ -177,8 +240,8 @@ export default class api<ReqestBodyType, ResponseDataType> {
   async delete(
     url: string,
     data: ReqestBodyType | undefined,
-    cof: AxiosRequestConfig = {},
-    abortController: AbortController | undefined = undefined
+    abortController?: AbortController,
+    cof: AxiosRequestConfig = {}
   ) {
     return this.request(url, 'DELETE', data, abortController, cof)
   }

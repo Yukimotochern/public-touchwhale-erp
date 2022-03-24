@@ -13,6 +13,22 @@ const emailMessage_1 = require("../../utils/emailMessage");
 const b2_1 = require("../../utils/AWS/b2");
 const userHandlerIO_1 = require("./userHandlerIO");
 const apiIO_1 = require("../apiIO");
+// import {
+//   SignUp,
+//   Verify,
+//   SignIn,
+//   GetUser,
+//   Update,
+//   GetAvatarUploadUrl,
+//   ChangePassword,
+//   ForgetPassword,
+//   ResetPassword,
+//   GetWorker,
+//   GetWorkers,
+//   CreateWorker,
+//   DeleteWorker,
+//   UpdateWorker,
+//  } from 'api/dist/user/userApi'
 const { SignUp, Verify, SignIn, GetUser, Update, GetAvatarUploadUrl, ChangePassword, ForgetPassword, ResetPassword, GetWorker, GetWorkers, CreateWorker, DeleteWorker, UpdateWorker, } = userHandlerIO_1.UserIO;
 const UserAvatarKeyPrifix = 'UserAvatar';
 // @route    POST api/v1/user/signUp

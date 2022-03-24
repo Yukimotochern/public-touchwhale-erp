@@ -12,7 +12,22 @@ import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import { UserIO } from './userHandlerIO'
 import { UserType } from './userTypes'
 import { HandlerIO } from '../apiIO'
-import { api } from 'api/dist/api'
+// import {
+//   SignUp,
+//   Verify,
+//   SignIn,
+//   GetUser,
+//   Update,
+//   GetAvatarUploadUrl,
+//   ChangePassword,
+//   ForgetPassword,
+//   ResetPassword,
+//   GetWorker,
+//   GetWorkers,
+//   CreateWorker,
+//   DeleteWorker,
+//   UpdateWorker,
+//  } from 'api/dist/user/userApi'
 
 const {
   SignUp,

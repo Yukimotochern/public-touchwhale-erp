@@ -9,7 +9,7 @@ import {
   Dropdown,
   Menu,
 } from 'antd'
-import { PureRouteObjectWithLink } from '../../../AppRoutes'
+import { RouteLink } from '../../../routes/appLink'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../../../redux/hooks'
@@ -17,8 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import Avatar from 'antd/lib/avatar/avatar'
-import api from '../../../api/api'
-import { getRegularUser } from '../../../redux/auth/authSlice'
+import { signOut } from '../../../api/userActions'
+import { getUserThunkAction } from '../../../redux/auth/authSlice'
 
 const { Content } = Layout
 
@@ -51,7 +51,7 @@ export const PageWithHeader: React.FC<Props> = ({
   const firstLevelMatch = useAppSelector((s) => s.routeLink).find(
     (route) => route.path === '/' + firstLevelRoute
   )
-  let tabs: PureRouteObjectWithLink[] | undefined
+  let tabs: RouteLink[] | undefined
   if (firstLevelMatch) {
     // has match
     let children = firstLevelMatch.children
@@ -69,8 +69,8 @@ export const PageWithHeader: React.FC<Props> = ({
           key='log_out'
           onClick={async () => {
             try {
-              await api.get('/user/signOut')
-              dispatch(getRegularUser())
+              await signOut()
+              dispatch(getUserThunkAction())
             } catch (err) {
               // refresh
               navigate(0)

@@ -1,3 +1,5 @@
+import axios from 'axios'
+import CustomError, { ApiErrorDealtInternallyAndThrown } from './CustomError'
 type NullaryFn<T = void> = () => T
 type UnaryFn<T = void, U = void> = (arg: T) => U
 type OnRejectFn<ErrorAccept = Error> =
@@ -38,19 +40,54 @@ export class ApiPromise<T> implements Promise<T> {
   public finally(onfinally?: NullaryFn | undefined | null): Promise<T> {
     return this.promise.finally(onfinally)
   }
-
-  public onMongoError<TF = never>(
-    code: number,
-    onrejected: Function
-  ): ApiPromise<T | TF> {
+  private getApiErrorDealtInternallyAndThrown(): ApiErrorDealtInternallyAndThrown {
+    let apiError: ApiErrorDealtInternallyAndThrown | undefined = undefined
+    let err1: any = undefined
     this.catch((err: unknown) => {
-      // if (err instanceof Error) {
-      //   console.log(`Error of ${err} is catched: `)
-      //   console.error(err)
-      //   onrejected()
-      // }
+      if (err instanceof ApiErrorDealtInternallyAndThrown) {
+        apiError = err
+      } else {
+        err1 = err
+      }
       return this.promise.then()
     })
+    if (apiError) {
+      return apiError
+    } else {
+      throw new CustomError(
+        'Api error is not properly set to ApiPromise as expected.',
+        500,
+        err1
+      )
+    }
+  }
+
+  public onEveryErrorButCancelAndAuth<TF = never>(
+    onrejected: Function
+  ): ApiPromise<T | TF> {
+    const innerError = this.getApiErrorDealtInternallyAndThrown()
+    let thrown = innerError.thrown
+    if (
+      // cancel
+      !(thrown instanceof axios.Cancel) &&
+      // unauthorized
+      !(axios.isAxiosError(thrown) && thrown.response?.status === 401)
+    ) {
+      onrejected()
+    }
+    return this
+  }
+  public onEveryErrorButCancel<TF = never>(
+    onrejected: Function
+  ): ApiPromise<T | TF> {
+    const innerError = this.getApiErrorDealtInternallyAndThrown()
+    let thrown = innerError.thrown
+    if (
+      // cancel
+      !(thrown instanceof axios.Cancel)
+    ) {
+      onrejected()
+    }
     return this
   }
 }
