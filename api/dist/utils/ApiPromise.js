@@ -11,14 +11,9 @@ const CustomError_1 = require("./CustomError");
  */
 Promise;
 class ApiPromise extends Promise {
-    constructor(executor) {
-        super(executor);
+    constructor() {
+        super(...arguments);
         this.catched = false;
-        this.catch((err) => {
-            if (err instanceof CustomError_1.ApiErrorDealtInternallyAndThrown && err.catched) {
-                this.catched = true;
-            }
-        });
     }
     onErrorsButCancelAndAuth(onrejected, executeWhenAlreadyCatched = false) {
         this.catch((err) => {

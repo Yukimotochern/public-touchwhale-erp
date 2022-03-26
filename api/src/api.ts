@@ -221,7 +221,6 @@ export default class api<ReqestBodyType, ResponseDataType> {
            */
           if (this.onUnAuthoried) {
             this.onUnAuthoried()
-            innerError.catched = true
           }
         } else {
           // deserialize error if possible

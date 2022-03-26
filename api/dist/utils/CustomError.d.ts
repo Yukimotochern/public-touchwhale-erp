@@ -38,7 +38,6 @@ export declare class ApiErrorDealtInternallyAndThrown extends CustomError {
     name: string;
     deserializedError?: Error;
     customError?: serializedCustomError;
-    catched: boolean;
     constructor(thrown: any, statusCode?: number);
 }
 /**

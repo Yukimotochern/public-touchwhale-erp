@@ -54,7 +54,6 @@ class ApiErrorDealtInternallyAndThrown extends CustomError {
         this.thrown = thrown;
         this.statusCode = statusCode;
         this.name = 'ApiErrorDealtInternallyAndThrown';
-        this.catched = false;
     }
 }
 exports.ApiErrorDealtInternallyAndThrown = ApiErrorDealtInternallyAndThrown;

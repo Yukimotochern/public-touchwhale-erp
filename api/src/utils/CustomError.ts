@@ -87,7 +87,6 @@ export class ApiErrorDealtInternallyAndThrown extends CustomError {
   public name = 'ApiErrorDealtInternallyAndThrown'
   public deserializedError?: Error
   public customError?: serializedCustomError
-  public catched: boolean = false
   constructor(public thrown: any, public statusCode: number = 500) {
     super('DO NOT CATCH THIS ERROR OUTSIDE CUSTOM API PROMISE!', statusCode)
   }

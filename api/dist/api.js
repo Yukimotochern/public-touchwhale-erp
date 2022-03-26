@@ -189,7 +189,6 @@ class api {
                      */
                     if (this.onUnAuthoried) {
                         this.onUnAuthoried();
-                        innerError.catched = true;
                     }
                 }
                 else {

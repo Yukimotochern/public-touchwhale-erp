@@ -7,19 +7,6 @@ import CustomError, { ApiErrorDealtInternallyAndThrown } from './CustomError'
 Promise
 export class ApiPromise<T> extends Promise<T> {
   catched: boolean = false
-  constructor(
-    executor: (
-      resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void
-    ) => void
-  ) {
-    super(executor)
-    this.catch((err: any) => {
-      if (err instanceof ApiErrorDealtInternallyAndThrown && err.catched) {
-        this.catched = true
-      }
-    })
-  }
   public onErrorsButCancelAndAuth<TF = never>(
     onrejected: Function,
     executeWhenAlreadyCatched: boolean = false
