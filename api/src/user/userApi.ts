@@ -69,10 +69,6 @@ export namespace SignUp {
     bodySchema: submitEmailSchema,
   })
 }
-export const signUp = async (email: string) =>
-  SignUp.API.request('/user/signUp', 'POST', {
-    email,
-  })
 
 export namespace Verify {
   // types

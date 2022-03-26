@@ -4,6 +4,7 @@ import './ProfileBlock.css'
 import { updateUser } from '../../api/userActions'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'
+import { useAbortController } from '../../hooks/useAbortController'
 interface ProfileBlockProps {
   fieldName: string
   type: 'plain' | 'edit'
@@ -22,19 +23,23 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
   const [value, setValue] = useState(initialValue)
   const [isEditting, setIsEditting] = useState(false)
   const [loading, setLoading] = useState(false)
+  const abortController = useAbortController()
   const onFinish = async () => {
     setLoading(true)
     try {
       // Request to update user
-      const user = await updateUser({
-        [fieldName]: value,
+      const user = await updateUser(
+        {
+          [fieldName]: value,
+        },
+        abortController
+      ).onErrorsButCancelAndAuth(() => {
+        setLoading(false)
       })
       setLoading(false)
-      dispatch(authSlice.actions.updateRegularUser(user))
+      dispatch(authSlice.actions.updateUser(user))
       setIsEditting(false)
-    } catch (error) {
-      setLoading(false)
-    }
+    } catch {}
   }
 
   return (

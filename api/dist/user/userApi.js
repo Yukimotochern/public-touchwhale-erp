@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteWorker = exports.UpdateWorker = exports.CreateWorker = exports.GetWorker = exports.GetWorkers = exports.ResetPassword = exports.ForgetPassword = exports.ChangePassword = exports.GetAvatarUploadUrl = exports.GetUser = exports.Update = exports.SignIn = exports.Verify = exports.signUp = exports.SignUp = exports.plainUserSchema = void 0;
+exports.DeleteWorker = exports.UpdateWorker = exports.CreateWorker = exports.GetWorker = exports.GetWorkers = exports.ResetPassword = exports.ForgetPassword = exports.ChangePassword = exports.GetAvatarUploadUrl = exports.GetUser = exports.Update = exports.SignIn = exports.Verify = exports.SignUp = exports.plainUserSchema = void 0;
 const api_1 = require("../api");
 const mongoTypes_1 = require("../utils/mongoTypes");
 const permissionTypes_1 = require("../permissionTypes");
@@ -53,10 +53,6 @@ var SignUp;
         bodySchema: submitEmailSchema,
     });
 })(SignUp = exports.SignUp || (exports.SignUp = {}));
-const signUp = async (email) => SignUp.API.request('/user/signUp', 'POST', {
-    email,
-});
-exports.signUp = signUp;
 var Verify;
 (function (Verify) {
     // api

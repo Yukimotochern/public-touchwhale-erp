@@ -9,27 +9,7 @@ import {
   sixDigitsMessage,
 } from '../../utils/emailMessage'
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
-import { UserIO } from './userHandlerIO'
-import { UserType } from './userTypes'
-import { HandlerIO } from '../apiIO'
-// import {
-//   SignUp,
-//   Verify,
-//   SignIn,
-//   GetUser,
-//   Update,
-//   GetAvatarUploadUrl,
-//   ChangePassword,
-//   ForgetPassword,
-//   ResetPassword,
-//   GetWorker,
-//   GetWorkers,
-//   CreateWorker,
-//   DeleteWorker,
-//   UpdateWorker,
-//  } from 'api/dist/user/userApi'
-
-const {
+import {
   SignUp,
   Verify,
   SignIn,
@@ -44,7 +24,11 @@ const {
   CreateWorker,
   DeleteWorker,
   UpdateWorker,
-} = UserIO
+} from 'api/dist/user/userApi'
+import { api } from 'api/dist/api'
+import * as UserType from 'api/dist/user/userTypes'
+
+const API = new api()
 
 const UserAvatarKeyPrifix = 'UserAvatar'
 
@@ -52,7 +36,7 @@ const UserAvatarKeyPrifix = 'UserAvatar'
 // @desc     Sign user up
 // @access   Public
 export const userSignUp: RequestHandler = async (req, res, next) => {
-  if (SignUp.bodyValidator(req.body)) {
+  if (SignUp.API.bodyValidator(req.body)) {
     const { email } = req.body
     let user = await UserModel.findOne({ email })
     const sixDigits = Math.floor(100000 + Math.random() * 900000).toString()
@@ -80,38 +64,41 @@ export const userSignUp: RequestHandler = async (req, res, next) => {
       subject: 'Your verificatiom code',
       message: message,
     })
-    return SignUp.send(res, 200, {
+    return SignUp.API.send(res, 200, {
       message: `Verification code has been send to ${email}`,
     })
   }
-  next(avjErrorWrapper(SignUp.bodyValidator.errors))
+  next(avjErrorWrapper(SignUp.API.bodyValidator.errors))
 }
 
 // @route    POST api/v1/user/signUp/verify
 // @desc     Verify user email
 // @access   Public
 export const userVerify: RequestHandler = async (req, res, next) => {
-  if (Verify.bodyValidator(req.body)) {
+  if (Verify.API.bodyValidator(req.body)) {
     const { email, password } = req.body
     const user = await UserModel.findOne({ email }).select('+password')
-    if (!user || user.isActive) {
-      return next(new CustomError('User email is invalid.', 401))
+    if (!user) {
+      return next(new CustomError('Invalid credentials.', 401))
+    }
+    if (user.isActive) {
+      return next(new CustomError('User email is invalid.', 409))
     }
     const isMatch = await user.matchPassword(password)
     if (!isMatch) {
       return next(new CustomError('Invalid credentials.', 401))
     }
 
-    return Verify.sendData(res, user.getSignedJWTToken())
+    return Verify.API.sendData(res, user.getSignedJWTToken())
   }
-  next(avjErrorWrapper(Verify.bodyValidator.errors))
+  next(avjErrorWrapper(Verify.API.bodyValidator.errors))
 }
 
 // @route    POST api/v1/user/signIn
 // @desc     Sign user in
 // @access   Public
 export const userSignIn: RequestHandler = async (req, res, next) => {
-  if (SignIn.bodyValidator(req.body)) {
+  if (SignIn.API.bodyValidator(req.body)) {
     const { email, login_name, password } = req.body
     if (!email && !login_name) {
       return next(new CustomError('Without Identity.', 400))
@@ -145,7 +132,7 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
     }
     return sendTokenResponse(user, 200, res)
   }
-  next(avjErrorWrapper(SignIn.bodyValidator.errors))
+  next(avjErrorWrapper(SignIn.API.bodyValidator.errors))
 }
 
 // @route    GET api/v1/user/googleOAuth/callback
@@ -213,7 +200,7 @@ export const userSignOut: RequestHandler = async (req, res, next) => {
     httpOnly: true,
   }
   res.cookie('token', '', options)
-  res.end()
+  API.send(res)
 }
 
 // @route    GET api/v1/user/
@@ -223,7 +210,7 @@ export const getUser: RequestHandler = async (req, res, next) => {
   if (req.userJWT) {
     const user = await UserModel.findById(req.userJWT.id)
     if (user) {
-      return GetUser.sendData(res, user)
+      return GetUser.API.sendData(res, user)
     } else {
       return next(new CustomError('Server Error'))
     }
@@ -236,21 +223,21 @@ export const getUser: RequestHandler = async (req, res, next) => {
 // @desc     Update user infomation
 // @access   Private
 export const updateUser: RequestHandler = async (req, res, next) => {
-  if (Update.bodyValidator(req.body)) {
+  if (Update.API.bodyValidator(req.body)) {
     if (req.userJWT) {
       const user = await UserModel.findByIdAndUpdate(req.userJWT.id, req.body, {
         new: true,
         runValidators: true,
       })
       if (user) {
-        return Update.sendData(res, user)
+        return Update.API.sendData(res, user)
       }
       return next(new CustomError('Server Error'))
     } else {
       return next(new CustomError('Server Error'))
     }
   } else {
-    return next(avjErrorWrapper(Update.bodyValidator.errors))
+    return next(avjErrorWrapper(Update.API.bodyValidator.errors))
   }
 }
 
@@ -272,7 +259,7 @@ export const userGetAvatarUploadUrl: RequestHandler = async (
     let avatar = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
     user.avatar = avatar
     await user.save()
-    return GetAvatarUploadUrl.sendData(res, { uploadUrl: url, avatar })
+    return GetAvatarUploadUrl.API.sendData(res, { uploadUrl: url, avatar })
   }
   return next(new CustomError('Server Error', 500))
 }
@@ -290,7 +277,7 @@ export const deleteAvatar: RequestHandler = async (req, res, next) => {
     await deleteImage(UserAvatarKeyPrifix, id)
     user.avatar = undefined
     await user.save()
-    return HandlerIO.send(res, 200, { message: 'Avatar deleted.' })
+    return API.send(res, 200, { message: 'Avatar deleted.' })
   }
   return next(new CustomError('Server Error', 500))
 }
@@ -299,7 +286,7 @@ export const deleteAvatar: RequestHandler = async (req, res, next) => {
 // @desc     Update password
 // @access   Private
 export const changePassword: RequestHandler = async (req, res, next) => {
-  if (ChangePassword.bodyValidator(req.body) && req.userJWT) {
+  if (ChangePassword.API.bodyValidator(req.body) && req.userJWT) {
     const user = await UserModel.findById(req.userJWT.id).select('+password')
     if (user && user.isActive && req.body.currentPassword) {
       if (!(await user.matchPassword(req.body.currentPassword))) {
@@ -316,7 +303,7 @@ export const changePassword: RequestHandler = async (req, res, next) => {
     }
     return next(new CustomError('Server Error'))
   } else {
-    return next(avjErrorWrapper(ChangePassword.bodyValidator.errors))
+    return next(avjErrorWrapper(ChangePassword.API.bodyValidator.errors))
   }
 }
 
@@ -324,10 +311,18 @@ export const changePassword: RequestHandler = async (req, res, next) => {
 // @desc     Forget password
 // @access   Public
 export const forgetPassword: RequestHandler = async (req, res, next) => {
-  if (ForgetPassword.bodyValidator(req.body)) {
+  if (ForgetPassword.API.bodyValidator(req.body)) {
     const user = await UserModel.findOne({ email: req.body.email })
     if (!user) {
       return next(new CustomError('There is no user with that email.', 404))
+    }
+    if (user.provider === 'Google') {
+      return next(
+        new CustomError(
+          'You have been using the Google login. Please use google to login.',
+          409
+        )
+      )
     }
     const token = user.getForgetPasswordToken()
     await user.save({ validateBeforeSave: false })
@@ -344,7 +339,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
         subject: 'Password reset token',
         message,
       })
-      ForgetPassword.send(res, 200, { message: 'Email sent' })
+      ForgetPassword.API.send(res, 200, { message: 'Email sent' })
     } catch (err: any) {
       console.error(err)
       user.forgetPasswordToken = undefined
@@ -354,7 +349,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
       return next(new CustomError('Email could not be sent.', 500, err))
     }
   } else {
-    return next(avjErrorWrapper(ForgetPassword.bodyValidator.errors))
+    return next(avjErrorWrapper(ForgetPassword.API.bodyValidator.errors))
   }
 }
 
@@ -362,7 +357,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 // @route       PUT /api/v1/user/forgetPassword
 // @access      Public
 export const resetPassword: RequestHandler = async (req, res, next) => {
-  if (ResetPassword.bodyValidator(req.body)) {
+  if (ResetPassword.API.bodyValidator(req.body)) {
     // case 1: body only provide token
     // 1. validate the token
     // 2. reset a new token and return
@@ -387,7 +382,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
       user.forgetPasswordToken = undefined
       user.forgetPasswordExpire = undefined
       await user.save()
-      return ResetPassword.sendData(
+      return ResetPassword.API.sendData(
         res,
         {},
         { message: 'Your password has been set.' }
@@ -395,14 +390,14 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
     } else {
       const token = user.getForgetPasswordToken()
       await user.save({ validateBeforeSave: false })
-      return ResetPassword.sendData(
+      return ResetPassword.API.sendData(
         res,
         { token },
         { message: 'Please use this new token to reset the password.' }
       )
     }
   } else {
-    return next(avjErrorWrapper(ResetPassword.bodyValidator.errors))
+    return next(avjErrorWrapper(ResetPassword.API.bodyValidator.errors))
   }
 }
 
@@ -415,7 +410,7 @@ export const getWorkers: RequestHandler = async (req, res, next) => {
       owner: req.userJWT.owner,
       isOwner: false,
     })
-    GetWorkers.sendData(res, workers)
+    GetWorkers.API.sendData(res, workers)
   }
   return next(new CustomError('Internal Server Error'))
 }
@@ -431,7 +426,7 @@ export const getWorker: RequestHandler = async (req, res, next) => {
       _id: req.params.id,
     })
     if (worker) {
-      GetWorker.sendData(res, worker)
+      GetWorker.API.sendData(res, worker)
     }
     next(new CustomError('Worker not found.'))
   }
@@ -442,21 +437,21 @@ export const getWorker: RequestHandler = async (req, res, next) => {
 // @desc     Get worker
 // @access   Private
 export const createWorker: RequestHandler = async (req, res, next) => {
-  if (CreateWorker.bodyValidator(req.body)) {
+  if (CreateWorker.API.bodyValidator(req.body)) {
     if (req.userJWT) {
       const worker = await UserModel.create(req.body)
-      CreateWorker.sendData(res, worker)
+      CreateWorker.API.sendData(res, worker)
     }
     return next(new CustomError('Internal Server Error'))
   }
-  return next(avjErrorWrapper(CreateWorker.bodyValidator.errors))
+  return next(avjErrorWrapper(CreateWorker.API.bodyValidator.errors))
 }
 
 // @route    PUT api/v1/user/workers/:id
 // @desc     Update a worker
 // @access   Private
 export const updateWorker: RequestHandler = async (req, res, next) => {
-  if (UpdateWorker.bodyValidator(req.body)) {
+  if (UpdateWorker.API.bodyValidator(req.body)) {
     if (req.userJWT) {
       // TODO make sure the permission group obeys the tree like structure
       const worker = await UserModel.findOneAndUpdate(
@@ -468,7 +463,7 @@ export const updateWorker: RequestHandler = async (req, res, next) => {
         { runValidators: true, new: true }
       )
       if (worker) {
-        return UpdateWorker.sendData(res, worker)
+        return UpdateWorker.API.sendData(res, worker)
       }
       return next(
         new CustomError(
@@ -479,7 +474,7 @@ export const updateWorker: RequestHandler = async (req, res, next) => {
     }
     return next(new CustomError('Internal Server Error'))
   }
-  return next(avjErrorWrapper(UpdateWorker.bodyValidator.errors))
+  return next(avjErrorWrapper(UpdateWorker.API.bodyValidator.errors))
 }
 
 // @route    DELETE api/v1/user/workers/:id
@@ -497,7 +492,7 @@ export const deleteWorker: RequestHandler = async (req, res, next) => {
     })
     if (worker) {
       await worker.delete()
-      DeleteWorker.sendData(res, worker, {
+      DeleteWorker.API.sendData(res, worker, {
         message: 'The user in the data is successfully deleted.',
       })
     }
@@ -515,12 +510,12 @@ export const deleteWorker: RequestHandler = async (req, res, next) => {
 // @desc     
 // @access   Public
 export const userXXX: RequestHandler = async (req, res, next) => {
-  if (XXX.bodyValidator(req.body)) {
+  if (XXX.API.bodyValidator(req.body)) {
     // return send(res, {})
     // or
-    // return XXX.sendData(res, {})
+    // return XXX.API.sendData(res, {})
   }
-  next(avjErrorWrapper(XXX.bodyValidator.errors))
+  next(avjErrorWrapper(XXX.API.bodyValidator.errors))
 }
 */
 
@@ -542,10 +537,10 @@ const sendTokenResponse = (
   user: UserType.Mongoose,
   statusCode: number,
   res: Response
-): void => {
+) => {
   const token = setToken(user, res)
   if (process.env.NODE_ENV === 'test') {
-    return HandlerIO.send(res, statusCode, token)
+    return API.send(res, statusCode, token)
   }
-  return HandlerIO.send(res, statusCode)
+  return API.send(res, statusCode)
 }

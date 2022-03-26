@@ -17,48 +17,48 @@ import {
 import { chain } from './apiErrorDealer'
 import { api } from 'api/dist/api'
 
-export const signUp = async (
+export const signUp = (
   email: SignUp.Body['email'],
   abortController?: AbortController
 ) => chain(SignUp.API).post('/user/signUp', { email }, abortController)
 
-export const verify = async (
+export const verify = (
   credential: Verify.Body,
   abortController?: AbortController
 ) => chain(Verify.API).post('/user/signUp/verify', credential, abortController)
 
-export const signIn = async (
+export const signIn = (
   credential: SignIn.Body,
   abortController?: AbortController
 ) => chain(SignIn.API).post('/user/signIn', credential, abortController)
 
-export const signOut = async (abortController?: AbortController) =>
-  chain(new api({})).get('/user/signOut')
+export const signOut = (abortController?: AbortController) =>
+  chain(new api()).get('/user/signOut', abortController)
 
-export const updateUser = async (
+export const updateUser = (
   edits: Update.Body,
   abortController?: AbortController
-) => chain(Update.API).post('/user', edits, abortController)
+) => chain(Update.API).put('/user', edits, abortController)
 
-export const getUser = async (abortController?: AbortController) =>
+export const getUser = (abortController?: AbortController) =>
   chain(GetUser.API).get('/user', abortController)
 
-export const getUserUnchained = async (abortController?: AbortController) =>
+export const getUserUnchained = (abortController?: AbortController) =>
   GetUser.API.get('/user', abortController)
 
-export const getAvatarUploadUrl = async (abortController?: AbortController) =>
+export const getAvatarUploadUrl = (abortController?: AbortController) =>
   chain(GetAvatarUploadUrl.API).get('/user/avatar', abortController)
 
-export const deletAvatar = async (abortController?: AbortController) =>
-  chain(new api({})).delete('/user/avatar', undefined, abortController)
+export const deletAvatar = (abortController?: AbortController) =>
+  chain(new api()).delete('/user/avatar', undefined, abortController)
 
-export const changePassword = async (
+export const changePassword = (
   body: ChangePassword.Body,
   abortController?: AbortController
 ) =>
   chain(ChangePassword.API).put('/user/changePassword', body, abortController)
 
-export const forgetPassword = async (
+export const forgetPassword = (
   email: ForgetPassword.Body['email'],
   abortController?: AbortController
 ) =>
@@ -68,34 +68,29 @@ export const forgetPassword = async (
     abortController
   )
 
-export const resetPassword = async (
+export const resetPassword = (
   body: ResetPassword.Body,
   abortController?: AbortController
 ) => chain(ResetPassword.API).put('/user/forgetPassword', body, abortController)
 
-export const getWorkers = async (abortController?: AbortController) =>
+export const getWorkers = (abortController?: AbortController) =>
   chain(GetWorkers.API).get('/user/workers', abortController)
 
-export const getWorker = async (
-  id: string,
-  abortController?: AbortController
-) => chain(GetWorker.API).get(`/user/worker/${id}`, abortController)
+export const getWorker = (id: string, abortController?: AbortController) =>
+  chain(GetWorker.API).get(`/user/worker/${id}`, abortController)
 
-export const createWorker = async (
+export const createWorker = (
   worker: CreateWorker.Body,
   abortController?: AbortController
 ) => chain(CreateWorker.API).post('/user/worker', worker, abortController)
 
-export const updateWorker = async (
+export const updateWorker = (
   id: string,
   worker: UpdateWorker.Body,
   abortController?: AbortController
 ) => chain(UpdateWorker.API).put(`/worker/${id}`, worker, abortController)
 
-export const deleteWork = async (
-  id: string,
-  abortController?: AbortController
-) =>
+export const deleteWork = (id: string, abortController?: AbortController) =>
   chain(DeleteWorker.API).delete(
     `/user/worker/${id}`,
     undefined,

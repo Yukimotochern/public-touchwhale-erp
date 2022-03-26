@@ -122,11 +122,9 @@ export const fullLayoutRoutes: RouteObjectWithoutElementWithIconAndText[] = [
   },
   {
     path: '/forgetPassword',
-    children: [
-      {
-        path: ':forgetPasswordToken',
-      },
-    ],
+  },
+  {
+    path: '/resetPassword',
   },
 ]
 

@@ -2,11 +2,15 @@ import { RequestHandler } from 'express'
 import { avjErrorWrapper } from '../../utils/ajv'
 import CustomError from '../../utils/CustomError'
 import RoleModel from './roleModels'
-import { RoleIO } from './roleHandlerIO'
+import {
+  GetRoles,
+  GetRole,
+  CreateRole,
+  UpdateRole,
+  DeleteRole,
+} from 'api/dist/role/roleApi'
 import UserModel from '../user/userModel'
-import { TwPermissons } from '../../middlewares/permission/permissionType'
-
-const { GetRoles, GetRole, CreateRole, UpdateRole, DeleteRole } = RoleIO
+import { PermissionGroupNames } from 'api/dist/permissionTypes'
 
 // @route    GET api/v1/roles
 // @desc     Get all created and default(TODO) roles
@@ -14,7 +18,7 @@ const { GetRoles, GetRole, CreateRole, UpdateRole, DeleteRole } = RoleIO
 export const getRoles: RequestHandler = async (req, res, next) => {
   if (req.userJWT?.owner) {
     const roles = await RoleModel.find({ owner: req.userJWT.owner })
-    return GetRoles.sendData(res, roles)
+    return GetRoles.API.sendData(res, roles)
   }
   next(new CustomError('Internal Server error'))
 }
@@ -29,7 +33,7 @@ export const getRole: RequestHandler = async (req, res, next) => {
       _id: req.params.id,
     })
     if (role) {
-      return GetRole.sendData(res, role)
+      return GetRole.API.sendData(res, role)
     }
     next(new CustomError('Internal Server error'))
   }
@@ -41,18 +45,18 @@ export const getRole: RequestHandler = async (req, res, next) => {
 // @access   Private
 export const createRole: RequestHandler = async (req, res, next) => {
   if (req.userJWT?.owner) {
-    if (CreateRole.bodyValidator(req.body)) {
+    if (CreateRole.API.bodyValidator(req.body)) {
       // TODO should check that if the tree like hierrachy is complied with
       const role = await RoleModel.create({
         ...req.body,
         owner: req.userJWT.owner,
       })
       if (role) {
-        return CreateRole.sendData(res, role)
+        return CreateRole.API.sendData(res, role)
       }
       next(new CustomError('Internal Server error'))
     }
-    next(avjErrorWrapper(CreateRole.bodyValidator.errors))
+    next(avjErrorWrapper(CreateRole.API.bodyValidator.errors))
   }
   next(new CustomError('Internal Server error'))
 }
@@ -62,7 +66,7 @@ export const createRole: RequestHandler = async (req, res, next) => {
 // @access   Private
 export const updateRole: RequestHandler = async (req, res, next) => {
   if (req.userJWT?.owner) {
-    if (UpdateRole.bodyValidator(req.body)) {
+    if (UpdateRole.API.bodyValidator(req.body)) {
       const { shouldCascade, updates } = req.body
       const roleQuery = {
         owner: req.userJWT.owner,
@@ -93,8 +97,8 @@ export const updateRole: RequestHandler = async (req, res, next) => {
           if (users.length !== 0) {
             let userAffected = users
               .map((user) => {
-                let shouldAdd: TwPermissons.PermissionGroupNames[] = []
-                let shouldRemove: TwPermissons.PermissionGroupNames[] = []
+                let shouldAdd: PermissionGroupNames[] = []
+                let shouldRemove: PermissionGroupNames[] = []
                 if (user.permission_groups) {
                   shouldRemove = user.permission_groups.filter(
                     (permission_group) =>
@@ -131,7 +135,7 @@ export const updateRole: RequestHandler = async (req, res, next) => {
               )
             let anyoneAffected = userAffected.length !== 0
             if (anyoneAffected && !shouldCascade) {
-              return UpdateRole.sendData(res, {
+              return UpdateRole.API.sendData(res, {
                 isUpdateDone: false,
                 userAffected,
               })
@@ -156,14 +160,14 @@ export const updateRole: RequestHandler = async (req, res, next) => {
         }
       )
       if (updatedRole) {
-        return UpdateRole.sendData(res, {
+        return UpdateRole.API.sendData(res, {
           isUpdateDone: true,
           updatedRole: updatedRole,
         })
       }
       return next(new CustomError('Role not found.'))
     }
-    next(avjErrorWrapper(UpdateRole.bodyValidator.errors))
+    next(avjErrorWrapper(UpdateRole.API.bodyValidator.errors))
   }
   next(new CustomError('Internal Server error'))
 }
@@ -187,13 +191,13 @@ export const deleteRole: RequestHandler = async (req, res, next) => {
       role: role._id,
     })
     if (users.length !== 0) {
-      return DeleteRole.sendData(res, {
+      return DeleteRole.API.sendData(res, {
         deleted: false,
         usersOfThisRole: users,
       })
     }
     await role.delete()
-    return DeleteRole.sendData(res, {
+    return DeleteRole.API.sendData(res, {
       deleted: true,
       deletedRole: role,
     })

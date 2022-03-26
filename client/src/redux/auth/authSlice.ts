@@ -21,16 +21,16 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    updateRegularUser: (state, action: PayloadAction<PlainUser>) => {
+    updateUser: (state, action: PayloadAction<PlainUser>) => {
       state.user = action.payload
     },
-    updateRegularUserAvatar: (
-      state,
-      action: PayloadAction<PlainUser['avatar']>
-    ) => {
+    updateUserAvatar: (state, action: PayloadAction<PlainUser['avatar']>) => {
       if (state.user?.avatar) {
         state.user.avatar = action.payload
       }
+    },
+    signOut: (state) => {
+      state.user = undefined
     },
   },
   extraReducers: (builder) => {

@@ -52,7 +52,9 @@ class ApiErrorDealtInternallyAndThrown extends CustomError {
     constructor(thrown, statusCode = 500) {
         super('DO NOT CATCH THIS ERROR OUTSIDE CUSTOM API PROMISE!', statusCode);
         this.thrown = thrown;
+        this.statusCode = statusCode;
         this.name = 'ApiErrorDealtInternallyAndThrown';
+        this.catched = false;
     }
 }
 exports.ApiErrorDealtInternallyAndThrown = ApiErrorDealtInternallyAndThrown;

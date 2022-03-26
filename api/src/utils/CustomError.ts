@@ -21,8 +21,16 @@ export default class CustomError extends Error {
   }
 }
 
+export interface serializedCustomError {
+  name: 'CustomError'
+  message: string
+  statusCode: number
+  errorData?: any
+}
+
 /**
- * typed wrapper for known errors
+ * Typed wrapper for known errors
+ * Copied from mongoose, :)
  */
 type GenericMongooseError =
   | IMongooseError.CastError
@@ -78,7 +86,9 @@ export class AjvErrors extends CustomError {
 export class ApiErrorDealtInternallyAndThrown extends CustomError {
   public name = 'ApiErrorDealtInternallyAndThrown'
   public deserializedError?: Error
-  constructor(public thrown: any, statusCode: number = 500) {
+  public customError?: serializedCustomError
+  public catched: boolean = false
+  constructor(public thrown: any, public statusCode: number = 500) {
     super('DO NOT CATCH THIS ERROR OUTSIDE CUSTOM API PROMISE!', statusCode)
   }
 }

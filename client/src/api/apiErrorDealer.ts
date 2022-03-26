@@ -25,7 +25,7 @@ const onNetworkError = () => {
   message.error('Please check your net work connection.')
 }
 const onUnknownError = () => {
-  message.error('Something seems to go wrong.')
+  message.error('Something went wrong. Try again latter.')
 }
 
 export function chain<t extends api<any, any>>(someApi: t) {

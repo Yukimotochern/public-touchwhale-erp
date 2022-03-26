@@ -1,4 +1,8 @@
-import { ResponseBody, responseBodyWithAnyDataJSONSchema } from './apiTypes'
+import {
+  ResponseBody,
+  responseBodyWithAnyDataJSONSchema,
+  ResponseBodyWithOutData,
+} from './apiTypes'
 import { ValidateFunction, JSONSchemaType, DefinedError } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/types/index'
 import ajv from './utils/ajv'
@@ -9,7 +13,7 @@ import CustomError, {
   ApiErrorDealtInternallyAndThrown,
 } from './utils/CustomError'
 import { deserializeError } from 'serialize-error'
-import { NavigateFunction } from 'react-router'
+import { Response } from 'express'
 
 let config: AxiosRequestConfig = {
   timeout: process.env.REACT_APP_API_TIMEOUT
@@ -38,7 +42,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
   constructor({
     bodySchema,
     dataSchema,
-  }: Partial<SchemaOption<ReqestBodyType, ResponseDataType>>) {
+  }: Partial<SchemaOption<ReqestBodyType, ResponseDataType>> = {}) {
     if (bodySchema) {
       this.bodyValidator = ajv.compile(bodySchema)
     } else {
@@ -61,69 +65,142 @@ export default class api<ReqestBodyType, ResponseDataType> {
       )
     }
   }
+
   /**
    * * Server Things
-   * TODO: 1. send
-   * TODO: 2. sendData
    */
+  send(
+    res: Response,
+    statusCode: number = 200,
+    extra: ResponseBodyWithOutData = {}
+  ) {
+    return res.status(statusCode).json(extra)
+  }
+  sendData(
+    res: Response,
+    data: ResponseDataType,
+    extra: ResponseBodyWithOutData = {},
+    statusCode: number = 200
+  ) {
+    const resBody: ResponseBody = {
+      data,
+      ...extra,
+    }
+    // do some computationally intensive checks in development mode
+    if (process.env.NODE_ENV === 'development') {
+      if (this.resWithAnyDataValidator(resBody)) {
+        // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+        let clientObtainedThing = JSON.parse(JSON.stringify(data))
+
+        // check owner
+        const isObjectOwnByOther = (x: any): boolean =>
+          typeof x === 'object' &&
+          typeof x.owner === 'string' &&
+          x.owner !== String(res.owner)
+        const hasNestedObjectOwnByOthers = (ob: any): boolean => {
+          if (typeof ob === 'object' && !Array.isArray(ob)) {
+            if (isObjectOwnByOther(ob)) {
+              console.log(
+                'The following object is owned by others. Please check your code.'
+              )
+              console.log(ob)
+              return true
+            } else {
+              return Object.entries(ob).some(([name, value]) =>
+                hasNestedObjectOwnByOthers(value)
+              )
+            }
+          } else if (Array.isArray(ob)) {
+            return ob.some((inner) => hasNestedObjectOwnByOthers(inner))
+          } else {
+            return false
+          }
+        }
+        // * next line will be imaginably extremly slow ...
+        if (hasNestedObjectOwnByOthers(clientObtainedThing)) {
+          return new CustomError(
+            'Controller has returned something that is not owned by this user or the owner of this user.'
+          )
+        }
+
+        // check with provided validator
+        if (!this.dataValidator(clientObtainedThing)) {
+          console.log(`Here's what client obtained: `)
+          console.log(clientObtainedThing)
+          console.log(`with the following errors:`)
+          console.log(this.dataValidator.errors)
+          throw new CustomError('Unexpected response body from server.')
+        }
+      } else {
+        throw new CustomError('Unexpected response from server.')
+      }
+    }
+    return res.status(statusCode).json(resBody)
+  }
+
   /**
    * * Client Things
    */
-  _reject = (rejectedError: any) =>
-    new ApiPromise<ResponseDataType>((resolve, reject) => reject(rejectedError))
-  _resolve = (data: ResponseDataType) =>
-    new ApiPromise<ResponseDataType>((resolve, reject) => resolve(data))
-
-  async request(
+  request = (
     url: string,
     method: Method,
     data: ReqestBodyType | undefined,
     abortController?: AbortController,
     cof: AxiosRequestConfig<ReqestBodyType> = {}
-  ) {
-    try {
+  ) =>
+    new ApiPromise<ResponseDataType>((resolve, reject) => {
+      const processAndReject = (err: any) => {
+        let innerError = new ApiErrorDealtInternallyAndThrown(err)
+        innerError = this.errorProcessor(innerError)
+        reject(innerError)
+      }
       // validate request body data under developent mode
       if (process.env.NODE_ENV === 'development') {
         if (!this.bodyValidator(data)) {
           console.log('Unexpected thing about to sent:')
           console.log(data)
-          throw new AjvErrors(
-            'Invalid request body sent.',
-            this.bodyValidator.errors as DefinedError[],
-            400
+          processAndReject(
+            new AjvErrors(
+              'Invalid request body sent.',
+              this.bodyValidator.errors as DefinedError[],
+              400
+            )
           )
         }
       }
       // make the actural request
-      const res = await axios.request<
-        Required<ResponseBody<ResponseDataType>>,
-        AxiosResponse<Required<ResponseBody<ResponseDataType>>>,
-        ReqestBodyType
-      >({
-        url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
-        method,
-        data,
-        ...config,
-        ...cof,
-        signal: abortController?.signal || undefined,
-      })
-      // validate response data
-      if (!this.resValidator(res.data)) {
-        console.log('Unexpected thing got:')
-        console.log(res.data)
-        throw new AjvErrors(
-          'Invalid response from server received.',
-          this.resValidator.errors as DefinedError[],
-          500
-        )
-      }
-      return this._resolve(res.data.data)
-    } catch (err) {
-      let innerError = new ApiErrorDealtInternallyAndThrown(err)
-      innerError = this.errorProcessor(innerError)
-      return this._reject(innerError)
-    }
-  }
+      axios
+        .request<
+          Required<ResponseBody<ResponseDataType>>,
+          AxiosResponse<Required<ResponseBody<ResponseDataType>>>,
+          ReqestBodyType
+        >({
+          url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
+          method,
+          data,
+          ...config,
+          ...cof,
+          signal: abortController?.signal || undefined,
+        })
+        .then((res) => {
+          // validate response data
+          if (!this.resValidator(res.data)) {
+            console.log('Unexpected thing got:')
+            console.log(res.data)
+            processAndReject(
+              new AjvErrors(
+                'Invalid response from server received.',
+                this.resValidator.errors as DefinedError[],
+                500
+              )
+            )
+          } else {
+            resolve(res.data.data)
+          }
+        })
+        .catch(processAndReject)
+    })
+
   errorProcessor(
     innerError: ApiErrorDealtInternallyAndThrown
   ): ApiErrorDealtInternallyAndThrown {
@@ -144,25 +221,23 @@ export default class api<ReqestBodyType, ResponseDataType> {
            */
           if (this.onUnAuthoried) {
             this.onUnAuthoried()
+            innerError.catched = true
           }
-          innerError.thrown = new axios.Cancel('Unauthorized.')
-          return innerError
         } else {
           // deserialize error if possible
           const deserializedError = deserializeError(err.response.data)
-          err = err.response.data
+          /**
+           * ! Uncomment the below to catch custom error
+           */
+          // console.log('The following error thrown from server,')
+          // console.error(deserializedError)
+          // console.log('with the following data,')
+          // console.log(err.response.data)
+          // console.log(
+          //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
+          // )
+          innerError.customError = err.response.data
           innerError.deserializedError = deserializedError
-
-          // mongoose error
-          // mongoDB error
-          // custom error from server
-          console.log('The following error thrown from server,')
-          console.error(deserializedError)
-          console.log('with the following data,')
-          console.log(err.response.data)
-          console.log(
-            `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
-          )
         }
       } else {
         // some intrinsic error
@@ -211,40 +286,32 @@ export default class api<ReqestBodyType, ResponseDataType> {
   }
 
   // The belows are merely sugar, they may be SWEET~
-  async get(
+  get = (
     url: string,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
-  ) {
-    return this.request(url, 'GET', undefined, abortController, cof)
-  }
+  ) => this.request(url, 'GET', undefined, abortController, cof)
 
-  async post(
+  post = (
     url: string,
     data: ReqestBodyType,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
-  ) {
-    return this.request(url, 'POST', data, abortController, cof)
-  }
+  ) => this.request(url, 'POST', data, abortController, cof)
 
-  async put(
+  put = (
     url: string,
     data: ReqestBodyType,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
-  ) {
-    return this.request(url, 'PUT', data, abortController, cof)
-  }
+  ) => this.request(url, 'PUT', data, abortController, cof)
 
-  async delete(
+  delete = (
     url: string,
     data: ReqestBodyType | undefined,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
-  ) {
-    return this.request(url, 'DELETE', data, abortController, cof)
-  }
+  ) => this.request(url, 'DELETE', data, abortController, cof)
 }
 
 export { api }

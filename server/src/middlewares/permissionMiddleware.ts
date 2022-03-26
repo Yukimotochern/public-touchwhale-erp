@@ -1,10 +1,9 @@
-import errorCatcher from '../errorCatcher'
-import CustomError from '../../utils/CustomError'
-import { TwPermissons } from './permissionType'
-import UserModel from '../../features/user/userModel'
-const { permissionGroupSet } = TwPermissons
+import errorCatcher from './errorCatcher'
+import CustomError from '../utils/CustomError'
+import { Permissions, permissionGroupSet } from 'api/dist/permissionTypes'
+import UserModel from '../features/user/userModel'
 
-export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
+export const permission = (requiredPermissions: Permissions[]) =>
   errorCatcher(async (req, res, next) => {
     if (req.userJWT) {
       const { isOwner, id } = req.userJWT
@@ -22,7 +21,7 @@ export const permission = (requiredPermissions: TwPermissons.Permissions[]) =>
           return prev.concat(permissionsInGroup.permissions)
         }
         return prev
-      }, <TwPermissons.Permissions[]>[])
+      }, <Permissions[]>[])
       if (requiredPermissions.every((rp) => totalPermissions.includes(rp))) {
         next()
       } else {

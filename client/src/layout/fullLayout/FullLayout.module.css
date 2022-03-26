@@ -18,6 +18,8 @@
   height: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .tw-auth-marketing-background {
   background-image: url('https://account.mongodb.com/static/images/auth/login_promo_desktop.png');

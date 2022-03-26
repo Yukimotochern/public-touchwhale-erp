@@ -8,7 +8,6 @@ export declare namespace SignUp {
     type Body = SubmitEmail;
     const API: api<SubmitEmail, any>;
 }
-export declare const signUp: (email: string) => Promise<any>;
 export declare namespace Verify {
     interface Body extends Required<Pick<Identity, 'email'>>, Required<Secret> {
     }

@@ -9,7 +9,8 @@ import { SignInPage } from '../pages/signIn/SignInPage'
 import { PrivateOutlet } from '../components/private/PrivateOutlet'
 import { PublicOutlet } from '../components/public/PublicOutlet'
 import { ProfilePage } from '../pages/profile/ProfilePage'
-import { ForgetPassword } from '../pages/forgetPassword/ForgetPasswordPage'
+import { ForgetPasswordPage } from '../pages/forgetPassword/ForgetPasswordPage'
+import { ResetPasswordPage } from '../pages/resetPassword/ResetPasswordPage'
 import { ProductPageTable } from '../pages/product/ProductPage'
 
 // ! make sure applink is sync with this one
@@ -151,12 +152,11 @@ const fullLayoutRoutes: RouteObject[] = [
   },
   {
     path: '/forgetPassword',
-    element: <ForgetPassword />,
-    children: [
-      {
-        path: ':forgetPasswordToken',
-      },
-    ],
+    element: <ForgetPasswordPage />,
+  },
+  {
+    path: '/resetPassword',
+    element: <ResetPasswordPage />,
   },
 ]
 
@@ -223,11 +223,10 @@ if (process.env.NODE_ENV === 'development') {
   }
   const fullHere = deleteElement(fullRouteSpecification)
   const fullInLink = deleteIconAndText(fullRouteSpecificationFromLink)
-  console.log(fullHere)
-  console.log(fullInLink)
-
   // Use the '.isEqual' from lodash package to deep compare
   if (!_.isEqual(fullHere, fullInLink)) {
+    console.log(fullHere)
+    console.log(fullInLink)
     throw new Error(
       'Please make sure that fullRouteSpecification has exactly the same structure between AppRoutes.tsx and appLink.ts. The order DO matter.'
     )

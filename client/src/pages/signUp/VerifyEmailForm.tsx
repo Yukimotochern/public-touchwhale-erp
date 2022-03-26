@@ -8,15 +8,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import useCountDown from 'react-countdown-hook'
 import { verify, signUp } from '../../api/userActions'
-import axios from 'axios'
 import jwt_decode from 'jwt-decode'
-const initialTime = 30 * 1000
+import { useNavigate } from 'react-router-dom'
+import { isErrorButApiError, notApiError } from 'api/dist/utils/errorTypeGuards'
+import { useAbortController } from '../../hooks/useAbortController'
+
+const initialTime = 120 * 1000
 const interval = 1000
 
 export const VerifyEmailForm = ({
   signUpProcessState: { email },
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
+  const navigate = useNavigate()
+  const abortController = useAbortController()
+
   // resend count down
   const [timeLeft, { start }] = useCountDown(initialTime, interval)
   const restart = useCallback(() => {
@@ -34,52 +40,54 @@ export const VerifyEmailForm = ({
     }))
     restart()
     try {
-      await signUp(email)
+      await signUp(email, abortController).onErrorsButCancel(() => {
+        setSignUpProcessState((state) => ({
+          ...state,
+          loading: false,
+        }))
+      })
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,
       }))
-    } catch (err: any) {
-      console.error(err)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data) {
-          // error with response
-          switch (err.response?.data?.error?.message) {
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        } else {
-          // error without response
-          switch (err.message) {
-            case 'Network Error':
-              message.error('Please check your internet connection.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        }
-      } else {
-        message.error(`Unknown error: ${err}`)
-      }
-      setSignUpProcessState((state) => ({
-        ...state,
-        loading: false,
-      }))
-    }
+    } catch {}
   }
   const onFinish = async () => {
     setSignUpProcessState((state) => ({
       ...state,
       loading: true,
     }))
+    const onInvalidCredential = () => {
+      form.setFields([
+        { name: 'verify', errors: ['Incorrect verification code'] },
+      ])
+      message.error('Incorrect credentials.')
+      setSignUpProcessState((state) => ({
+        ...state,
+        loading: false,
+      }))
+    }
     try {
       const password = form.getFieldValue('verify')
-      const tokenStr = await verify({
-        email,
-        password,
-      })
+
+      const tokenStr = await verify(
+        {
+          email,
+          password,
+        },
+        abortController
+      )
+        .onCustomCode(401, onInvalidCredential)
+        .onCustomCode(409, () => {
+          message.error('Email has been registered. Please login.')
+          navigate('/signIn')
+        })
+        .onErrorsButCancel(() => {
+          setSignUpProcessState((state) => ({
+            ...state,
+            loading: false,
+          }))
+        })
       // try to decode token
       let token: any
       try {
@@ -99,46 +107,14 @@ export const VerifyEmailForm = ({
         password,
       }))
     } catch (err) {
-      console.error(err)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data) {
-          // error with response
-          switch (err.response?.data?.error?.message) {
-            case 'Invalid credentials.':
-              form.setFields([
-                { name: 'verify', errors: ['Incorrect verification code'] },
-              ])
-              message.error('Incorrect verification code')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        } else {
-          // error without response
-          switch (err.message) {
-            case 'Invalid credentials.':
-              form.setFields([
-                { name: 'verify', errors: ['Incorrect verification code'] },
-              ])
-              message.error('Incorrect verification code')
-              break
-            case 'Network Error':
-              message.error('Please check your internet connection.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        }
-      } else {
-        message.error(`Unknown error: ${err}`)
+      if (isErrorButApiError(err) && err.message === 'Invalid credentials.') {
+        onInvalidCredential()
+      } else if (notApiError(err)) {
+        setSignUpProcessState((state) => ({
+          ...state,
+          loading: false,
+        }))
       }
-
-      setSignUpProcessState((state) => ({
-        ...state,
-        loading: false,
-      }))
     }
   }
   return (

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
-import { RoleType } from './roleType'
-import { TwPermissons } from '../../middlewares/permission/permissionType'
+import * as RoleType from 'api/dist/role/roleTypes'
+import { permissionGroupNameSet } from 'api/dist/permissionTypes'
 
 const RoleSchema = new Schema<RoleType.Mongoose>(
   {
@@ -19,7 +19,7 @@ const RoleSchema = new Schema<RoleType.Mongoose>(
       type: [
         {
           type: String,
-          enum: TwPermissons.permissionGroupNameSet,
+          enum: permissionGroupNameSet,
         },
       ],
       required: true,

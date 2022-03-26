@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react'
 
 // Custom Abort Controll Hook
 const initAbortController = () => new AbortController()
-const useAbortController = (shouldAutoRestart = false) => {
+const useAbortController = (shouldAutoRestart = true) => {
   const abortController = useRef(initAbortController())
 
   useEffect(() => {

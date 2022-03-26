@@ -41,21 +41,56 @@ let config = {
     headers: { 'content-type': 'application/json' },
 };
 class api {
-    constructor({ bodySchema, dataSchema, }) {
+    constructor({ bodySchema, dataSchema, } = {}) {
         this.resWithAnyDataValidator = ajv_1.default.compile(apiTypes_1.responseBodyWithAnyDataJSONSchema);
         this.onUnAuthoried = undefined;
         this.onNetworkError = undefined;
         this.onUnknownError = undefined;
         /**
-         * * Server Things
-         * TODO: 1. send
-         * TODO: 2. sendData
-         */
-        /**
          * * Client Things
          */
-        this._reject = (rejectedError) => new ApiPromise_1.ApiPromise((resolve, reject) => reject(rejectedError));
-        this._resolve = (data) => new ApiPromise_1.ApiPromise((resolve, reject) => resolve(data));
+        this.request = (url, method, data, abortController, cof = {}) => new ApiPromise_1.ApiPromise((resolve, reject) => {
+            const processAndReject = (err) => {
+                let innerError = new CustomError_1.ApiErrorDealtInternallyAndThrown(err);
+                innerError = this.errorProcessor(innerError);
+                reject(innerError);
+            };
+            // validate request body data under developent mode
+            if (process.env.NODE_ENV === 'development') {
+                if (!this.bodyValidator(data)) {
+                    console.log('Unexpected thing about to sent:');
+                    console.log(data);
+                    processAndReject(new CustomError_1.AjvErrors('Invalid request body sent.', this.bodyValidator.errors, 400));
+                }
+            }
+            // make the actural request
+            axios_1.default
+                .request({
+                url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
+                method,
+                data,
+                ...config,
+                ...cof,
+                signal: abortController?.signal || undefined,
+            })
+                .then((res) => {
+                // validate response data
+                if (!this.resValidator(res.data)) {
+                    console.log('Unexpected thing got:');
+                    console.log(res.data);
+                    processAndReject(new CustomError_1.AjvErrors('Invalid response from server received.', this.resValidator.errors, 500));
+                }
+                else {
+                    resolve(res.data.data);
+                }
+            })
+                .catch(processAndReject);
+        });
+        // The belows are merely sugar, they may be SWEET~
+        this.get = (url, abortController, cof = {}) => this.request(url, 'GET', undefined, abortController, cof);
+        this.post = (url, data, abortController, cof = {}) => this.request(url, 'POST', data, abortController, cof);
+        this.put = (url, data, abortController, cof = {}) => this.request(url, 'PUT', data, abortController, cof);
+        this.delete = (url, data, abortController, cof = {}) => this.request(url, 'DELETE', data, abortController, cof);
         if (bodySchema) {
             this.bodyValidator = ajv_1.default.compile(bodySchema);
         }
@@ -78,38 +113,62 @@ class api {
             this.resValidator = ajv_1.default.compile(apiTypes_1.responseBodyWithAnyDataJSONSchema);
         }
     }
-    async request(url, method, data, abortController, cof = {}) {
-        try {
-            // validate request body data under developent mode
-            if (process.env.NODE_ENV === 'development') {
-                if (!this.bodyValidator(data)) {
-                    console.log('Unexpected thing about to sent:');
-                    console.log(data);
-                    throw new CustomError_1.AjvErrors('Invalid request body sent.', this.bodyValidator.errors, 400);
+    /**
+     * * Server Things
+     */
+    send(res, statusCode = 200, extra = {}) {
+        return res.status(statusCode).json(extra);
+    }
+    sendData(res, data, extra = {}, statusCode = 200) {
+        const resBody = {
+            data,
+            ...extra,
+        };
+        // do some computationally intensive checks in development mode
+        if (process.env.NODE_ENV === 'development') {
+            if (this.resWithAnyDataValidator(resBody)) {
+                // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+                let clientObtainedThing = JSON.parse(JSON.stringify(data));
+                // check owner
+                const isObjectOwnByOther = (x) => typeof x === 'object' &&
+                    typeof x.owner === 'string' &&
+                    x.owner !== String(res.owner);
+                const hasNestedObjectOwnByOthers = (ob) => {
+                    if (typeof ob === 'object' && !Array.isArray(ob)) {
+                        if (isObjectOwnByOther(ob)) {
+                            console.log('The following object is owned by others. Please check your code.');
+                            console.log(ob);
+                            return true;
+                        }
+                        else {
+                            return Object.entries(ob).some(([name, value]) => hasNestedObjectOwnByOthers(value));
+                        }
+                    }
+                    else if (Array.isArray(ob)) {
+                        return ob.some((inner) => hasNestedObjectOwnByOthers(inner));
+                    }
+                    else {
+                        return false;
+                    }
+                };
+                // * next line will be imaginably extremly slow ...
+                if (hasNestedObjectOwnByOthers(clientObtainedThing)) {
+                    return new CustomError_1.default('Controller has returned something that is not owned by this user or the owner of this user.');
+                }
+                // check with provided validator
+                if (!this.dataValidator(clientObtainedThing)) {
+                    console.log(`Here's what client obtained: `);
+                    console.log(clientObtainedThing);
+                    console.log(`with the following errors:`);
+                    console.log(this.dataValidator.errors);
+                    throw new CustomError_1.default('Unexpected response body from server.');
                 }
             }
-            // make the actural request
-            const res = await axios_1.default.request({
-                url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
-                method,
-                data,
-                ...config,
-                ...cof,
-                signal: abortController?.signal || undefined,
-            });
-            // validate response data
-            if (!this.resValidator(res.data)) {
-                console.log('Unexpected thing got:');
-                console.log(res.data);
-                throw new CustomError_1.AjvErrors('Invalid response from server received.', this.resValidator.errors, 500);
+            else {
+                throw new CustomError_1.default('Unexpected response from server.');
             }
-            return this._resolve(res.data.data);
         }
-        catch (err) {
-            let innerError = new CustomError_1.ApiErrorDealtInternallyAndThrown(err);
-            innerError = this.errorProcessor(innerError);
-            return this._reject(innerError);
-        }
+        return res.status(statusCode).json(resBody);
     }
     errorProcessor(innerError) {
         let err = innerError.thrown;
@@ -130,23 +189,24 @@ class api {
                      */
                     if (this.onUnAuthoried) {
                         this.onUnAuthoried();
+                        innerError.catched = true;
                     }
-                    innerError.thrown = new axios_1.default.Cancel('Unauthorized.');
-                    return innerError;
                 }
                 else {
                     // deserialize error if possible
                     const deserializedError = (0, serialize_error_1.deserializeError)(err.response.data);
-                    err = err.response.data;
+                    /**
+                     * ! Uncomment the below to catch custom error
+                     */
+                    // console.log('The following error thrown from server,')
+                    // console.error(deserializedError)
+                    // console.log('with the following data,')
+                    // console.log(err.response.data)
+                    // console.log(
+                    //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
+                    // )
+                    innerError.customError = err.response.data;
                     innerError.deserializedError = deserializedError;
-                    // mongoose error
-                    // mongoDB error
-                    // custom error from server
-                    console.log('The following error thrown from server,');
-                    console.error(deserializedError);
-                    console.log('with the following data,');
-                    console.log(err.response.data);
-                    console.log(`Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`);
                 }
             }
             else {
@@ -189,19 +249,6 @@ class api {
         }
         innerError.thrown = err;
         return innerError;
-    }
-    // The belows are merely sugar, they may be SWEET~
-    async get(url, abortController, cof = {}) {
-        return this.request(url, 'GET', undefined, abortController, cof);
-    }
-    async post(url, data, abortController, cof = {}) {
-        return this.request(url, 'POST', data, abortController, cof);
-    }
-    async put(url, data, abortController, cof = {}) {
-        return this.request(url, 'PUT', data, abortController, cof);
-    }
-    async delete(url, data, abortController, cof = {}) {
-        return this.request(url, 'DELETE', data, abortController, cof);
     }
 }
 exports.default = api;

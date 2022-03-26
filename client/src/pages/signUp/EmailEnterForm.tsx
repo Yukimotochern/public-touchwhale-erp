@@ -2,8 +2,9 @@ import React from 'react'
 import { Form, Input, Button, Divider, Typography } from 'antd'
 import styles from './EmailEnterForm.module.css'
 import { UseStateForSignUpPageProps } from './SignUpPage'
-import { signUp } from 'api/dist/user/userApi'
+import { signUp } from '../../api/userActions'
 import { useNavigate } from 'react-router-dom'
+import { useAbortController } from '../../hooks/useAbortController'
 
 export const EmailEnterForm = ({
   signUpProcessState,
@@ -11,6 +12,7 @@ export const EmailEnterForm = ({
 }: UseStateForSignUpPageProps) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
+  const abortController = useAbortController()
   const onFinish = async () => {
     const email = form.getFieldValue('email')
     setSignUpProcessState((state) => ({
@@ -20,19 +22,28 @@ export const EmailEnterForm = ({
     }))
 
     try {
-      await signUp(email)
+      await signUp(email, abortController)
+        .onCustomCode(409, () => {
+          form.setFields([
+            {
+              name: 'email',
+              errors: ['This email has been registed. Please try another one.'],
+            },
+          ])
+        })
+        .onErrorsButCancel(() => {
+          setSignUpProcessState((state) => ({
+            ...state,
+            loading: false,
+          }))
+        }, true)
       setSignUpProcessState((state) => ({
         ...state,
         email,
         stage: 'verify',
         loading: false,
       }))
-    } catch (err: any) {
-      setSignUpProcessState((state) => ({
-        ...state,
-        loading: false,
-      }))
-    }
+    } catch {}
   }
   return (
     <>

@@ -1,9 +1,8 @@
 import React from 'react'
-import { Form, Button, Input, message } from 'antd'
+import { Form, Button, Input } from 'antd'
 import { UseStateForSignUpPageProps } from './SignUpPage'
 import styles from './PasswordSetUpForm.module.css'
 import { changePassword } from '../../api/userActions'
-import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { getUserThunkAction } from '../../redux/auth/authSlice'
 
@@ -25,26 +24,7 @@ export const PasswordSetUpForm = ({
         token,
       })
       dispatch(getUserThunkAction())
-    } catch (err) {
-      console.error(err)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data) {
-          message.error(`Something is wrong: ${err.response.data.message}`)
-        } else {
-          // error without response
-          switch (err.message) {
-            case 'Network Error':
-              message.error('Please check your internet connection.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        }
-      } else {
-        message.error(`Unknown error: ${err}`)
-      }
-    }
+    } catch {}
   }
   return (
     <>
