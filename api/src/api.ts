@@ -214,6 +214,9 @@ export default class api<ReqestBodyType, ResponseDataType> {
     } else if (axios.isAxiosError(err)) {
       // server error
       if (err.response?.data) {
+        const deserializedError = deserializeError(err.response.data)
+        innerError.customError = err.response.data
+        innerError.deserializedError = deserializedError
         if (err.response.status === 401) {
           /**
            * Unauthorized, redirect if possible
@@ -224,7 +227,6 @@ export default class api<ReqestBodyType, ResponseDataType> {
           }
         } else {
           // deserialize error if possible
-          const deserializedError = deserializeError(err.response.data)
           /**
            * ! Uncomment the below to catch custom error
            */
@@ -235,8 +237,6 @@ export default class api<ReqestBodyType, ResponseDataType> {
           // console.log(
           //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
           // )
-          innerError.customError = err.response.data
-          innerError.deserializedError = deserializedError
         }
       } else {
         // some intrinsic error

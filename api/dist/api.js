@@ -182,6 +182,9 @@ class api {
         else if (axios_1.default.isAxiosError(err)) {
             // server error
             if (err.response?.data) {
+                const deserializedError = (0, serialize_error_1.deserializeError)(err.response.data);
+                innerError.customError = err.response.data;
+                innerError.deserializedError = deserializedError;
                 if (err.response.status === 401) {
                     /**
                      * Unauthorized, redirect if possible
@@ -193,7 +196,6 @@ class api {
                 }
                 else {
                     // deserialize error if possible
-                    const deserializedError = (0, serialize_error_1.deserializeError)(err.response.data);
                     /**
                      * ! Uncomment the below to catch custom error
                      */
@@ -204,8 +206,6 @@ class api {
                     // console.log(
                     //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
                     // )
-                    innerError.customError = err.response.data;
-                    innerError.deserializedError = deserializedError;
                 }
             }
             else {
