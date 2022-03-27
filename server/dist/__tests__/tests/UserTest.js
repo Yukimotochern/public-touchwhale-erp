@@ -1,48 +1,24 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const server_1 = __importStar(require("../server"));
-const mongoose_1 = __importDefault(require("mongoose"));
+exports.User_Test = void 0;
+const server_1 = __importDefault(require("../../server"));
 const supertest_1 = __importDefault(require("supertest"));
 const axios_1 = __importDefault(require("axios"));
 const fs_1 = __importDefault(require("fs"));
 const form_data_1 = __importDefault(require("form-data"));
-beforeAll(async () => {
-    // Connect to MongoDB
-    // const url = `mongodb://127.0.0.1/test_db`
-    // await mongoose.connect(url)
-});
+// import imageCompression from 'browser-image-compression'
 let verification_code;
 let resetPassword_url;
 let resetPassword_token;
 let token;
 let getUploadAvatar;
-// example
-describe('User SignUp -> Get User Test', () => {
+const RequestServer = (0, supertest_1.default)(server_1.default);
+const User_Test = () => describe('Test all user routes.', () => {
     it('POST SignUp User', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .post('/api/v1/user/signUp')
+        const res = await RequestServer.post('/api/v1/user/signUp')
             .send({
             email: 'testEmail@gmail.com',
         })
@@ -63,8 +39,7 @@ describe('User SignUp -> Get User Test', () => {
         console.log('****'.bgBlue, 'Verification code:', verification_code, '****'.bgBlue);
     });
     it('POST Verify User', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .post('/api/v1/user/signUp/verify')
+        const res = await RequestServer.post('/api/v1/user/signUp/verify')
             .send({
             email: 'testEmail@gmail.com',
             password: verification_code,
@@ -75,8 +50,7 @@ describe('User SignUp -> Get User Test', () => {
         token = res.body.data;
     });
     it('PUT Set Password', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .put('/api/v1/user/changePassword')
+        const res = await RequestServer.put('/api/v1/user/changePassword')
             .set('Cookie', [`token=${token}`])
             .send({
             newPassword: 'test1234',
@@ -84,8 +58,7 @@ describe('User SignUp -> Get User Test', () => {
         expect(res.status).toBe(200);
     });
     it('POST User SignIn', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .post('/api/v1/user/signIn')
+        const res = await RequestServer.post('/api/v1/user/signIn')
             .send({
             email: 'testEmail@gmail.com',
             password: 'test1234',
@@ -94,15 +67,14 @@ describe('User SignUp -> Get User Test', () => {
         expect(res.status).toBe(200);
     });
     it('GET Get User infomation', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .get('/api/v1/user')
-            .set('Cookie', [`token=${token}`]);
+        const res = await RequestServer.get('/api/v1/user').set('Cookie', [
+            `token=${token}`,
+        ]);
         expect(res.status).toBe(200);
         expect(typeof res.body).toBe('object');
     });
     it('PUT Update User', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .put('/api/v1/user')
+        const res = await RequestServer.put('/api/v1/user')
             .send({
             username: 'testAccount',
             company: 'FacGooAmazFilx',
@@ -114,9 +86,9 @@ describe('User SignUp -> Get User Test', () => {
         // expect(console.log(res))
     });
     it('GET Upload Avatar URL', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .get('/api/v1/user/avatar')
-            .set('Cookie', [`token=${token}`]);
+        const res = await RequestServer.get('/api/v1/user/avatar').set('Cookie', [
+            `token=${token}`,
+        ]);
         expect(res.status).toBe(200);
         expect(typeof res.body).toBe('object');
         getUploadAvatar = res.body.data;
@@ -134,15 +106,12 @@ describe('User SignUp -> Get User Test', () => {
         });
     });
     it('Delete Avatar', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .delete('/api/v1/user/avatar')
-            .set('Cookie', [`token=${token}`]);
+        const res = await RequestServer.delete('/api/v1/user/avatar').set('Cookie', [`token=${token}`]);
         expect(res.status).toBe(200);
         expect(res.body.message).toBe('Avatar deleted.');
     });
     it('Change Password', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .put('/api/v1/user/changePassword')
+        const res = await RequestServer.put('/api/v1/user/changePassword')
             .send({
             currentPassword: 'test1234',
             newPassword: 'Test2345',
@@ -151,7 +120,7 @@ describe('User SignUp -> Get User Test', () => {
         expect(res.status).toBe(200);
     });
     it('Forget Passwrod', async () => {
-        const res = await (0, supertest_1.default)(server_1.default).post('/api/v1/user/forgetPassword').send({
+        const res = await RequestServer.post('/api/v1/user/forgetPassword').send({
             email: 'testEmail@gmail.com',
         });
         expect(res.status).toBe(200);
@@ -166,12 +135,12 @@ describe('User SignUp -> Get User Test', () => {
         const res_mail = await axios_1.default.get(`https://mailtrap.io/api/v1/inboxes/1616396/messages/${mail_id}/body.txt`, options);
         const data = res_mail.data.split(' ');
         resetPassword_url = data[data.length - 1].split('\n')[0];
-        resetPassword_token =
-            resetPassword_url.split('/')[resetPassword_url.split('/').length - 1];
+        resetPassword_token = resetPassword_url
+            .split('/')[resetPassword_url.split('/').length - 1].split('#')[1];
         console.log('****'.bgBlue, 'Reset Password URL:', resetPassword_url, 'Reset Password Token:', resetPassword_token, '****'.bgBlue);
     });
     it('Reset Password First Call', async () => {
-        const res = await (0, supertest_1.default)(server_1.default).put('/api/v1/user/forgetPassword').send({
+        const res = await RequestServer.put('/api/v1/user/forgetPassword').send({
             token: resetPassword_token,
         });
         expect(res.status).toBe(200);
@@ -180,7 +149,7 @@ describe('User SignUp -> Get User Test', () => {
         console.log('****'.bgBlue, 'New Reset Password Token:', resetPassword_token, '****'.bgBlue);
     });
     it('Resrt Password Second Call', async () => {
-        const res = await (0, supertest_1.default)(server_1.default).put('/api/v1/user/forgetPassword').send({
+        const res = await RequestServer.put('/api/v1/user/forgetPassword').send({
             token: resetPassword_token,
             password: 'test3456',
         });
@@ -188,8 +157,7 @@ describe('User SignUp -> Get User Test', () => {
         expect(res.body.message).toBe('Your password has been set.');
     });
     it('POST User SignIn After Resetpassword', async () => {
-        const res = await (0, supertest_1.default)(server_1.default)
-            .post('/api/v1/user/signIn')
+        const res = await RequestServer.post('/api/v1/user/signIn')
             .send({
             email: 'testEmail@gmail.com',
             password: 'test3456',
@@ -216,13 +184,4 @@ describe('User SignUp -> Get User Test', () => {
     // 	expect(res.status).toBe(200)
     // })
 });
-afterAll(async () => {
-    // Closing the DB connection allows Jest to exit successfully.
-    const collections = await mongoose_1.default.connection.db.collections();
-    for (let collection of collections) {
-        await collection.drop();
-    }
-    mongoose_1.default.disconnect();
-    server_1.server.close();
-    // done()
-});
+exports.User_Test = User_Test;

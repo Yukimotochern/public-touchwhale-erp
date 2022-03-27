@@ -82,12 +82,14 @@ exports.userVerify = userVerify;
 // @desc     Sign user in
 // @access   Public
 const userSignIn = async (req, res, next) => {
+    console.log(req, '----reqreqrqrqrqrqrqrqrq----------'.bgGreen);
     if (userApi_1.SignIn.API.bodyValidator(req.body)) {
         const { email, login_name, password } = req.body;
         if (!email && !login_name) {
             return next(new CustomError_1.default('Without Identity.', 400));
         }
-        let user = await userModel_1.default.findOne({ login_name, email }).select('+password');
+        let user = await userModel_1.default.findOne({ email }).select('+password');
+        // console.log(user, '-------------------------'.bgRed)
         if (!user) {
             return next(new CustomError_1.default('Invalid credentials.', 401));
         }
@@ -400,9 +402,16 @@ const createWorker = async (req, res, next) => {
         if (req.userJWT) {
             const worker = await userModel_1.default.create({
                 ...req.body,
+<<<<<<< HEAD
                 isActive: true,
                 isOwner: false,
                 provider: 'TouchWhale',
+=======
+                provider: 'TouchWhale',
+                isActive: true,
+                isOwner: false,
+                owner: req.userJWT.id,
+>>>>>>> origin/b-User_Unit_Test
             });
             userApi_1.CreateWorker.API.sendData(res, worker);
         }
