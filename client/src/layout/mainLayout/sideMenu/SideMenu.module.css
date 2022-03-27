@@ -10,7 +10,7 @@
   cursor: pointer;
 }
 
-.ant-layout-sider-collapsed .side-menu-top-bar .trigger {
+:global(.ant-layout-sider-collapsed) .side-menu-top-bar .trigger {
   display: none;
 }
 
@@ -18,15 +18,6 @@
   color: #fff;
 }
 
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
-}
-
-:hover::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: #a8a7a773;
-}
 .main-layout-sider .main-layout-menu {
   flex: 1 1 0;
   overflow-y: overlay;
@@ -41,8 +32,6 @@ a.mynavIcon:hover {
 }
 
 a.mynavIcon {
-  /* margin: 5px 5px 5px 10px; */
-  /* padding: 1rem 0 0rem 0; */
   display: inline-block;
   font-size: 20px;
   color: #fff;
@@ -63,7 +52,7 @@ a.mynavIcon {
   margin-bottom: 5px;
 }
 
-.main-layout-sider .ant-layout-sider-children {
+.main-layout-sider :global(.ant-layout-sider-children) {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -73,11 +62,11 @@ a.mynavIcon {
 }
 
 .main-layout-sider
-  .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal)
-  .ant-menu-item-selected {
+  :global(.ant-menu-dark):global(.ant-menu-dark):not(:global(.ant-menu-horizontal))
+  :global(.ant-menu-item-selected) {
   background-color: #1672c9cc;
 }
 
-.main-layout-sider .ant-menu-item {
+.main-layout-sider :global(.ant-menu-item) {
   font-size: 16px;
 }

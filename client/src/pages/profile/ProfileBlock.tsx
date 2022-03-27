@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Form, Input, Col, Typography } from 'antd'
-import './ProfileBlock.css'
+import styles from './ProfileBlock.module.css'
 import { updateUser } from '../../api/userActions'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'
@@ -50,7 +50,7 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
       lg={12}
       xl={11}
       xxl={6}
-      className='tw-profile-block'
+      className={styles['tw-profile-block']}
     >
       {/* Title */}
       <Typography.Title level={5}>{title}</Typography.Title>

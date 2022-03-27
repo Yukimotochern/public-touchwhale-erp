@@ -1,6 +1,6 @@
 import React from 'react'
 import { Layout, Menu } from 'antd'
-import './SideMenu.css'
+import styles from './SideMenu.module.css'
 import { NavLink, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../../../redux/hooks'
@@ -27,24 +27,24 @@ export const SideMenu = () => {
       trigger={null}
       collapsedWidth='0'
       collapsible
-      className='main-layout-sider'
+      className={styles['main-layout-sider']}
       collapsed={!siderOpen}
       width={225}
     >
-      <div className='side-menu-top-bar'>
-        <Link to='/' className='mynavIcon'>
+      <div className={styles['side-menu-top-bar']}>
+        <Link to='/' className={styles['mynavIcon']}>
           <img
             alt=''
             src='/logo128.png'
             width='36'
             height='36'
-            className='app-logo'
+            className={styles['app-logo']}
           />{' '}
           <span>TWhale ERP</span>
         </Link>
         <FontAwesomeIcon
           icon={faBars}
-          className='trigger'
+          className={styles['trigger']}
           onClick={() => dispatch(toggle())}
           transform={{ y: -1 }}
         />
@@ -53,7 +53,7 @@ export const SideMenu = () => {
         theme='dark'
         mode='inline'
         selectedKeys={selectedKeys}
-        className='main-layout-menu'
+        className={styles['main-layout-menu']}
       >
         {routeLink.map(({ path, text, icon, link }) => {
           return (

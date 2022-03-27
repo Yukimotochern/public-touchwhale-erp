@@ -22,6 +22,7 @@
     "antd": "^4.19.2",
     "antd-img-crop": "^4.1.0",
     "axios": "^0.26.0",
+    "classnames": "^2.3.1",
     "express": "^4.17.3",
     "history": "^5.2.0",
     "jwt-decode": "^3.1.2",
@@ -38,8 +39,8 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-first-history": "^5.0.8",
     "serialize-error": "8.1.0",
-    "typescript": "^4.5.5",
-    "typescript-plugin-css-modules": "^2.8.0"
+    "typescript": "^4.6.3",
+    "typescript-plugin-css-modules": "^3.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

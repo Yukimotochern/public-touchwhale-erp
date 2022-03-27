@@ -4,3 +4,7 @@
 .user-icon {
   cursor: pointer;
 }
+
+.tw-edit-avatar-menu :global(.ant-upload):global(.ant-upload-select) {
+  display: block;
+}

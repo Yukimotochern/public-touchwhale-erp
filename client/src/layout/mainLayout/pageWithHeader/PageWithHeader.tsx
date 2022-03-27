@@ -1,5 +1,4 @@
 import React from 'react'
-import './PageWithHeader.css'
 import styles from './PageWithHeader.module.css'
 import {
   PageHeader as AntPageHeader,
@@ -20,16 +19,21 @@ import Avatar from 'antd/lib/avatar/avatar'
 import { signOut } from '../../../api/userActions'
 import { authSlice } from '../../../redux/auth/authSlice'
 import { useAbortController } from '../../../hooks/useAbortController'
+import cln from 'classnames'
 
 const { Content } = Layout
 
 interface Props extends PageHeaderProps {
   title: string
+  xScroll?: boolean
+  yScroll?: boolean
 }
 const { TabPane } = Tabs
 export const PageWithHeader: React.FC<Props> = ({
   children,
   title,
+  xScroll,
+  yScroll,
   ...rest
 }) => {
   const abortController = useAbortController()
@@ -51,7 +55,7 @@ export const PageWithHeader: React.FC<Props> = ({
   }
   const navigate = useNavigate()
   const firstLevelMatch = useAppSelector((s) => s.routeLink).find(
-    (route) => route.path === '/' + firstLevelRoute
+    (route) => route.path === firstLevelRoute
   )
   let tabs: RouteLink[] | undefined
   if (firstLevelMatch) {
@@ -74,7 +78,7 @@ export const PageWithHeader: React.FC<Props> = ({
     }
   }
   const userMenu = (
-    <Menu className='tw-page-with-header-user-menu '>
+    <Menu className={styles['tw-page-with-header-user-menu']}>
       <Menu.ItemGroup title={<div>Hi, {auth.user?.email}</div>}>
         <Menu.Item key='log_out' onClick={onSignOut}>
           Log out
@@ -94,12 +98,12 @@ export const PageWithHeader: React.FC<Props> = ({
           siderOpen ? null : (
             <FontAwesomeIcon
               icon={faBars}
-              className='trigger'
+              className={styles.trigger}
               transform={{ y: -1 }}
             />
           )
         }
-        className='tw-page-with-header'
+        className={styles['tw-page-with-header']}
         footer={
           tabs ? (
             <Tabs
@@ -116,7 +120,7 @@ export const PageWithHeader: React.FC<Props> = ({
           ) : undefined
         }
         extra={
-          <div className='user-icon'>
+          <div className={styles['user-icon']}>
             <Dropdown
               overlay={userMenu}
               trigger={['click']}
@@ -137,7 +141,14 @@ export const PageWithHeader: React.FC<Props> = ({
           </div>
         }
       />
-      <Content className='tw-page-with-header-content'>{children}</Content>
+      <Content
+        className={cln(styles['tw-page-with-header-content'], {
+          [styles['x-scroll']]: xScroll,
+          [styles['y-scroll']]: yScroll,
+        })}
+      >
+        {children}
+      </Content>
     </>
   )
 }

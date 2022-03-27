@@ -22,7 +22,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
      * * Server Things
      */
     send(res: Response, statusCode?: number, extra?: ResponseBodyWithOutData): Response<any, Record<string, any>>;
-    sendData(res: Response, data: ResponseDataType, extra?: ResponseBodyWithOutData, statusCode?: number): Response<any, Record<string, any>> | CustomError;
+    sendData(res: Response, data: ResponseDataType, extra?: ResponseBodyWithOutData, statusCode?: number): CustomError | Response<any, Record<string, any>>;
     /**
      * * Client Things
      */

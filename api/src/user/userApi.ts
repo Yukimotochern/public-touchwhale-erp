@@ -13,7 +13,6 @@ import {
   MongooseStampsJSONSchema,
 } from '../utils/mongoTypes'
 import { permissionGroupNameSet } from '../permissionTypes'
-import { NavigateFunction } from 'react-router'
 
 export interface SubmitEmail extends Required<Pick<Identity, 'email'>> {}
 

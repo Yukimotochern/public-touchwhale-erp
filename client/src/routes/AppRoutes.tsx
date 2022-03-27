@@ -120,7 +120,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/account',
     element: (
-      <PageWithHeader title='Account Page'>
+      <PageWithHeader title='Account Page' yScroll>
         <Outlet />
       </PageWithHeader>
     ),

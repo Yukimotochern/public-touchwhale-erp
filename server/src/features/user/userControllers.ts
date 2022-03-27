@@ -439,7 +439,12 @@ export const getWorker: RequestHandler = async (req, res, next) => {
 export const createWorker: RequestHandler = async (req, res, next) => {
   if (CreateWorker.API.bodyValidator(req.body)) {
     if (req.userJWT) {
-      const worker = await UserModel.create(req.body)
+      const worker = await UserModel.create({
+        ...req.body,
+        isActive: true,
+        isOwner: false,
+        provider: 'TouchWhale',
+      })
       CreateWorker.API.sendData(res, worker)
     }
     return next(new CustomError('Internal Server Error'))

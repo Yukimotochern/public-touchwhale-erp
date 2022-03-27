@@ -9,7 +9,6 @@ const CustomError_1 = require("./CustomError");
 /**
  * A promise that can catch errors with type-safe method.
  */
-Promise;
 class ApiPromise extends Promise {
     constructor() {
         super(...arguments);

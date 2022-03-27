@@ -132,7 +132,7 @@ export const VerifyEmailForm = ({
           <FontAwesomeIcon
             style={{ marginRight: '13px' }}
             icon={faArrowLeft}
-            className='trigger'
+            className={styles['trigger']}
             transform={{ y: 1.4 }}
           />
         }

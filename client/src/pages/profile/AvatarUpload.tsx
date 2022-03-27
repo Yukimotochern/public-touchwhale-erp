@@ -6,7 +6,6 @@ import Avatar from 'antd/lib/avatar/avatar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons'
 import styles from './AvatarUpload.module.css'
-import './AvatarUpload.css'
 import { getAvatarUploadUrl, deletAvatar } from '../../api/userActions'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
@@ -70,7 +69,7 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
     }
   }
   const editAvatarMenu = (
-    <Menu className='tw-edit-avatar-menu'>
+    <Menu className={styles['tw-edit-avatar-menu']}>
       <ImgCrop
         minZoom={0.1}
         maxZoom={10}

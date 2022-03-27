@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { MongooseStatics } from '../utils/mongoTypes'
+import { MongooseStatics, MongooseStamps } from '../utils/mongoTypes'
 import { PermissionGroupNames } from '../permissionTypes'
 
 export interface Classifier {
@@ -30,11 +30,6 @@ export interface Editable {
   avatar?: string
 }
 
-export interface Stamp {
-  createdAt: Date | string
-  updatedAt: Date | string
-}
-
 export interface Token {
   forgetPasswordToken?: string
   forgetPasswordExpire?: Date | string
@@ -50,7 +45,7 @@ export interface PlainUser
   extends Classifier,
     Identity,
     Editable,
-    Stamp,
+    MongooseStamps,
     MongooseStatics,
     RolePermissions {}
 
@@ -59,7 +54,7 @@ export interface Mongoose
     Identity,
     Secret,
     Editable,
-    Stamp,
+    MongooseStamps,
     Token,
     MongooseMethods,
     MongooseStatics,
