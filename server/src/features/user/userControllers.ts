@@ -103,9 +103,7 @@ export const userSignIn: RequestHandler = async (req, res, next) => {
 		if (!email && !login_name) {
 			return next(new CustomError('Without Identity.', 400))
 		}
-		let user = await UserModel.findOne({ login_name, email }).select(
-			'+password'
-		)
+		let user = await UserModel.findOne({ email }).select('+password')
 		if (!user) {
 			return next(new CustomError('Invalid credentials.', 401))
 		}
@@ -439,14 +437,19 @@ export const getWorker: RequestHandler = async (req, res, next) => {
 export const createWorker: RequestHandler = async (req, res, next) => {
 	if (CreateWorker.API.bodyValidator(req.body)) {
 		if (req.userJWT) {
-			const worker = await UserModel.create(req.body)
+			const worker = await UserModel.create({
+				...req.body,
+				provider: 'TouchWhale',
+				isActive: true,
+				isOwner: false,
+				owner: req.userJWT.id,
+			})
 			CreateWorker.API.sendData(res, worker)
 		}
 		return next(new CustomError('Internal Server Error'))
 	}
 	return next(avjErrorWrapper(CreateWorker.API.bodyValidator.errors))
 }
-
 // @route    PUT api/v1/user/workers/:id
 // @desc     Update a worker
 // @access   Private
@@ -483,7 +486,7 @@ export const updateWorker: RequestHandler = async (req, res, next) => {
 export const deleteWorker: RequestHandler = async (req, res, next) => {
 	if (req.userJWT) {
 		let idToDelete = req.params.id
-		if (req.params.id === idToDelete) {
+		if (req.userJWT.id === idToDelete) {
 			return next(new CustomError('Your cannot delete yourself.'))
 		}
 		const worker = await UserModel.findOne({

@@ -62,3 +62,4 @@ class ApiPromise extends Promise {
     }
 }
 exports.ApiPromise = ApiPromise;
+exports.default = ApiPromise;

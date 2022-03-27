@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserIO = void 0;
 const mongodb_1 = require("../../utils/mongodb");
 const apiIO_1 = require("../apiIO");
-const permissionTypes_1 = require("api/dist/permissionTypes");
+const permissionType_1 = require("../../middlewares/permission/permissionType");
 var UserIO;
 (function (UserIO) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3;
@@ -13,7 +13,7 @@ var UserIO;
             type: 'array',
             items: {
                 type: 'string',
-                enum: permissionTypes_1.permissionGroupNameSet,
+                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
             },
             nullable: true,
         },
@@ -78,7 +78,7 @@ var UserIO;
         type: 'object',
         properties: {
             email: { type: 'string', format: 'email', nullable: true },
-            login_name: { type: 'string', format: 'email', nullable: true },
+            login_name: { type: 'string', nullable: true },
             password: { type: 'string' },
         },
         required: ['password'],

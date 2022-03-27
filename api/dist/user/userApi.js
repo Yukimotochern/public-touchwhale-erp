@@ -76,7 +76,7 @@ var SignIn;
             type: 'object',
             properties: {
                 email: { type: 'string', format: 'email', nullable: true },
-                login_name: { type: 'string', format: 'email', nullable: true },
+                login_name: { type: 'string', nullable: true },
                 password: { type: 'string' },
             },
             required: ['password'],

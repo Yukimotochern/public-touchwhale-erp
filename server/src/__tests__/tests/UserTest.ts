@@ -120,7 +120,6 @@ export const User_Test = () =>
 			expect(typeof res.body).toBe('object')
 
 			getUploadAvatar = res.body.data
-			console.log(getUploadAvatar)
 		})
 
 		it('Upload Avatar to B2 ...', async () => {
