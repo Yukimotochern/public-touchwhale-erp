@@ -442,7 +442,7 @@ export const createWorker: RequestHandler = async (req, res, next) => {
 				provider: 'TouchWhale',
 				isActive: true,
 				isOwner: false,
-				owner: req.userJWT.id,
+				owner: req.userJWT.owner,
 			})
 			CreateWorker.API.sendData(res, worker)
 		}
