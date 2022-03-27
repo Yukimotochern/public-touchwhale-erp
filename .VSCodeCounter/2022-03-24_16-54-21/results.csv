@@ -1,0 +1,185 @@
+"filename", "language", "TypeScript", "TypeScript React", "CSS", "JSON with Comments", "Markdown", "JSON", "JavaScript", "env", "HTML", "comment", "blank", "total"
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/api.d.ts", "TypeScript", 32, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 39
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/api.js", "JavaScript", 0, 0, 0, 0, 0, 0, 230, 0, 0, 30, 1, 261
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/apiTypes.d.ts", "TypeScript", 19, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 24
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/apiTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 18, 0, 0, 8, 1, 27
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/index.d.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/permissionTypes.d.ts", "TypeScript", 19, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 26
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/permissionTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 36, 0, 0, 5, 1, 42
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/role/rolePermissions.d.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/role/rolePermissions.js", "JavaScript", 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 13
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userApi.d.ts", "TypeScript", 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 88
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userApi.js", "JavaScript", 0, 0, 0, 0, 0, 0, 217, 0, 0, 1, 1, 219
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userPermissions.d.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userPermissions.js", "JavaScript", 0, 0, 0, 0, 0, 0, 14, 0, 0, 1, 1, 16
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userTypes.d.ts", "TypeScript", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 44
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/user/userTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ApiPromise.d.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 22
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ApiPromise.js", "JavaScript", 0, 0, 0, 0, 0, 0, 91, 0, 0, 6, 1, 98
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/CustomError.d.ts", "TypeScript", 130, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 137
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/CustomError.js", "JavaScript", 0, 0, 0, 0, 0, 0, 57, 0, 0, 1, 1, 59
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ajv.d.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ajv.js", "JavaScript", 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 1, 12
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/mongoTypes.d.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"/Users/yukimoto/projects/touchwhale-erp/api/dist/utils/mongoTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 15, 0, 0, 1, 1, 17
+"/Users/yukimoto/projects/touchwhale-erp/api/environment.d.ts", "TypeScript", 37, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 43
+"/Users/yukimoto/projects/touchwhale-erp/api/package-lock.json", "JSON", 0, 0, 0, 0, 0, 2384, 0, 0, 0, 0, 1, 2385
+"/Users/yukimoto/projects/touchwhale-erp/api/package.json", "JSON", 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 1, 28
+"/Users/yukimoto/projects/touchwhale-erp/api/src/api.ts", "TypeScript", 277, 0, 0, 0, 0, 0, 0, 0, 0, 30, 15, 322
+"/Users/yukimoto/projects/touchwhale-erp/api/src/apiTypes.ts", "TypeScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 8, 5, 35
+"/Users/yukimoto/projects/touchwhale-erp/api/src/index.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/yukimoto/projects/touchwhale-erp/api/src/permissionTypes.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 16, 9, 70
+"/Users/yukimoto/projects/touchwhale-erp/api/src/role/rolePermissions.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 18
+"/Users/yukimoto/projects/touchwhale-erp/api/src/user/userApi.ts", "TypeScript", 248, 0, 0, 0, 0, 0, 0, 0, 0, 2, 17, 267
+"/Users/yukimoto/projects/touchwhale-erp/api/src/user/userPermissions.ts", "TypeScript", 15, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 22
+"/Users/yukimoto/projects/touchwhale-erp/api/src/user/userTypes.ts", "TypeScript", 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 67
+"/Users/yukimoto/projects/touchwhale-erp/api/src/utils/ApiPromise.ts", "TypeScript", 85, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 95
+"/Users/yukimoto/projects/touchwhale-erp/api/src/utils/CustomError.ts", "TypeScript", 174, 0, 0, 0, 0, 0, 0, 0, 0, 7, 25, 206
+"/Users/yukimoto/projects/touchwhale-erp/api/src/utils/ajv.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8
+"/Users/yukimoto/projects/touchwhale-erp/api/src/utils/mongoTypes.ts", "TypeScript", 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 26
+"/Users/yukimoto/projects/touchwhale-erp/api/tsconfig.json", "JSON with Comments", 0, 0, 0, 21, 0, 0, 0, 0, 0, 78, 9, 108
+"/Users/yukimoto/projects/touchwhale-erp/client/.env", "env", 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 5
+"/Users/yukimoto/projects/touchwhale-erp/client/README.md", "Markdown", 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 20, 45
+"/Users/yukimoto/projects/touchwhale-erp/client/package-lock.json", "JSON", 0, 0, 0, 0, 0, 28056, 0, 0, 0, 0, 1, 28057
+"/Users/yukimoto/projects/touchwhale-erp/client/package.json", "JSON", 0, 0, 0, 0, 0, 69, 0, 0, 0, 0, 1, 70
+"/Users/yukimoto/projects/touchwhale-erp/client/public/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 1, 24
+"/Users/yukimoto/projects/touchwhale-erp/client/public/manifest.json", "JSON", 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 1, 26
+"/Users/yukimoto/projects/touchwhale-erp/client/src/App.css", "CSS", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 1, 17
+"/Users/yukimoto/projects/touchwhale-erp/client/src/App.test.tsx", "TypeScript React", 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/yukimoto/projects/touchwhale-erp/client/src/App.tsx", "TypeScript React", 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 4, 21
+"/Users/yukimoto/projects/touchwhale-erp/client/src/api/apiErrorDealer.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 37
+"/Users/yukimoto/projects/touchwhale-erp/client/src/api/userActions.ts", "TypeScript", 86, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 104
+"/Users/yukimoto/projects/touchwhale-erp/client/src/components/VerificationInput/VerificationInput.tsx", "TypeScript React", 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 4, 29
+"/Users/yukimoto/projects/touchwhale-erp/client/src/components/VerificationInput/VerifyCodeInput.module.css", "CSS", 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/yukimoto/projects/touchwhale-erp/client/src/components/private/PrivateOutlet.tsx", "TypeScript React", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16
+"/Users/yukimoto/projects/touchwhale-erp/client/src/components/public/PublicOutlet.tsx", "TypeScript React", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"/Users/yukimoto/projects/touchwhale-erp/client/src/hooks/useAbortController.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 21
+"/Users/yukimoto/projects/touchwhale-erp/client/src/index.tsx", "TypeScript React", 0, 19, 0, 0, 0, 0, 0, 0, 0, 3, 3, 25
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/fullLayout/FullLayout.module.css", "CSS", 0, 0, 43, 0, 0, 0, 0, 0, 0, 0, 3, 46
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/fullLayout/FullLayout.tsx", "TypeScript React", 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 2, 23
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/MainLayout.module.css", "CSS", 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/MainLayout.tsx", "TypeScript React", 0, 18, 0, 0, 0, 0, 0, 0, 0, 1, 4, 23
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/mainLayout.slice.ts", "TypeScript", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 22
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.css", "CSS", 0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 6, 36
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.module.css", "CSS", 0, 0, 7, 0, 0, 0, 0, 0, 0, 2, 2, 11
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.tsx", "TypeScript React", 0, 134, 0, 0, 0, 0, 0, 0, 0, 7, 3, 144
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/sideMenu/SideMenu.css", "CSS", 0, 0, 69, 0, 0, 0, 0, 0, 0, 2, 13, 84
+"/Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/sideMenu/SideMenu.tsx", "TypeScript React", 0, 79, 0, 0, 0, 0, 0, 0, 0, 1, 3, 83
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/forgetPassword/ForgetPasswordPage.tsx", "TypeScript React", 0, 83, 0, 0, 0, 0, 0, 0, 0, 2, 6, 91
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/home/HomePage.tsx", "TypeScript React", 0, 4, 0, 0, 0, 0, 0, 0, 0, 2, 3, 9
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/loading/AppLoading.module.css", "CSS", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 1, 13
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/loading/AppLoading.tsx", "TypeScript React", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/product/ProductPage.css", "CSS", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/product/ProductPage.tsx", "TypeScript React", 0, 173, 0, 0, 0, 0, 0, 0, 0, 1, 15, 189
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.css", "CSS", 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.module.css", "CSS", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.tsx", "TypeScript React", 0, 124, 0, 0, 0, 0, 0, 0, 0, 0, 3, 127
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ChangePassword.tsx", "TypeScript React", 0, 134, 0, 0, 0, 0, 0, 0, 0, 0, 3, 137
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfileBlock.css", "CSS", 0, 0, 9, 0, 0, 0, 0, 0, 0, 4, 2, 15
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfileBlock.tsx", "TypeScript React", 0, 92, 0, 0, 0, 0, 0, 0, 0, 1, 3, 96
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfilePage.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfilePage.tsx", "TypeScript React", 0, 117, 0, 0, 0, 0, 0, 0, 0, 9, 3, 129
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signIn/SignInPage.module.css", "CSS", 0, 0, 12, 0, 0, 0, 0, 0, 0, 1, 1, 14
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signIn/SignInPage.tsx", "TypeScript React", 0, 144, 0, 0, 0, 0, 0, 0, 0, 0, 3, 147
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/EmailEnterForm.module.css", "CSS", 0, 0, 12, 0, 0, 0, 0, 0, 0, 1, 1, 14
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/EmailEnterForm.tsx", "TypeScript React", 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 3, 110
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/PasswordSetUpForm.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/PasswordSetUpForm.tsx", "TypeScript React", 0, 117, 0, 0, 0, 0, 0, 0, 0, 1, 3, 121
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/SignUpPage.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/SignUpPage.tsx", "TypeScript React", 0, 62, 0, 0, 0, 0, 0, 0, 0, 1, 7, 70
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/VerifyEmailForm.module.css", "CSS", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/VerifyEmailForm.tsx", "TypeScript React", 0, 210, 0, 0, 0, 0, 0, 0, 0, 8, 4, 222
+"/Users/yukimoto/projects/touchwhale-erp/client/src/react-app-env.d.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 15
+"/Users/yukimoto/projects/touchwhale-erp/client/src/redux/auth/authSlice.ts", "TypeScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 52
+"/Users/yukimoto/projects/touchwhale-erp/client/src/redux/hooks.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 9
+"/Users/yukimoto/projects/touchwhale-erp/client/src/redux/mainLink.slice.ts", "TypeScript", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 38
+"/Users/yukimoto/projects/touchwhale-erp/client/src/redux/store.ts", "TypeScript", 25, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 32
+"/Users/yukimoto/projects/touchwhale-erp/client/src/routes/AppRoutes.tsx", "TypeScript React", 0, 218, 0, 0, 0, 0, 0, 0, 0, 11, 7, 236
+"/Users/yukimoto/projects/touchwhale-erp/client/src/routes/appLink.ts", "TypeScript", 200, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 212
+"/Users/yukimoto/projects/touchwhale-erp/client/src/serviceWorker.ts", "TypeScript", 102, 0, 0, 0, 0, 0, 0, 0, 0, 31, 14, 147
+"/Users/yukimoto/projects/touchwhale-erp/client/src/setupTests.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 6
+"/Users/yukimoto/projects/touchwhale-erp/client/src/utils/ajv.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8
+"/Users/yukimoto/projects/touchwhale-erp/client/tsconfig.json", "JSON with Comments", 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 1, 27
+"/Users/yukimoto/projects/touchwhale-erp/ecosystem.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 2, 31
+"/Users/yukimoto/projects/touchwhale-erp/package-lock.json", "JSON", 0, 0, 0, 0, 0, 538, 0, 0, 0, 0, 1, 539
+"/Users/yukimoto/projects/touchwhale-erp/package.json", "JSON", 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 1, 23
+"/Users/yukimoto/projects/touchwhale-erp/server/config/config.env.env", "env", 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 6, 24
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/__tests__/UserTest.test.js", "JavaScript", 0, 0, 0, 0, 0, 0, 206, 0, 0, 26, 1, 233
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/apiIO.js", "JavaScript", 0, 0, 0, 0, 0, 0, 70, 0, 0, 9, 1, 80
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/apiRoutes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 13
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/apiTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleControllers.js", "JavaScript", 0, 0, 0, 0, 0, 0, 167, 0, 0, 25, 1, 193
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleHandlerIO.js", "JavaScript", 0, 0, 0, 0, 0, 0, 143, 0, 0, 0, 1, 144
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleModels.js", "JavaScript", 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 1, 54
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/rolePermissions.js", "JavaScript", 0, 0, 0, 0, 0, 0, 14, 0, 0, 1, 1, 16
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleRoutes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 12, 0, 0, 1, 1, 14
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleType.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/twItem/twItemController.js", "JavaScript", 0, 0, 0, 0, 0, 0, 208, 0, 0, 45, 1, 254
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/twItem/twItemHandlerIO.js", "JavaScript", 0, 0, 0, 0, 0, 0, 89, 0, 0, 6, 1, 96
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/twItem/twItemModel.js", "JavaScript", 0, 0, 0, 0, 0, 0, 98, 0, 0, 8, 1, 107
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/twItem/twItemRoutes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 29, 0, 0, 2, 1, 32
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/twItem/twItemType.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userControllers.js", "JavaScript", 0, 0, 0, 0, 0, 0, 401, 0, 0, 92, 1, 494
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userHandlerIO.js", "JavaScript", 0, 0, 0, 0, 0, 0, 205, 0, 0, 0, 1, 206
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userModel.js", "JavaScript", 0, 0, 0, 0, 0, 0, 134, 0, 0, 8, 1, 143
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userPermissions.js", "JavaScript", 0, 0, 0, 0, 0, 0, 15, 0, 0, 1, 1, 17
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userRoutes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 51, 0, 0, 1, 1, 53
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userTypes.js", "JavaScript", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/advancedResult.js", "JavaScript", 0, 0, 0, 0, 0, 0, 62, 0, 0, 5, 1, 68
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/authMiddleware.js", "JavaScript", 0, 0, 0, 0, 0, 0, 46, 0, 0, 1, 1, 48
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/errorCatcher.js", "JavaScript", 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 1, 7
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/errorMiddleware.js", "JavaScript", 0, 0, 0, 0, 0, 0, 61, 0, 0, 4, 1, 66
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/permission/permissionMiddleware.js", "JavaScript", 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 1, 38
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/permission/permissionType.js", "JavaScript", 0, 0, 0, 0, 0, 0, 42, 0, 0, 9, 1, 52
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/middlewares/permissionMiddleware.js", "JavaScript", 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 1, 37
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/server.js", "JavaScript", 0, 0, 0, 0, 0, 0, 53, 0, 0, 8, 1, 62
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/AWS/b2.js", "JavaScript", 0, 0, 0, 0, 0, 0, 22, 0, 0, 17, 0, 39
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/CustomError.js", "JavaScript", 0, 0, 0, 0, 0, 0, 42, 0, 0, 1, 1, 44
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/ajv.js", "JavaScript", 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 15
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/emailMessage.js", "JavaScript", 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 1, 19
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/mongodb.js", "JavaScript", 0, 0, 0, 0, 0, 0, 43, 0, 0, 1, 1, 45
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/passportOAuth.js", "JavaScript", 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 1, 19
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/sendEmail.js", "JavaScript", 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 1, 41
+"/Users/yukimoto/projects/touchwhale-erp/server/dist/utils/testconfig/Testdatabase.js", "JavaScript", 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 1, 41
+"/Users/yukimoto/projects/touchwhale-erp/server/jest.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 1, 8
+"/Users/yukimoto/projects/touchwhale-erp/server/jest.setup.js", "JavaScript", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2
+"/Users/yukimoto/projects/touchwhale-erp/server/package-lock.json", "JSON", 0, 0, 0, 0, 0, 11946, 0, 0, 0, 0, 1, 11947
+"/Users/yukimoto/projects/touchwhale-erp/server/package.json", "JSON", 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 1, 56
+"/Users/yukimoto/projects/touchwhale-erp/server/src/__tests__/UserTest.test.ts", "TypeScript", 215, 0, 0, 0, 0, 0, 0, 0, 0, 26, 47, 288
+"/Users/yukimoto/projects/touchwhale-erp/server/src/environment.d.ts", "TypeScript", 28, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 33
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/apiIO.ts", "TypeScript", 82, 0, 0, 0, 0, 0, 0, 0, 0, 10, 8, 100
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/apiRoutes.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/apiTypes.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 15
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleControllers.ts", "TypeScript", 171, 0, 0, 0, 0, 0, 0, 0, 0, 25, 7, 203
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleHandlerIO.ts", "TypeScript", 135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 143
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleModels.ts", "TypeScript", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 36
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleRoutes.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 13
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleType.ts", "TypeScript", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 51
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/twItem/twItemController.ts", "TypeScript", 211, 0, 0, 0, 0, 0, 0, 0, 0, 47, 38, 296
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/twItem/twItemHandlerIO.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 0, 6, 9, 106
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/twItem/twItemModel.ts", "TypeScript", 79, 0, 0, 0, 0, 0, 0, 0, 0, 8, 13, 100
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/twItem/twItemRoutes.ts", "TypeScript", 32, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 41
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/twItem/twItemType.ts", "TypeScript", 72, 0, 0, 0, 0, 0, 0, 0, 0, 13, 17, 102
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userControllers.ts", "TypeScript", 430, 0, 0, 0, 0, 0, 0, 0, 0, 92, 30, 552
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userHandlerIO.ts", "TypeScript", 198, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 214
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userModel.ts", "TypeScript", 111, 0, 0, 0, 0, 0, 0, 0, 0, 8, 13, 132
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userRoutes.ts", "TypeScript", 67, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 85
+"/Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userTypes.ts", "TypeScript", 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 145
+"/Users/yukimoto/projects/touchwhale-erp/server/src/middlewares/advancedResult.ts", "TypeScript", 70, 0, 0, 0, 0, 0, 0, 0, 0, 5, 25, 100
+"/Users/yukimoto/projects/touchwhale-erp/server/src/middlewares/authMiddleware.ts", "TypeScript", 58, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8, 67
+"/Users/yukimoto/projects/touchwhale-erp/server/src/middlewares/errorCatcher.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9
+"/Users/yukimoto/projects/touchwhale-erp/server/src/middlewares/errorMiddleware.ts", "TypeScript", 39, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 46
+"/Users/yukimoto/projects/touchwhale-erp/server/src/middlewares/permissionMiddleware.ts", "TypeScript", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 37
+"/Users/yukimoto/projects/touchwhale-erp/server/src/server.ts", "TypeScript", 52, 0, 0, 0, 0, 0, 0, 0, 0, 8, 22, 82
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/AWS/b2.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 16, 4, 36
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/CustomError.ts", "TypeScript", 157, 0, 0, 0, 0, 0, 0, 0, 0, 7, 23, 187
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/RequestUser.d.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/ajv.ts", "TypeScript", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 15
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/emailMessage.ts", "TypeScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 28
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/mongodb.ts", "TypeScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 54
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/passportOAuth.ts", "TypeScript", 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 35
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/sendEmail.ts", "TypeScript", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 44
+"/Users/yukimoto/projects/touchwhale-erp/server/src/utils/testconfig/Testdatabase.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 39
+"/Users/yukimoto/projects/touchwhale-erp/server/tsconfig.json", "JSON with Comments", 0, 0, 0, 20, 0, 0, 0, 0, 0, 50, 6, 76
+"Total", "-", 4739, 1942, 259, 67, 25, 43122, 3236, 22, 23, 947, 839, 55221

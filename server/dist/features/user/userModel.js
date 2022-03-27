@@ -27,7 +27,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto_1 = __importDefault(require("crypto"));
 const CustomError_1 = __importDefault(require("../../utils/CustomError"));
-const permissionType_1 = require("../../middlewares/permission/permissionType");
+const permissionTypes_1 = require("api/dist/permissionTypes");
 const UserSchema = new mongoose_1.default.Schema({
     // Classifier
     isOwner: {
@@ -72,7 +72,7 @@ const UserSchema = new mongoose_1.default.Schema({
         type: [
             {
                 type: String,
-                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                enum: permissionTypes_1.permissionGroupNameSet,
             },
         ],
     },

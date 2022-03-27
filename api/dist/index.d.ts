@@ -1,1 +1,1 @@
-export declare function helloWorld(): void;
+export {};

@@ -131,7 +131,9 @@ export namespace UserType {
     export interface Body
       extends Required<Pick<Identity, 'login_name'>>,
         Required<Secret>,
-        Required<Permission> {}
+        Required<Permission> {
+          
+        }
     export interface Data extends PlainUser {}
   }
   export namespace UpdateWorker {

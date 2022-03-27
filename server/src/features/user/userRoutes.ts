@@ -23,7 +23,7 @@ import {
 // Middleware
 import auth from '../../middlewares/authMiddleware'
 import errorCatcher from '../../middlewares/errorCatcher'
-import { permission } from '../../middlewares/permission/permissionMiddleware'
+import { permission } from '../../middlewares/permissionMiddleware'
 
 const router = express.Router()
 
@@ -35,9 +35,19 @@ router.route('/signIn').post(errorCatcher(userSignIn))
 
 router.route('/signUp/setPassword').post(auth, errorCatcher(changePassword)) // Use changePassword to implement new user setPassword
 
-router
-  .route('/googleOAuth')
-  .get(passport.authenticate('google', { scope: ['profile', 'email'] }))
+router.route('/googleOAuth').get(
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    failureRedirect:
+      process.env.NODE_ENV === 'development'
+        ? `${process.env.FRONTEND_DEV_URL}/signIn#${encodeURI(
+            'Something went wrong while using Google Auth. Please try again latter or use other login method.'
+          )}`
+        : `${process.env.BACKEND_PROD_URL}/signIn#${encodeURI(
+            'Something went wrong while using Google Auth. Please try again latter or use other login method.'
+          )}`,
+  })
+)
 
 router.route('/googleOAuth/callback').get(
   passport.authenticate('google', {

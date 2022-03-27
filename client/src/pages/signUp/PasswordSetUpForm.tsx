@@ -1,11 +1,10 @@
 import React from 'react'
-import { Form, Button, Input, message } from 'antd'
+import { Form, Button, Input } from 'antd'
 import { UseStateForSignUpPageProps } from './SignUpPage'
 import styles from './PasswordSetUpForm.module.css'
-import api from '../../api/api'
-import axios from 'axios'
+import { changePassword } from '../../api/userActions'
 import { useDispatch } from 'react-redux'
-import { getRegularUser } from '../../redux/auth/authSlice'
+import { getUserThunkAction } from '../../redux/auth/authSlice'
 
 export const PasswordSetUpForm = ({
   signUpProcessState: { token, password, loading },
@@ -19,32 +18,13 @@ export const PasswordSetUpForm = ({
       loading: true,
     }))
     try {
-      await api.put('/user/changePassword', {
+      await changePassword({
         currentPassword: password,
         newPassword: form.getFieldValue('password'),
         token,
       })
-      dispatch(getRegularUser())
-    } catch (err) {
-      console.error(err)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data) {
-          message.error(`Something is wrong: ${err.response.data.message}`)
-        } else {
-          // error without response
-          switch (err.message) {
-            case 'Network Error':
-              message.error('Please check your internet connection.')
-              break
-            default:
-              message.error(`Something is wrong: ${err.message}`)
-              break
-          }
-        }
-      } else {
-        message.error(`Unknown error: ${err}`)
-      }
-    }
+      dispatch(getUserThunkAction())
+    } catch {}
   }
   return (
     <>

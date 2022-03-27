@@ -20,7 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const permissionType_1 = require("../../middlewares/permission/permissionType");
+const permissionTypes_1 = require("api/dist/permissionTypes");
 const RoleSchema = new mongoose_1.Schema({
     owner: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -37,7 +37,7 @@ const RoleSchema = new mongoose_1.Schema({
         type: [
             {
                 type: String,
-                enum: permissionType_1.TwPermissons.permissionGroupNameSet,
+                enum: permissionTypes_1.permissionGroupNameSet,
             },
         ],
         required: true,

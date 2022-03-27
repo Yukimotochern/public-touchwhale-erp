@@ -1,10 +1,10 @@
-import React, { useState, cloneElement, isValidElement } from 'react'
+import React, { useState } from 'react'
 import { Button, Form, Input, Col, Typography } from 'antd'
 import './ProfileBlock.css'
-import api from '../../api/api'
-import { getRegularUserResValidator } from '../../res/regularUserValidate'
+import { updateUser } from '../../api/userActions'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'
+import { useAbortController } from '../../hooks/useAbortController'
 interface ProfileBlockProps {
   fieldName: string
   type: 'plain' | 'edit'
@@ -23,23 +23,23 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
   const [value, setValue] = useState(initialValue)
   const [isEditting, setIsEditting] = useState(false)
   const [loading, setLoading] = useState(false)
+  const abortController = useAbortController()
   const onFinish = async () => {
     setLoading(true)
     try {
       // Request to update user
-      const {
-        data: { data },
-      } = await api.put('/user', {
-        [fieldName]: value,
+      const user = await updateUser(
+        {
+          [fieldName]: value,
+        },
+        abortController
+      ).onErrorsButCancelAndAuth(() => {
+        setLoading(false)
       })
       setLoading(false)
-      if (getRegularUserResValidator(data)) {
-        dispatch(authSlice.actions.updateRegularUser(data))
-        setIsEditting(false)
-      }
-    } catch (error) {
-      setLoading(false)
-    }
+      dispatch(authSlice.actions.updateUser(user))
+      setIsEditting(false)
+    } catch {}
   }
 
   return (

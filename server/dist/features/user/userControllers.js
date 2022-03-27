@@ -11,15 +11,15 @@ const CustomError_1 = __importDefault(require("../../utils/CustomError"));
 const userModel_1 = __importDefault(require("./userModel"));
 const emailMessage_1 = require("../../utils/emailMessage");
 const b2_1 = require("../../utils/AWS/b2");
-const userHandlerIO_1 = require("./userHandlerIO");
-const apiIO_1 = require("../apiIO");
-const { SignUp, Verify, SignIn, GetUser, Update, GetAvatarUploadUrl, ChangePassword, ForgetPassword, ResetPassword, GetWorker, GetWorkers, CreateWorker, DeleteWorker, UpdateWorker, } = userHandlerIO_1.UserIO;
+const userApi_1 = require("api/dist/user/userApi");
+const api_1 = require("api/dist/api");
+const API = new api_1.api();
 const UserAvatarKeyPrifix = 'UserAvatar';
 // @route    POST api/v1/user/signUp
 // @desc     Sign user up
 // @access   Public
 const userSignUp = async (req, res, next) => {
-    if (SignUp.bodyValidator(req.body)) {
+    if (userApi_1.SignUp.API.bodyValidator(req.body)) {
         const { email } = req.body;
         let user = await userModel_1.default.findOne({ email });
         const sixDigits = Math.floor(100000 + Math.random() * 900000).toString();
@@ -49,37 +49,40 @@ const userSignUp = async (req, res, next) => {
             subject: 'Your verificatiom code',
             message: message,
         });
-        return SignUp.send(res, 200, {
+        return userApi_1.SignUp.API.send(res, 200, {
             message: `Verification code has been send to ${email}`,
         });
     }
-    next((0, ajv_1.avjErrorWrapper)(SignUp.bodyValidator.errors));
+    next((0, ajv_1.avjErrorWrapper)(userApi_1.SignUp.API.bodyValidator.errors));
 };
 exports.userSignUp = userSignUp;
 // @route    POST api/v1/user/signUp/verify
 // @desc     Verify user email
 // @access   Public
 const userVerify = async (req, res, next) => {
-    if (Verify.bodyValidator(req.body)) {
+    if (userApi_1.Verify.API.bodyValidator(req.body)) {
         const { email, password } = req.body;
         const user = await userModel_1.default.findOne({ email }).select('+password');
-        if (!user || user.isActive) {
-            return next(new CustomError_1.default('User email is invalid.', 401));
+        if (!user) {
+            return next(new CustomError_1.default('Invalid credentials.', 401));
+        }
+        if (user.isActive) {
+            return next(new CustomError_1.default('User email is invalid.', 409));
         }
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             return next(new CustomError_1.default('Invalid credentials.', 401));
         }
-        return Verify.sendData(res, user.getSignedJWTToken());
+        return userApi_1.Verify.API.sendData(res, user.getSignedJWTToken());
     }
-    next((0, ajv_1.avjErrorWrapper)(Verify.bodyValidator.errors));
+    next((0, ajv_1.avjErrorWrapper)(userApi_1.Verify.API.bodyValidator.errors));
 };
 exports.userVerify = userVerify;
 // @route    POST api/v1/user/signIn
 // @desc     Sign user in
 // @access   Public
 const userSignIn = async (req, res, next) => {
-    if (SignIn.bodyValidator(req.body)) {
+    if (userApi_1.SignIn.API.bodyValidator(req.body)) {
         const { email, login_name, password } = req.body;
         if (!email && !login_name) {
             return next(new CustomError_1.default('Without Identity.', 400));
@@ -100,7 +103,7 @@ const userSignIn = async (req, res, next) => {
         }
         return sendTokenResponse(user, 200, res);
     }
-    next((0, ajv_1.avjErrorWrapper)(SignIn.bodyValidator.errors));
+    next((0, ajv_1.avjErrorWrapper)(userApi_1.SignIn.API.bodyValidator.errors));
 };
 exports.userSignIn = userSignIn;
 // @route    GET api/v1/user/googleOAuth/callback
@@ -161,19 +164,12 @@ exports.userOAuthCallback = userOAuthCallback;
 // @desc     Sign user out
 // @access   Public
 const userSignOut = async (req, res, next) => {
-    res.clearCookie('token', {
-        path: '/',
-        domain: process.env.NODE_ENV === 'development'
-            ? process.env.DEV_DOMAIN
-            : process.env.PROD_DOMAIN,
+    const options = {
+        expires: new Date(1),
         httpOnly: true,
-    });
-    res.clearCookie('token', {
-        path: '/',
-        domain: '127.0.0.1',
-        httpOnly: true,
-    });
-    res.end();
+    };
+    res.cookie('token', '', options);
+    API.send(res);
 };
 exports.userSignOut = userSignOut;
 // @route    GET api/v1/user/
@@ -183,7 +179,7 @@ const getUser = async (req, res, next) => {
     if (req.userJWT) {
         const user = await userModel_1.default.findById(req.userJWT.id);
         if (user) {
-            return GetUser.sendData(res, user);
+            return userApi_1.GetUser.API.sendData(res, user);
         }
         else {
             return next(new CustomError_1.default('Server Error'));
@@ -198,14 +194,14 @@ exports.getUser = getUser;
 // @desc     Update user infomation
 // @access   Private
 const updateUser = async (req, res, next) => {
-    if (Update.bodyValidator(req.body)) {
+    if (userApi_1.Update.API.bodyValidator(req.body)) {
         if (req.userJWT) {
             const user = await userModel_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
                 new: true,
                 runValidators: true,
             });
             if (user) {
-                return Update.sendData(res, user);
+                return userApi_1.Update.API.sendData(res, user);
             }
             return next(new CustomError_1.default('Server Error'));
         }
@@ -214,7 +210,7 @@ const updateUser = async (req, res, next) => {
         }
     }
     else {
-        return next((0, ajv_1.avjErrorWrapper)(Update.bodyValidator.errors));
+        return next((0, ajv_1.avjErrorWrapper)(userApi_1.Update.API.bodyValidator.errors));
     }
 };
 exports.updateUser = updateUser;
@@ -232,7 +228,7 @@ const userGetAvatarUploadUrl = async (req, res, next) => {
         let avatar = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`;
         user.avatar = avatar;
         await user.save();
-        return GetAvatarUploadUrl.sendData(res, { uploadUrl: url, avatar });
+        return userApi_1.GetAvatarUploadUrl.API.sendData(res, { uploadUrl: url, avatar });
     }
     return next(new CustomError_1.default('Server Error', 500));
 };
@@ -250,7 +246,7 @@ const deleteAvatar = async (req, res, next) => {
         await (0, b2_1.deleteImage)(UserAvatarKeyPrifix, id);
         user.avatar = undefined;
         await user.save();
-        return apiIO_1.HandlerIO.send(res, 200, { message: 'Avatar deleted.' });
+        return API.send(res, 200, { message: 'Avatar deleted.' });
     }
     return next(new CustomError_1.default('Server Error', 500));
 };
@@ -259,7 +255,7 @@ exports.deleteAvatar = deleteAvatar;
 // @desc     Update password
 // @access   Private
 const changePassword = async (req, res, next) => {
-    if (ChangePassword.bodyValidator(req.body) && req.userJWT) {
+    if (userApi_1.ChangePassword.API.bodyValidator(req.body) && req.userJWT) {
         const user = await userModel_1.default.findById(req.userJWT.id).select('+password');
         if (user && user.isActive && req.body.currentPassword) {
             if (!(await user.matchPassword(req.body.currentPassword))) {
@@ -278,7 +274,7 @@ const changePassword = async (req, res, next) => {
         return next(new CustomError_1.default('Server Error'));
     }
     else {
-        return next((0, ajv_1.avjErrorWrapper)(ChangePassword.bodyValidator.errors));
+        return next((0, ajv_1.avjErrorWrapper)(userApi_1.ChangePassword.API.bodyValidator.errors));
     }
 };
 exports.changePassword = changePassword;
@@ -286,10 +282,13 @@ exports.changePassword = changePassword;
 // @desc     Forget password
 // @access   Public
 const forgetPassword = async (req, res, next) => {
-    if (ForgetPassword.bodyValidator(req.body)) {
+    if (userApi_1.ForgetPassword.API.bodyValidator(req.body)) {
         const user = await userModel_1.default.findOne({ email: req.body.email });
         if (!user) {
             return next(new CustomError_1.default('There is no user with that email.', 404));
+        }
+        if (user.provider === 'Google') {
+            return next(new CustomError_1.default('You have been using the Google login. Please use google to login.', 409));
         }
         const token = user.getForgetPasswordToken();
         await user.save({ validateBeforeSave: false });
@@ -306,7 +305,7 @@ const forgetPassword = async (req, res, next) => {
                 subject: 'Password reset token',
                 message,
             });
-            ForgetPassword.send(res, 200, { message: 'Email sent' });
+            userApi_1.ForgetPassword.API.send(res, 200, { message: 'Email sent' });
         }
         catch (err) {
             console.error(err);
@@ -317,7 +316,7 @@ const forgetPassword = async (req, res, next) => {
         }
     }
     else {
-        return next((0, ajv_1.avjErrorWrapper)(ForgetPassword.bodyValidator.errors));
+        return next((0, ajv_1.avjErrorWrapper)(userApi_1.ForgetPassword.API.bodyValidator.errors));
     }
 };
 exports.forgetPassword = forgetPassword;
@@ -325,7 +324,7 @@ exports.forgetPassword = forgetPassword;
 // @route       PUT /api/v1/user/forgetPassword
 // @access      Public
 const resetPassword = async (req, res, next) => {
-    if (ResetPassword.bodyValidator(req.body)) {
+    if (userApi_1.ResetPassword.API.bodyValidator(req.body)) {
         // case 1: body only provide token
         // 1. validate the token
         // 2. reset a new token and return
@@ -348,16 +347,16 @@ const resetPassword = async (req, res, next) => {
             user.forgetPasswordToken = undefined;
             user.forgetPasswordExpire = undefined;
             await user.save();
-            return ResetPassword.sendData(res, {}, { message: 'Your password has been set.' });
+            return userApi_1.ResetPassword.API.sendData(res, {}, { message: 'Your password has been set.' });
         }
         else {
             const token = user.getForgetPasswordToken();
             await user.save({ validateBeforeSave: false });
-            return ResetPassword.sendData(res, { token }, { message: 'Please use this new token to reset the password.' });
+            return userApi_1.ResetPassword.API.sendData(res, { token }, { message: 'Please use this new token to reset the password.' });
         }
     }
     else {
-        return next((0, ajv_1.avjErrorWrapper)(ResetPassword.bodyValidator.errors));
+        return next((0, ajv_1.avjErrorWrapper)(userApi_1.ResetPassword.API.bodyValidator.errors));
     }
 };
 exports.resetPassword = resetPassword;
@@ -370,7 +369,7 @@ const getWorkers = async (req, res, next) => {
             owner: req.userJWT.owner,
             isOwner: false,
         });
-        GetWorkers.sendData(res, workers);
+        userApi_1.GetWorkers.API.sendData(res, workers);
     }
     return next(new CustomError_1.default('Internal Server Error'));
 };
@@ -386,7 +385,7 @@ const getWorker = async (req, res, next) => {
             _id: req.params.id,
         });
         if (worker) {
-            GetWorker.sendData(res, worker);
+            userApi_1.GetWorker.API.sendData(res, worker);
         }
         next(new CustomError_1.default('Worker not found.'));
     }
@@ -397,21 +396,21 @@ exports.getWorker = getWorker;
 // @desc     Get worker
 // @access   Private
 const createWorker = async (req, res, next) => {
-    if (CreateWorker.bodyValidator(req.body)) {
+    if (userApi_1.CreateWorker.API.bodyValidator(req.body)) {
         if (req.userJWT) {
             const worker = await userModel_1.default.create(req.body);
-            CreateWorker.sendData(res, worker);
+            userApi_1.CreateWorker.API.sendData(res, worker);
         }
         return next(new CustomError_1.default('Internal Server Error'));
     }
-    return next((0, ajv_1.avjErrorWrapper)(CreateWorker.bodyValidator.errors));
+    return next((0, ajv_1.avjErrorWrapper)(userApi_1.CreateWorker.API.bodyValidator.errors));
 };
 exports.createWorker = createWorker;
 // @route    PUT api/v1/user/workers/:id
 // @desc     Update a worker
 // @access   Private
 const updateWorker = async (req, res, next) => {
-    if (UpdateWorker.bodyValidator(req.body)) {
+    if (userApi_1.UpdateWorker.API.bodyValidator(req.body)) {
         if (req.userJWT) {
             // TODO make sure the permission group obeys the tree like structure
             const worker = await userModel_1.default.findOneAndUpdate({
@@ -419,13 +418,13 @@ const updateWorker = async (req, res, next) => {
                 _id: req.params.id,
             }, req.body, { runValidators: true, new: true });
             if (worker) {
-                return UpdateWorker.sendData(res, worker);
+                return userApi_1.UpdateWorker.API.sendData(res, worker);
             }
             return next(new CustomError_1.default('The worker does not exist or you do not have the correct access permission.', 400));
         }
         return next(new CustomError_1.default('Internal Server Error'));
     }
-    return next((0, ajv_1.avjErrorWrapper)(UpdateWorker.bodyValidator.errors));
+    return next((0, ajv_1.avjErrorWrapper)(userApi_1.UpdateWorker.API.bodyValidator.errors));
 };
 exports.updateWorker = updateWorker;
 // @route    DELETE api/v1/user/workers/:id
@@ -443,7 +442,7 @@ const deleteWorker = async (req, res, next) => {
         });
         if (worker) {
             await worker.delete();
-            DeleteWorker.sendData(res, worker, {
+            userApi_1.DeleteWorker.API.sendData(res, worker, {
                 message: 'The user in the data is successfully deleted.',
             });
         }
@@ -457,12 +456,12 @@ exports.deleteWorker = deleteWorker;
 // @desc
 // @access   Public
 export const userXXX: RequestHandler = async (req, res, next) => {
-  if (XXX.bodyValidator(req.body)) {
+  if (XXX.API.bodyValidator(req.body)) {
     // return send(res, {})
     // or
-    // return XXX.sendData(res, {})
+    // return XXX.API.sendData(res, {})
   }
-  next(avjErrorWrapper(XXX.bodyValidator.errors))
+  next(avjErrorWrapper(XXX.API.bodyValidator.errors))
 }
 */
 // Helper functions
@@ -478,7 +477,7 @@ const setToken = (user, res) => {
 const sendTokenResponse = (user, statusCode, res) => {
     const token = setToken(user, res);
     if (process.env.NODE_ENV === 'test') {
-        return apiIO_1.HandlerIO.send(res, statusCode, token);
+        return API.send(res, statusCode, token);
     }
-    return apiIO_1.HandlerIO.send(res, statusCode);
+    return API.send(res, statusCode);
 };

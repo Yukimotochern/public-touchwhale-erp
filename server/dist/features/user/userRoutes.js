@@ -9,15 +9,18 @@ const userControllers_1 = require("./userControllers");
 // Middleware
 const authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 const errorCatcher_1 = __importDefault(require("../../middlewares/errorCatcher"));
-const permissionMiddleware_1 = require("../../middlewares/permission/permissionMiddleware");
+const permissionMiddleware_1 = require("../../middlewares/permissionMiddleware");
 const router = express_1.default.Router();
 router.route('/signUp').post((0, errorCatcher_1.default)(userControllers_1.userSignUp));
 router.route('/signUp/verify').post((0, errorCatcher_1.default)(userControllers_1.userVerify));
 router.route('/signIn').post((0, errorCatcher_1.default)(userControllers_1.userSignIn));
 router.route('/signUp/setPassword').post(authMiddleware_1.default, (0, errorCatcher_1.default)(userControllers_1.changePassword)); // Use changePassword to implement new user setPassword
-router
-    .route('/googleOAuth')
-    .get(passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
+router.route('/googleOAuth').get(passport_1.default.authenticate('google', {
+    scope: ['profile', 'email'],
+    failureRedirect: process.env.NODE_ENV === 'development'
+        ? `${process.env.FRONTEND_DEV_URL}/signIn#${encodeURI('Something went wrong while using Google Auth. Please try again latter or use other login method.')}`
+        : `${process.env.BACKEND_PROD_URL}/signIn#${encodeURI('Something went wrong while using Google Auth. Please try again latter or use other login method.')}`,
+}));
 router.route('/googleOAuth/callback').get(passport_1.default.authenticate('google', {
     failureRedirect: process.env.NODE_ENV === 'production'
         ? '/signIn'

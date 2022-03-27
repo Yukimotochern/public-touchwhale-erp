@@ -3,12 +3,18 @@ export default class CustomError extends Error {
     message: string;
     statusCode: number;
     errorData?: any;
-    messageArray?: string[] | undefined;
     name: string;
-    constructor(message?: string, statusCode?: number, errorData?: any, messageArray?: string[] | undefined);
+    constructor(message?: string, statusCode?: number, errorData?: any);
+}
+export interface serializedCustomError {
+    name: 'CustomError';
+    message: string;
+    statusCode: number;
+    errorData?: any;
 }
 /**
- * typed wrapper for known errors
+ * Typed wrapper for known errors
+ * Copied from mongoose, :)
  */
 declare type GenericMongooseError = IMongooseError.CastError | IMongooseError.DisconnectedError | IMongooseError.DivergentArrayError | IMongooseError.DocumentNotFoundError | IMongooseError.MissingSchemaError | IMongooseError.MongooseServerSelectionError | IMongooseError.ObjectExpectedError | IMongooseError.ObjectParameterError | IMongooseError.OverwriteModelError | IMongooseError.ParallelSaveError | IMongooseError.ParallelValidateError | IMongooseError.StrictModeError | IMongooseError.SyncIndexesError | IMongooseError.ValidationError | IMongooseError.ValidatorError | IMongooseError.VersionError;
 export declare class MongooseError extends CustomError {
@@ -28,7 +34,10 @@ export declare class AjvErrors extends CustomError {
 }
 export declare class ApiErrorDealtInternallyAndThrown extends CustomError {
     thrown: any;
+    statusCode: number;
     name: string;
+    deserializedError?: Error;
+    customError?: serializedCustomError;
     constructor(thrown: any, statusCode?: number);
 }
 /**

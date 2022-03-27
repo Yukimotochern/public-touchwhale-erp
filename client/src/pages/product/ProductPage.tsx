@@ -134,7 +134,7 @@ export const ProductPageTable = () => {
               Save
             </Typography.Link>
             <Popconfirm title='Sure to cancel?' onConfirm={cancel}>
-              <a>Cancel</a>
+              <a href='/#'>Cancel</a>
             </Popconfirm>
           </span>
         ) : (

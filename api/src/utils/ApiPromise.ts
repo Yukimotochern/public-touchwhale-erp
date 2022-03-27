@@ -1,55 +1,74 @@
-type NullaryFn<T = void> = () => T
-type UnaryFn<T = void, U = void> = (arg: T) => U
-type OnRejectFn<ErrorAccept = Error> =
-  | UnaryFn<ErrorAccept | unknown, never | PromiseLike<never>>
-  | undefined
-  | null
-
-declare namespace ApiPromise {
-  type Executor<T> = (
-    resolve: UnaryFn<T | PromiseLike<T>>,
-    reject: UnaryFn<Error | unknown>
-  ) => void
-}
+import axios from 'axios'
+import CustomError, { ApiErrorDealtInternallyAndThrown } from './CustomError'
 
 /**
  * A promise that can catch errors with type-safe method.
  */
-export class ApiPromise<T> implements Promise<T> {
-  promise: Promise<T>
-  public constructor(executor: ApiPromise.Executor<T>) {
-    this.promise = new Promise(executor)
-  }
-  public get [Symbol.toStringTag](): string {
-    return 'ApiPromise'
-  }
-  public then<TS = T, TF = never>(
-    onfulfilled?: UnaryFn<T, TS | PromiseLike<TS>> | undefined | null,
-    onrejected?: OnRejectFn
-  ): Promise<TS | TF> {
-    return this.promise.then(onfulfilled, onrejected)
-  }
-  public catch<TF = never>(onrejected?: OnRejectFn): Promise<T | TF> {
-    const clonedPromise = this.promise.then()
-    this.promise.catch(onrejected)
-    this.promise = clonedPromise
+Promise
+export class ApiPromise<T> extends Promise<T> {
+  catched: boolean = false
+  public onErrorsButCancelAndAuth<TF = never>(
+    onrejected: Function,
+    executeWhenAlreadyCatched: boolean = false
+  ): ApiPromise<T | TF> {
+    this.catch((err: any) => {
+      if (
+        err instanceof ApiErrorDealtInternallyAndThrown &&
+        (!this.catched || executeWhenAlreadyCatched)
+      ) {
+        const thrown = err.thrown
+        if (
+          // cancel
+          !(thrown instanceof axios.Cancel) &&
+          // unauthorized
+          !(axios.isAxiosError(thrown) && thrown.response?.status === 401)
+        ) {
+          onrejected()
+          this.catched = true
+        }
+      }
+    })
     return this
   }
-  public finally(onfinally?: NullaryFn | undefined | null): Promise<T> {
-    return this.promise.finally(onfinally)
+
+  public onErrorsButCancel<TF = never>(
+    onrejected: Function,
+    executeWhenAlreadyCatched: boolean = false
+  ): ApiPromise<T | TF> {
+    this.catch((err: any) => {
+      if (
+        err instanceof ApiErrorDealtInternallyAndThrown &&
+        (!this.catched || executeWhenAlreadyCatched)
+      ) {
+        const thrown = err.thrown
+        if (
+          // cancel
+          !(thrown instanceof axios.Cancel)
+        ) {
+          onrejected()
+          this.catched = true
+        }
+      }
+    })
+    return this
   }
 
-  public onMongoError<TF = never>(
+  public onCustomCode<TF = never>(
     code: number,
-    onrejected: Function
+    onrejected: Function,
+    executeWhenAlreadyCatched: boolean = false
   ): ApiPromise<T | TF> {
-    this.catch((err: unknown) => {
-      // if (err instanceof Error) {
-      //   console.log(`Error of ${err} is catched: `)
-      //   console.error(err)
-      //   onrejected()
-      // }
-      return this.promise.then()
+    this.catch((err: any) => {
+      if (
+        err instanceof ApiErrorDealtInternallyAndThrown &&
+        (!this.catched || executeWhenAlreadyCatched)
+      ) {
+        const custom = err.customError
+        if (custom && custom.statusCode === code) {
+          onrejected()
+          this.catched = true
+        }
+      }
     })
     return this
   }

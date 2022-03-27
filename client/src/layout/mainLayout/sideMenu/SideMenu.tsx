@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Menu, Typography } from 'antd'
+import { Layout, Menu } from 'antd'
 import './SideMenu.css'
 import { NavLink, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -18,7 +18,7 @@ export const SideMenu = () => {
   const path = useAppSelector((s) => s.router.location?.pathname)
   let selectedKeys: string[]
   if (path) {
-    selectedKeys = ['/' + path.split('/')[1]]
+    selectedKeys = [path.split('/')[1]]
   } else {
     selectedKeys = []
   }

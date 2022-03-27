@@ -1,12 +1,14 @@
 import { Button, Typography, Form, Input, message } from 'antd'
 import React, { useState } from 'react'
-import api from '../../api/api'
+import { changePassword } from '../../api/userActions'
+import { useAbortController } from '../../hooks/useAbortController'
 
 interface ChangePasswordProp {
   edittable?: boolean
 }
 
 export const ChangePassword = ({ edittable }: ChangePasswordProp) => {
+  const abortController = useAbortController()
   const [form] = Form.useForm()
   const [state, setState] = useState({
     loading: false,
@@ -17,15 +19,24 @@ export const ChangePassword = ({ edittable }: ChangePasswordProp) => {
     try {
       const currentPassword = form.getFieldValue('currentPassword')
       const newPassword = form.getFieldValue('newPassword')
-      await api.put('/user/changePassword', {
+      await changePassword({
         currentPassword,
         newPassword,
       })
+        .onCustomCode(400, () => {
+          form.setFields([
+            {
+              name: 'currentPassword',
+              errors: ['Invalid credentials.'],
+            },
+          ])
+        })
+        .onErrorsButCancelAndAuth(() => {
+          setState((state) => ({ ...state, loading: false }))
+        })
       setState((state) => ({ ...state, loading: false, edit: false }))
       message.success('Password has been successfully changed.')
-    } catch (err) {
-      setState((state) => ({ ...state, loading: false }))
-    }
+    } catch {}
   }
   if (!edittable) {
     return (

@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, Divider, Typography, notification } from 'antd'
 import styles from './SignInPage.module.css'
 import { useNavigate, useLocation } from 'react-router-dom'
-import api from '../../api/api'
-import axios from 'axios'
+import { signIn } from '../../api/userActions'
 import { useDispatch } from 'react-redux'
-import { getRegularUser } from '../../redux/auth/authSlice'
+import { getUserThunkAction } from '../../redux/auth/authSlice'
+import { useAbortController } from '../../hooks/useAbortController'
 
 export const SignInPage = () => {
   const [form] = Form.useForm()
   const { hash: message } = useLocation()
+  const abortController = useAbortController()
   useEffect(() => {
     if (message) {
       notification.error({
@@ -31,22 +32,26 @@ export const SignInPage = () => {
   const onFinish = async () => {
     setLoading(true)
     try {
-      await api.post('/user/signIn', {
-        email: form.getFieldValue('email'),
-        password: form.getFieldValue('password'),
-      })
-      setLoading(false)
-      dispatch(getRegularUser())
-    } catch (err) {
-      setLoading(false)
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data?.error?.message === 'Invalid credentials.') {
+      await signIn(
+        {
+          email: form.getFieldValue('email'),
+          password: form.getFieldValue('password'),
+        },
+        abortController
+      )
+        .onCustomCode(401, () => {
           form.setFields([
             { name: 'password', errors: ['Incorrect email or password.'] },
             { name: 'email', errors: ['Incorrect email or password.'] },
           ])
-        }
-      }
+        })
+        .onErrorsButCancel(() => {
+          setLoading(false)
+        }, true)
+      setLoading(false)
+      dispatch(getUserThunkAction())
+    } catch (err) {
+      setLoading(false)
     }
   }
   return (
@@ -80,7 +85,7 @@ export const SignInPage = () => {
           }
           rules={[{ required: true, message: 'This field is required' }]}
           tooltip='Please enter the registered email address or username'
-          hasFeedback
+          // hasFeedback
         >
           <Input
             placeholder='Enter email address or username.'
@@ -100,7 +105,6 @@ export const SignInPage = () => {
               message: 'Please input your password!',
             },
           ]}
-          hasFeedback
         >
           <Input.Password
             disabled={loading}

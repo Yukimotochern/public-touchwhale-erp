@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { MongooseStatics } from '../utils/mongoTypes';
-import { PermissionGroupNames } from '../permissions';
+import { PermissionGroupNames } from '../permissionTypes';
 export interface Classifier {
     isOwner: boolean;
     isActive: boolean;

@@ -9,7 +9,7 @@ import {
   Dropdown,
   Menu,
 } from 'antd'
-import { PureRouteObjectWithLink } from '../../../AppRoutes'
+import { RouteLink } from '../../../routes/appLink'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../../../redux/hooks'
@@ -17,8 +17,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import Avatar from 'antd/lib/avatar/avatar'
-import api from '../../../api/api'
-import { getRegularUser } from '../../../redux/auth/authSlice'
+import { signOut } from '../../../api/userActions'
+import { authSlice } from '../../../redux/auth/authSlice'
+import { useAbortController } from '../../../hooks/useAbortController'
 
 const { Content } = Layout
 
@@ -31,6 +32,7 @@ export const PageWithHeader: React.FC<Props> = ({
   title,
   ...rest
 }) => {
+  const abortController = useAbortController()
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // First find the current first level route
@@ -51,7 +53,7 @@ export const PageWithHeader: React.FC<Props> = ({
   const firstLevelMatch = useAppSelector((s) => s.routeLink).find(
     (route) => route.path === '/' + firstLevelRoute
   )
-  let tabs: PureRouteObjectWithLink[] | undefined
+  let tabs: RouteLink[] | undefined
   if (firstLevelMatch) {
     // has match
     let children = firstLevelMatch.children
@@ -62,21 +64,19 @@ export const PageWithHeader: React.FC<Props> = ({
       }
     }
   }
+  const onSignOut = async () => {
+    try {
+      await signOut(abortController)
+      dispatch(authSlice.actions.signOut())
+    } catch (err) {
+      // refresh
+      navigate(0)
+    }
+  }
   const userMenu = (
     <Menu className='tw-page-with-header-user-menu '>
       <Menu.ItemGroup title={<div>Hi, {auth.user?.email}</div>}>
-        <Menu.Item
-          key='log_out'
-          onClick={async () => {
-            try {
-              await api.get('/user/signOut')
-              dispatch(getRegularUser())
-            } catch (err) {
-              // refresh
-              navigate(0)
-            }
-          }}
-        >
+        <Menu.Item key='log_out' onClick={onSignOut}>
           Log out
         </Menu.Item>
       </Menu.ItemGroup>

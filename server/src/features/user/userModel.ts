@@ -2,10 +2,10 @@ import mongoose, { Schema } from 'mongoose'
 import bcrtpt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { UserType } from './userTypes'
+import * as UserType from 'api/dist/user/userTypes'
 import { AuthJWT } from '../../middlewares/authMiddleware'
 import CustomError from '../../utils/CustomError'
-import { TwPermissons } from '../../middlewares/permission/permissionType'
+import { permissionGroupNameSet } from 'api/dist/permissionTypes'
 
 const UserSchema = new mongoose.Schema<UserType.Mongoose>(
   {
@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema<UserType.Mongoose>(
       type: [
         {
           type: String,
-          enum: TwPermissons.permissionGroupNameSet,
+          enum: permissionGroupNameSet,
         },
       ],
     },

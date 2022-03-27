@@ -4,8 +4,8 @@ exports.sixDigitsMessage = exports.forgetPasswordMessage = void 0;
 const forgetPasswordMessage = (option) => {
     const { protocol, host, token } = option;
     const resetUrl = process.env.NODE_ENV === 'production'
-        ? `${protocol}://${host}/forgetpassword#${token}`
-        : `${process.env.FRONTEND_DEV_URL}/forgetpassword#${token}`;
+        ? `${protocol}://${host}/resetPassword#${token}`
+        : `${process.env.FRONTEND_DEV_URL}/resetPassword#${token}`;
     const message = `Click the following link to reset password: \n ${resetUrl}`;
     return message;
 };

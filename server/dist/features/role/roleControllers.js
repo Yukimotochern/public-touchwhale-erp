@@ -7,16 +7,15 @@ exports.deleteRole = exports.updateRole = exports.createRole = exports.getRole =
 const ajv_1 = require("../../utils/ajv");
 const CustomError_1 = __importDefault(require("../../utils/CustomError"));
 const roleModels_1 = __importDefault(require("./roleModels"));
-const roleHandlerIO_1 = require("./roleHandlerIO");
+const roleApi_1 = require("api/dist/role/roleApi");
 const userModel_1 = __importDefault(require("../user/userModel"));
-const { GetRoles, GetRole, CreateRole, UpdateRole, DeleteRole } = roleHandlerIO_1.RoleIO;
 // @route    GET api/v1/roles
 // @desc     Get all created and default(TODO) roles
 // @access   Private
 const getRoles = async (req, res, next) => {
     if (req.userJWT?.owner) {
         const roles = await roleModels_1.default.find({ owner: req.userJWT.owner });
-        return GetRoles.sendData(res, roles);
+        return roleApi_1.GetRoles.API.sendData(res, roles);
     }
     next(new CustomError_1.default('Internal Server error'));
 };
@@ -31,7 +30,7 @@ const getRole = async (req, res, next) => {
             _id: req.params.id,
         });
         if (role) {
-            return GetRole.sendData(res, role);
+            return roleApi_1.GetRole.API.sendData(res, role);
         }
         next(new CustomError_1.default('Internal Server error'));
     }
@@ -43,18 +42,18 @@ exports.getRole = getRole;
 // @access   Private
 const createRole = async (req, res, next) => {
     if (req.userJWT?.owner) {
-        if (CreateRole.bodyValidator(req.body)) {
+        if (roleApi_1.CreateRole.API.bodyValidator(req.body)) {
             // TODO should check that if the tree like hierrachy is complied with
             const role = await roleModels_1.default.create({
                 ...req.body,
                 owner: req.userJWT.owner,
             });
             if (role) {
-                return CreateRole.sendData(res, role);
+                return roleApi_1.CreateRole.API.sendData(res, role);
             }
             next(new CustomError_1.default('Internal Server error'));
         }
-        next((0, ajv_1.avjErrorWrapper)(CreateRole.bodyValidator.errors));
+        next((0, ajv_1.avjErrorWrapper)(roleApi_1.CreateRole.API.bodyValidator.errors));
     }
     next(new CustomError_1.default('Internal Server error'));
 };
@@ -64,7 +63,7 @@ exports.createRole = createRole;
 // @access   Private
 const updateRole = async (req, res, next) => {
     if (req.userJWT?.owner) {
-        if (UpdateRole.bodyValidator(req.body)) {
+        if (roleApi_1.UpdateRole.API.bodyValidator(req.body)) {
             const { shouldCascade, updates } = req.body;
             const roleQuery = {
                 owner: req.userJWT.owner,
@@ -124,7 +123,7 @@ const updateRole = async (req, res, next) => {
                             .filter((ua) => ua.shouldAdd.length !== 0 || ua.shouldRemove.length !== 0);
                         let anyoneAffected = userAffected.length !== 0;
                         if (anyoneAffected && !shouldCascade) {
-                            return UpdateRole.sendData(res, {
+                            return roleApi_1.UpdateRole.API.sendData(res, {
                                 isUpdateDone: false,
                                 userAffected,
                             });
@@ -145,14 +144,14 @@ const updateRole = async (req, res, next) => {
                 new: true,
             });
             if (updatedRole) {
-                return UpdateRole.sendData(res, {
+                return roleApi_1.UpdateRole.API.sendData(res, {
                     isUpdateDone: true,
                     updatedRole: updatedRole,
                 });
             }
             return next(new CustomError_1.default('Role not found.'));
         }
-        next((0, ajv_1.avjErrorWrapper)(UpdateRole.bodyValidator.errors));
+        next((0, ajv_1.avjErrorWrapper)(roleApi_1.UpdateRole.API.bodyValidator.errors));
     }
     next(new CustomError_1.default('Internal Server error'));
 };
@@ -176,13 +175,13 @@ const deleteRole = async (req, res, next) => {
             role: role._id,
         });
         if (users.length !== 0) {
-            return DeleteRole.sendData(res, {
+            return roleApi_1.DeleteRole.API.sendData(res, {
                 deleted: false,
                 usersOfThisRole: users,
             });
         }
         await role.delete();
-        return DeleteRole.sendData(res, {
+        return roleApi_1.DeleteRole.API.sendData(res, {
             deleted: true,
             deletedRole: role,
         });

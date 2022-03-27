@@ -1,0 +1,8 @@
+.spin {
+  flex: 1 0 32px;
+}
+
+.spin :global(.ant-spin-dot) {
+  position: relative;
+  top: 50%;
+}
