@@ -4,4 +4,8 @@ const DingShin_import = async () => {
   for (let i = 0; i < 2; i++) {
     console.log('foo')
   }
+  let i = 2
+  while (i < 1) {
+    console.log(i)
+  }
 }
