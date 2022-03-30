@@ -1,5 +1,5 @@
 import { ResponseBody, ResponseBodyWithOutData } from './apiTypes';
-import { ValidateFunction, JSONSchemaType } from 'ajv';
+import { ValidateFunction, JSONSchemaType, AnySchema } from 'ajv';
 import { AnyValidateFunction } from 'ajv/dist/types/index';
 import { AxiosRequestConfig, Method } from 'axios';
 import { ApiPromise } from './utils/ApiPromise';
@@ -18,6 +18,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
     onNetworkError?: Function;
     onUnknownError?: Function;
     constructor({ bodySchema, dataSchema, }?: Partial<SchemaOption<ReqestBodyType, ResponseDataType>>);
+    setDataValidator(dataSchema: AnySchema): this;
     /**
      * * Server Things
      */

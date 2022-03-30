@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteRole = exports.updateRole = exports.createRole = exports.getRole = exports.getRoles = void 0;
-const ajv_1 = require("../../utils/ajv");
+const ajv_1 = require("api/dist/utils/ajv");
 const CustomError_1 = __importDefault(require("../../utils/CustomError"));
 const roleModels_1 = __importDefault(require("./roleModels"));
 const roleApi_1 = require("api/dist/role/roleApi");

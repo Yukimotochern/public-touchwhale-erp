@@ -1,7 +1,7 @@
 import { RequestHandler, Response } from 'express'
 import crypto from 'crypto'
 import { sendEmail } from '../../utils/sendEmail'
-import { avjErrorWrapper } from '../../utils/ajv'
+import { avjErrorWrapper } from 'api/dist/utils/ajv'
 import CustomError from '../../utils/CustomError'
 import UserModel from './userModel'
 import {

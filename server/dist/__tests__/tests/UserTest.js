@@ -92,7 +92,6 @@ const User_Test = () => describe('Test all user routes.', () => {
         expect(res.status).toBe(200);
         expect(typeof res.body).toBe('object');
         getUploadAvatar = res.body.data;
-        console.log(getUploadAvatar);
     });
     it('Upload Avatar to B2 ...', async () => {
         const { uploadUrl, avatar } = getUploadAvatar;

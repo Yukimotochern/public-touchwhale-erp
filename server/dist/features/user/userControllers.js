@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteWorker = exports.updateWorker = exports.createWorker = exports.getWorker = exports.getWorkers = exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.deleteAvatar = exports.userGetAvatarUploadUrl = exports.updateUser = exports.getUser = exports.userSignOut = exports.userOAuthCallback = exports.userSignIn = exports.userVerify = exports.userSignUp = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const sendEmail_1 = require("../../utils/sendEmail");
-const ajv_1 = require("../../utils/ajv");
+const ajv_1 = require("api/dist/utils/ajv");
 const CustomError_1 = __importDefault(require("../../utils/CustomError"));
 const userModel_1 = __importDefault(require("./userModel"));
 const emailMessage_1 = require("../../utils/emailMessage");
@@ -82,14 +82,12 @@ exports.userVerify = userVerify;
 // @desc     Sign user in
 // @access   Public
 const userSignIn = async (req, res, next) => {
-    console.log(req, '----reqreqrqrqrqrqrqrqrq----------'.bgGreen);
     if (userApi_1.SignIn.API.bodyValidator(req.body)) {
         const { email, login_name, password } = req.body;
         if (!email && !login_name) {
             return next(new CustomError_1.default('Without Identity.', 400));
         }
         let user = await userModel_1.default.findOne({ email }).select('+password');
-        // console.log(user, '-------------------------'.bgRed)
         if (!user) {
             return next(new CustomError_1.default('Invalid credentials.', 401));
         }
@@ -402,16 +400,10 @@ const createWorker = async (req, res, next) => {
         if (req.userJWT) {
             const worker = await userModel_1.default.create({
                 ...req.body,
-<<<<<<< HEAD
-                isActive: true,
-                isOwner: false,
-                provider: 'TouchWhale',
-=======
                 provider: 'TouchWhale',
                 isActive: true,
                 isOwner: false,
-                owner: req.userJWT.id,
->>>>>>> origin/b-User_Unit_Test
+                owner: req.userJWT.owner,
             });
             userApi_1.CreateWorker.API.sendData(res, worker);
         }
@@ -447,7 +439,7 @@ exports.updateWorker = updateWorker;
 const deleteWorker = async (req, res, next) => {
     if (req.userJWT) {
         let idToDelete = req.params.id;
-        if (req.params.id === idToDelete) {
+        if (req.userJWT.id === idToDelete) {
             return next(new CustomError_1.default('Your cannot delete yourself.'));
         }
         const worker = await userModel_1.default.findOne({

@@ -1,40 +1,52 @@
 import express from 'express'
-import authMiddleware from '../../middlewares/authMiddleware'
-// import itemOwnerMiddleware from '../../middlewares/itemOwnerMiddleware'  2022/3/18 deprecated
-import advancedResult from '../../middlewares/advancedResult'
+import auth from '../../middlewares/authMiddleware'
 import errorCatcher from '../../middlewares/errorCatcher'
+import { permission } from '../../middlewares/permissionMiddleware'
 
 import {
-	addItem,
-	getItems,
-	getItem,
-	updateItem,
-	deleteItem,
-	getB2URL,
-	deleteItemImage,
+  createItem,
+  getItemsWithDetail,
+  getItems,
+  getItem,
+  updateItem,
+  deleteItem,
+  getB2URL,
+  deleteItemImage,
 } from './twItemController'
-import { TwItem } from './twItemModel'
 
 const router = express.Router()
 
-// @todo twItem routes supposed to handle diff user access right.
 router
-	.route('/')
-	.all(authMiddleware)
-	.get([advancedResult(TwItem, 'setOfElement')], errorCatcher(getItems))
-	.post(errorCatcher(addItem))
+  .route('/')
+  .all(auth)
+  .get(permission(['tw_item.get_items']), errorCatcher(getItems))
+  .post(permission(['tw_item.create_item']), errorCatcher(createItem))
+
+router.get(
+  '/withDetail',
+  auth,
+  permission(['tw_item.get_items_with_detail']),
+  getItemsWithDetail
+)
 
 router
-	.route('/:id')
-	.all(authMiddleware)
-	.get(errorCatcher(getItem))
-	.put(errorCatcher(updateItem))
-	.delete(errorCatcher(deleteItem))
+  .route('/:id')
+  .all(auth)
+  .get(permission(['tw_item.get_item']), errorCatcher(getItem))
+  .put(permission(['tw_item.update_item']), errorCatcher(updateItem))
+  .delete(permission(['tw_item.delete_item']), errorCatcher(deleteItem))
 
-router
-	.route('/uploadImage/:id')
-	.all(authMiddleware)
-	.get(errorCatcher(getB2URL))
-	.delete(errorCatcher(deleteItemImage))
+router.get(
+  '/uploadImage/:id',
+  auth,
+  permission(['tw_item.upload_img']),
+  errorCatcher(getB2URL)
+)
+router.delete(
+  '/uploadImage/:key',
+  auth,
+  permission(['tw_item.delete_img']),
+  errorCatcher(deleteItemImage)
+)
 
 export default router

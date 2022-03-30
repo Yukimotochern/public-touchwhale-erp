@@ -26,6 +26,14 @@ declare global {
   }
 }
 
+export interface AuthJWT {
+  id: string
+  iat: number
+  exp: number
+  isOwner: boolean
+  owner: string
+}
+
 declare global {
   namespace Express {
     interface Request {

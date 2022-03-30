@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -109,6 +113,18 @@ class api {
             this.resValidator = ajv_1.default.compile(apiTypes_1.responseBodyWithAnyDataJSONSchema);
         }
     }
+    setDataValidator(dataSchema) {
+        this.dataValidator = ajv_1.default.compile(dataSchema);
+        this.resValidator = ajv_1.default.compile({
+            type: 'object',
+            properties: {
+                message: { type: 'string', nullable: true },
+                data: dataSchema,
+            },
+            additionalProperties: false,
+        });
+        return this;
+    }
     /**
      * * Server Things
      */
@@ -126,14 +142,14 @@ class api {
                 // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
                 let clientObtainedThing = JSON.parse(JSON.stringify(data));
                 // check owner
-                const isObjectOwnByOther = (x) => typeof x === 'object' &&
+                const isObjectOwnByOther = (x) => !!x &&
+                    typeof x === 'object' &&
                     typeof x.owner === 'string' &&
                     x.owner !== String(res.owner);
                 const hasNestedObjectOwnByOthers = (ob) => {
-                    if (typeof ob === 'object' && !Array.isArray(ob)) {
+                    if (!!ob && typeof ob === 'object' && !Array.isArray(ob)) {
                         if (isObjectOwnByOther(ob)) {
                             console.log('The following object is owned by others. Please check your code.');
-                            console.log(ob);
                             return true;
                         }
                         else {
