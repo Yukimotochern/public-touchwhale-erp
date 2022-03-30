@@ -197,7 +197,7 @@ export const updateItem: RequestHandler = async (req, res, next) => {
         })
         if (
           item_with_same_name_and_owner &&
-          String(item_with_same_name_and_owner.id) !== req.params.id
+          String(item_with_same_name_and_owner._id) !== req.params.id
         ) {
           return next(
             new CustomError(
@@ -223,7 +223,7 @@ export const updateItem: RequestHandler = async (req, res, next) => {
       if (
         !(await check_no_loop(
           members,
-          populatedItem.id,
+          populatedItem._id,
           String(req.userJWT.owner)
         ))
       ) {
@@ -240,14 +240,21 @@ export const updateItem: RequestHandler = async (req, res, next) => {
     }
 
     if (twItem) {
-      // ! @TODO check if this returned populatedItem is still populated
-      populatedItem = await populatedItem.update(twItem, { new: true })
+      /**
+       * ! noticed that the populatedItem will the be newer version and still populated
+       * ! after the below command but the populated data may not the be new version.
+       */
+      await populatedItem.updateOne(twItem, {
+        runValidators: true,
+        returnDocument: 'after',
+      })
     }
 
     if (members) {
       await TwItemSetDetail.findOneAndUpdate(
-        { owner: req.userJWT.owner, parentItem: populatedItem.id },
-        { $set: { members } }
+        { owner: req.userJWT.owner, parentItem: populatedItem._id },
+        { $set: { members } },
+        { upsert: true, runValidators: true }
       )
     } else if (
       populatedItem.item_type === 'element' &&
@@ -255,7 +262,7 @@ export const updateItem: RequestHandler = async (req, res, next) => {
     ) {
       await TwItemSetDetail.deleteMany({
         owner: req.userJWT.owner,
-        parentItem: item.id,
+        parentItem: item._id,
       })
     }
 

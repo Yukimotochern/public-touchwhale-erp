@@ -166,7 +166,7 @@ const updateItem = async (req, res, next) => {
                     name: name.trim(),
                 });
                 if (item_with_same_name_and_owner &&
-                    String(item_with_same_name_and_owner.id) !== req.params.id) {
+                    String(item_with_same_name_and_owner._id) !== req.params.id) {
                     return next(new CustomError_1.default(`You have another item with same name: '${name}' `, 409));
                 }
             }
@@ -178,7 +178,7 @@ const updateItem = async (req, res, next) => {
             if (populatedItem.item_type === 'element') {
                 return next(new CustomError_1.default('You cannot set members for item with element type.', 422));
             }
-            if (!(await check_no_loop(members, populatedItem.id, String(req.userJWT.owner)))) {
+            if (!(await check_no_loop(members, populatedItem._id, String(req.userJWT.owner)))) {
                 return next(new CustomError_1.default('The updates to the member field will incur a loop.'));
             }
         }
@@ -188,17 +188,23 @@ const updateItem = async (req, res, next) => {
             }
         }
         if (twItem) {
-            // ! @TODO check if this returned populatedItem is still populated
-            populatedItem = await populatedItem.update(twItem, { new: true });
+            /**
+             * ! noticed that the populatedItem will the be newer version and still populated
+             * ! after the below command but the populated data may not the be new version.
+             */
+            await populatedItem.updateOne(twItem, {
+                runValidators: true,
+                returnDocument: 'after',
+            });
         }
         if (members) {
-            await twItemModel_2.TwItemSetDetail.findOneAndUpdate({ owner: req.userJWT.owner, parentItem: populatedItem.id }, { $set: { members } });
+            await twItemModel_2.TwItemSetDetail.findOneAndUpdate({ owner: req.userJWT.owner, parentItem: populatedItem._id }, { $set: { members } }, { upsert: true, runValidators: true });
         }
         else if (populatedItem.item_type === 'element' &&
             populatedItem.set_detail) {
             await twItemModel_2.TwItemSetDetail.deleteMany({
                 owner: req.userJWT.owner,
-                parentItem: item.id,
+                parentItem: item._id,
             });
         }
         // things are updated, query again
