@@ -14,12 +14,13 @@ export const members = {
     type: 'object',
     properties: {
       qty: { type: 'integer' },
-      member_id: { type: 'string' },
+      member: { type: 'string' },
     },
-    required: ['member_id', 'qty'],
+    required: ['member', 'qty'],
     additionalProperties: false,
   },
 } as const
+
 export const twItemSetDetailConstSchema = {
   type: 'object',
   properties: {
@@ -48,14 +49,15 @@ export const twItemDefiniteProperties = {
 } as const
 
 // Without detail
-const twItemSchema: JSONSchemaType<TwItemType.TwItem> = {
+const twItemConstSchema = {
   type: 'object',
   properties: {
     ...twItemDefiniteProperties,
   },
   required: ['owner', 'count_stock', 'item_type', 'image'],
   additionalProperties: false,
-}
+} as const
+const twItemSchema: JSONSchemaType<TwItemType.TwItem> = twItemConstSchema
 
 // With detail
 export const twItemWithSetDetailSchema: JSONSchemaType<TwItemType.TwItemWithSetDetail> =
@@ -68,13 +70,48 @@ export const twItemWithSetDetailSchema: JSONSchemaType<TwItemType.TwItemWithSetD
     required: ['owner', 'count_stock', 'item_type', 'image', 'set_detail'],
     additionalProperties: false,
   }
+// With detail populated
+export const populated_members = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      qty: { type: 'integer' },
+      member: twItemConstSchema,
+    },
+    required: ['member', 'qty'],
+    additionalProperties: false,
+  },
+} as const
+
+export const twItemSetDetailPopulatedConstSchema = {
+  type: 'object',
+  properties: {
+    ...commonSchema,
+    parentItem: { type: 'string' },
+    members: populated_members,
+  },
+  required: ['owner', 'parentItem'],
+  additionalProperties: false,
+} as const
+
+export const twItemWithSetDetailPopulatedSchema: JSONSchemaType<TwItemType.TwItemWithSetDetailPopulated> =
+  {
+    type: 'object',
+    properties: {
+      ...twItemDefiniteProperties,
+      set_detail: { ...twItemSetDetailPopulatedConstSchema, nullable: true },
+    },
+    required: ['owner', 'count_stock', 'item_type', 'image', 'set_detail'],
+    additionalProperties: false,
+  }
 
 export namespace CreateItem {
   export interface Body {
     twItem: TwItemType.Editable
     members?: TwItemSetDetailType.SetMember[]
   }
-  export type Data = TwItemType.TwItemWithSetDetail
+  export type Data = TwItemType.TwItemWithSetDetailPopulated
   export const API = new api<Body, Data>({
     bodySchema: {
       type: 'object',
@@ -89,7 +126,7 @@ export namespace CreateItem {
       },
       required: ['twItem'],
     },
-    dataSchema: twItemWithSetDetailSchema,
+    dataSchema: twItemWithSetDetailPopulatedSchema,
   })
 }
 
@@ -98,7 +135,7 @@ export namespace UpdateItem {
     twItem?: Partial<TwItemType.Editable>
     members?: TwItemSetDetailType.SetMember[]
   }
-  export type Data = TwItemType.TwItemWithSetDetail
+  export type Data = TwItemType.TwItemWithSetDetailPopulated
   export const API = new api<Body, Data>({
     bodySchema: {
       type: 'object',
@@ -121,23 +158,23 @@ export namespace UpdateItem {
         members: { ...members, nullable: true },
       },
     },
-    dataSchema: twItemWithSetDetailSchema,
+    dataSchema: twItemWithSetDetailPopulatedSchema,
   })
 }
 
 export namespace GetItem {
-  export type Data = TwItemType.TwItemWithSetDetail
+  export type Data = TwItemType.TwItemWithSetDetailPopulated
   export const API = new api<any, Data>({
-    dataSchema: twItemWithSetDetailSchema,
+    dataSchema: twItemWithSetDetailPopulatedSchema,
   })
 }
 
 export namespace GetItemsWithDetail {
-  export type Data = AdvancedResult<TwItemType.TwItemWithSetDetail[]>
+  export type Data = AdvancedResult<TwItemType.TwItemWithSetDetailPopulated[]>
   export const API = new api<any, Data>().setDataValidator(
-    getAdvancedResultSchema<TwItemType.TwItemWithSetDetail[]>({
+    getAdvancedResultSchema<TwItemType.TwItemWithSetDetailPopulated[]>({
       type: 'array',
-      items: twItemWithSetDetailSchema,
+      items: twItemWithSetDetailPopulatedSchema,
     })
   )
 }

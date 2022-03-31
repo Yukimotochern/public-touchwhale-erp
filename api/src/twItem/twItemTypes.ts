@@ -20,6 +20,9 @@ export namespace TwItemType {
   export interface TwItemWithSetDetail extends Editable, Common {
     set_detail: TwItemSetDetailType.TwItemSetDetail | null
   }
+  export interface TwItemWithSetDetailPopulated extends Editable, Common {
+    set_detail: TwItemSetDetailType.PopulatedTwItemSetDetail | null
+  }
 }
 
 /**
@@ -34,10 +37,24 @@ export namespace TwItemSetDetailType {
     members: SetMember[]
   }
 
+  export interface PopulatedMembers {
+    members: PopulatedSetMember[]
+  }
+
   export interface SetMember {
     qty: number
-    member_id: Types.ObjectId | string
+    member: Types.ObjectId | string
+  }
+
+  export interface PopulatedSetMember {
+    qty: number
+    member: TwItemType.TwItem
   }
 
   export interface TwItemSetDetail extends Common, Identity, Editable {}
+
+  export interface PopulatedTwItemSetDetail
+    extends Common,
+      Identity,
+      PopulatedMembers {}
 }

@@ -75,12 +75,12 @@ TwItemSchema.pre('remove', async function (next) {
     const sets = await TwItemSetDetail.find({
         members: {
             $elemMatch: {
-                member_id: this._id,
+                member: this._id,
             },
         },
     });
     for (let i = 0; i < sets.length; i++) {
-        sets[i].members = sets[i].members.filter((mem) => mem.member_id !== this.id);
+        sets[i].members = sets[i].members.filter((mem) => mem.member !== this.id);
         await sets[i].save();
     }
     next();
@@ -109,7 +109,7 @@ const TwItemSetDetailSchema = new mongoose_1.default.Schema({
     members: [
         {
             qty: Number,
-            member_id: {
+            member: {
                 type: mongoose_1.Schema.Types.ObjectId,
                 ref: 'tw_item',
                 required: true,
@@ -117,6 +117,11 @@ const TwItemSetDetailSchema = new mongoose_1.default.Schema({
             _id: false,
         },
     ],
-}, { timestamps: true, id: false });
+}, {
+    timestamps: true,
+    id: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
 const TwItemSetDetail = mongoose_1.default.model('tw_item_set_detail', TwItemSetDetailSchema);
 exports.TwItemSetDetail = TwItemSetDetail;

@@ -38,8 +38,17 @@ const API = new api()
 export const getItemsWithDetail: RequestHandler = async (req, res, next) => {
   const advancedQuery = new AdvancedResultApi<TwItemType.TwItem>(req, TwItem)
   const twItemWithDetail = await advancedQuery.query.populate<
-    Pick<TwItemType.TwItemWithSetDetail, 'set_detail'>
-  >('set_detail')
+    Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+  >({
+    path: 'set_detail',
+    populate: {
+      path: 'members',
+      model: 'tw_item_set_detail',
+      populate: {
+        path: 'member',
+      },
+    },
+  })
   const result = await advancedQuery.result(twItemWithDetail)
   return GetItemsWithDetail.API.sendData(res, result)
 }
@@ -98,8 +107,17 @@ export const createItem: RequestHandler = async (req, res, next) => {
       await set.save()
     }
     const populatedItem = await item.populate<
-      Pick<TwItemType.TwItemWithSetDetail, 'set_detail'>
-    >('set_detail')
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
     return CreateItem.API.sendData(res, populatedItem)
   } else {
     return next(avjErrorWrapper(CreateItem.API.bodyValidator.errors))
@@ -121,8 +139,17 @@ export const getItem: RequestHandler = async (req, res, next) => {
       return next(new CustomError('Item not found.', 404))
     }
     const populateItem = await item.populate<
-      Pick<TwItemType.TwItemWithSetDetail, 'set_detail'>
-    >('set_detail')
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
     return GetItem.API.sendData(res, populateItem)
   }
   return next(new CustomError('This route should be private.'))
@@ -182,8 +209,17 @@ export const updateItem: RequestHandler = async (req, res, next) => {
       return next(new CustomError('Item not found.', 404))
     }
     let populatedItem = await item.populate<
-      Pick<TwItemType.TwItemWithSetDetail, 'set_detail'>
-    >('set_detail')
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
     // User want to change these fields
     const { twItem, members } = req.body
 
@@ -262,7 +298,7 @@ export const updateItem: RequestHandler = async (req, res, next) => {
     ) {
       await TwItemSetDetail.deleteMany({
         owner: req.userJWT.owner,
-        parentItem: item._id,
+        parentItem: populatedItem._id,
       })
     }
 
@@ -275,11 +311,20 @@ export const updateItem: RequestHandler = async (req, res, next) => {
     if (!new_item) {
       return next(new CustomError('Item not found.', 404))
     }
-    let newPopulatedItem = await new_item.populate<
-      Pick<TwItemType.TwItemWithSetDetail, 'set_detail'>
-    >('set_detail')
+    let newItemWithSetDetailPopulated = await new_item.populate<
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
 
-    return UpdateItem.API.sendData(res, newPopulatedItem)
+    return UpdateItem.API.sendData(res, newItemWithSetDetailPopulated)
   } else {
     return next(avjErrorWrapper(UpdateItem.API.bodyValidator.errors))
   }
@@ -309,7 +354,7 @@ const check_no_loop = async (
   owner: string
 ) => {
   let item_id = String(item_id_get)
-  let membersIdArray = members.map((mem) => String(mem.member_id))
+  let membersIdArray = members.map((mem) => String(mem.member))
   let searched: string[] = []
   while (membersIdArray.length) {
     const new_member = membersIdArray.pop() // pop is easier to do
@@ -324,7 +369,7 @@ const check_no_loop = async (
         })
         if (new_child) {
           membersIdArray = membersIdArray.concat(
-            new_child.members.map((mem) => String(mem.member_id))
+            new_child.members.map((mem) => String(mem.member))
           )
         }
         searched.push(new_member)

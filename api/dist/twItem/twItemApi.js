@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetImageUploadUrl = exports.GetItems = exports.GetItemsWithDetail = exports.GetItem = exports.UpdateItem = exports.CreateItem = exports.twItemWithSetDetailSchema = exports.twItemDefiniteProperties = exports.editableProperties = exports.twItemSetDetailSchema = exports.twItemSetDetailConstSchema = exports.members = void 0;
+exports.GetImageUploadUrl = exports.GetItems = exports.GetItemsWithDetail = exports.GetItem = exports.UpdateItem = exports.CreateItem = exports.twItemWithSetDetailPopulatedSchema = exports.twItemSetDetailPopulatedConstSchema = exports.populated_members = exports.twItemWithSetDetailSchema = exports.twItemDefiniteProperties = exports.editableProperties = exports.twItemSetDetailSchema = exports.twItemSetDetailConstSchema = exports.members = void 0;
 const api_1 = require("../api");
 const commonJSON_1 = require("../utils/commonJSON");
 const advancedResultTypes_1 = require("../advancedResult/advancedResultTypes");
@@ -11,9 +11,9 @@ exports.members = {
         type: 'object',
         properties: {
             qty: { type: 'integer' },
-            member_id: { type: 'string' },
+            member: { type: 'string' },
         },
-        required: ['member_id', 'qty'],
+        required: ['member', 'qty'],
         additionalProperties: false,
     },
 };
@@ -42,7 +42,7 @@ exports.twItemDefiniteProperties = {
     ...exports.editableProperties,
 };
 // Without detail
-const twItemSchema = {
+const twItemConstSchema = {
     type: 'object',
     properties: {
         ...exports.twItemDefiniteProperties,
@@ -50,12 +50,45 @@ const twItemSchema = {
     required: ['owner', 'count_stock', 'item_type', 'image'],
     additionalProperties: false,
 };
+const twItemSchema = twItemConstSchema;
 // With detail
 exports.twItemWithSetDetailSchema = {
     type: 'object',
     properties: {
         ...exports.twItemDefiniteProperties,
         set_detail: { ...exports.twItemSetDetailConstSchema, nullable: true },
+    },
+    required: ['owner', 'count_stock', 'item_type', 'image', 'set_detail'],
+    additionalProperties: false,
+};
+// With detail populated
+exports.populated_members = {
+    type: 'array',
+    items: {
+        type: 'object',
+        properties: {
+            qty: { type: 'integer' },
+            member: twItemConstSchema,
+        },
+        required: ['member', 'qty'],
+        additionalProperties: false,
+    },
+};
+exports.twItemSetDetailPopulatedConstSchema = {
+    type: 'object',
+    properties: {
+        ...commonJSON_1.commonSchema,
+        parentItem: { type: 'string' },
+        members: exports.populated_members,
+    },
+    required: ['owner', 'parentItem'],
+    additionalProperties: false,
+};
+exports.twItemWithSetDetailPopulatedSchema = {
+    type: 'object',
+    properties: {
+        ...exports.twItemDefiniteProperties,
+        set_detail: { ...exports.twItemSetDetailPopulatedConstSchema, nullable: true },
     },
     required: ['owner', 'count_stock', 'item_type', 'image', 'set_detail'],
     additionalProperties: false,
@@ -76,7 +109,7 @@ var CreateItem;
             },
             required: ['twItem'],
         },
-        dataSchema: exports.twItemWithSetDetailSchema,
+        dataSchema: exports.twItemWithSetDetailPopulatedSchema,
     });
 })(CreateItem = exports.CreateItem || (exports.CreateItem = {}));
 var UpdateItem;
@@ -103,20 +136,20 @@ var UpdateItem;
                 members: { ...exports.members, nullable: true },
             },
         },
-        dataSchema: exports.twItemWithSetDetailSchema,
+        dataSchema: exports.twItemWithSetDetailPopulatedSchema,
     });
 })(UpdateItem = exports.UpdateItem || (exports.UpdateItem = {}));
 var GetItem;
 (function (GetItem) {
     GetItem.API = new api_1.api({
-        dataSchema: exports.twItemWithSetDetailSchema,
+        dataSchema: exports.twItemWithSetDetailPopulatedSchema,
     });
 })(GetItem = exports.GetItem || (exports.GetItem = {}));
 var GetItemsWithDetail;
 (function (GetItemsWithDetail) {
     GetItemsWithDetail.API = new api_1.api().setDataValidator((0, advancedResultTypes_1.getAdvancedResultSchema)({
         type: 'array',
-        items: exports.twItemWithSetDetailSchema,
+        items: exports.twItemWithSetDetailPopulatedSchema,
     }));
 })(GetItemsWithDetail = exports.GetItemsWithDetail || (exports.GetItemsWithDetail = {}));
 var GetItems;

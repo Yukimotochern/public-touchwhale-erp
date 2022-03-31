@@ -57,12 +57,12 @@ TwItemSchema.pre('remove', async function (next) {
   const sets = await TwItemSetDetail.find({
     members: {
       $elemMatch: {
-        member_id: this._id,
+        member: this._id,
       },
     },
   })
   for (let i = 0; i < sets.length; i++) {
-    sets[i].members = sets[i].members.filter((mem) => mem.member_id !== this.id)
+    sets[i].members = sets[i].members.filter((mem) => mem.member !== this.id)
     await sets[i].save()
   }
 
@@ -97,7 +97,7 @@ const TwItemSetDetailSchema =
       members: [
         {
           qty: Number,
-          member_id: {
+          member: {
             type: Schema.Types.ObjectId,
             ref: 'tw_item',
             required: true,
@@ -106,7 +106,12 @@ const TwItemSetDetailSchema =
         },
       ],
     },
-    { timestamps: true, id: false }
+    {
+      timestamps: true,
+      id: false,
+      toJSON: { virtuals: true },
+      toObject: { virtuals: true },
+    }
   )
 
 const TwItemSetDetail = mongoose.model(

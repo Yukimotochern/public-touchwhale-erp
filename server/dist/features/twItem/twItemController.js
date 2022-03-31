@@ -25,7 +25,16 @@ const API = new api_1.api();
  */
 const getItemsWithDetail = async (req, res, next) => {
     const advancedQuery = new advancedResultApi_1.AdvancedResultApi(req, twItemModel_1.TwItem);
-    const twItemWithDetail = await advancedQuery.query.populate('set_detail');
+    const twItemWithDetail = await advancedQuery.query.populate({
+        path: 'set_detail',
+        populate: {
+            path: 'members',
+            model: 'tw_item_set_detail',
+            populate: {
+                path: 'member',
+            },
+        },
+    });
     const result = await advancedQuery.result(twItemWithDetail);
     return twItemApi_1.GetItemsWithDetail.API.sendData(res, result);
 };
@@ -77,7 +86,16 @@ const createItem = async (req, res, next) => {
             });
             await set.save();
         }
-        const populatedItem = await item.populate('set_detail');
+        const populatedItem = await item.populate({
+            path: 'set_detail',
+            populate: {
+                path: 'members',
+                model: 'tw_item_set_detail',
+                populate: {
+                    path: 'member',
+                },
+            },
+        });
         return twItemApi_1.CreateItem.API.sendData(res, populatedItem);
     }
     else {
@@ -99,7 +117,16 @@ const getItem = async (req, res, next) => {
         if (!item) {
             return next(new CustomError_1.default('Item not found.', 404));
         }
-        const populateItem = await item.populate('set_detail');
+        const populateItem = await item.populate({
+            path: 'set_detail',
+            populate: {
+                path: 'members',
+                model: 'tw_item_set_detail',
+                populate: {
+                    path: 'member',
+                },
+            },
+        });
         return twItemApi_1.GetItem.API.sendData(res, populateItem);
     }
     return next(new CustomError_1.default('This route should be private.'));
@@ -154,7 +181,16 @@ const updateItem = async (req, res, next) => {
         if (!item) {
             return next(new CustomError_1.default('Item not found.', 404));
         }
-        let populatedItem = await item.populate('set_detail');
+        let populatedItem = await item.populate({
+            path: 'set_detail',
+            populate: {
+                path: 'members',
+                model: 'tw_item_set_detail',
+                populate: {
+                    path: 'member',
+                },
+            },
+        });
         // User want to change these fields
         const { twItem, members } = req.body;
         // checks first
@@ -204,7 +240,7 @@ const updateItem = async (req, res, next) => {
             populatedItem.set_detail) {
             await twItemModel_2.TwItemSetDetail.deleteMany({
                 owner: req.userJWT.owner,
-                parentItem: item._id,
+                parentItem: populatedItem._id,
             });
         }
         // things are updated, query again
@@ -215,8 +251,17 @@ const updateItem = async (req, res, next) => {
         if (!new_item) {
             return next(new CustomError_1.default('Item not found.', 404));
         }
-        let newPopulatedItem = await new_item.populate('set_detail');
-        return twItemApi_1.UpdateItem.API.sendData(res, newPopulatedItem);
+        let newItemWithSetDetailPopulated = await new_item.populate({
+            path: 'set_detail',
+            populate: {
+                path: 'members',
+                model: 'tw_item_set_detail',
+                populate: {
+                    path: 'member',
+                },
+            },
+        });
+        return twItemApi_1.UpdateItem.API.sendData(res, newItemWithSetDetailPopulated);
     }
     else {
         return next((0, ajv_1.avjErrorWrapper)(twItemApi_1.UpdateItem.API.bodyValidator.errors));
@@ -242,7 +287,7 @@ const deleteItem = async (req, res, next) => {
 exports.deleteItem = deleteItem;
 const check_no_loop = async (members, item_id_get, owner) => {
     let item_id = String(item_id_get);
-    let membersIdArray = members.map((mem) => String(mem.member_id));
+    let membersIdArray = members.map((mem) => String(mem.member));
     let searched = [];
     while (membersIdArray.length) {
         const new_member = membersIdArray.pop(); // pop is easier to do
@@ -258,7 +303,7 @@ const check_no_loop = async (members, item_id_get, owner) => {
                     parentItem: new_member,
                 });
                 if (new_child) {
-                    membersIdArray = membersIdArray.concat(new_child.members.map((mem) => String(mem.member_id)));
+                    membersIdArray = membersIdArray.concat(new_child.members.map((mem) => String(mem.member)));
                 }
                 searched.push(new_member);
             }
