@@ -1,0 +1,87 @@
+{
+  "appIconText": "進銷存",
+  "mainLink": {
+    "home": {
+      "text": "首頁"
+    },
+    "order": {
+      "text": "訂單",
+      "process": { "text": "訂單處理" },
+      "marketing_event": { "text": "行銷活動" },
+      "ec_order": { "text": "電商訂單" },
+      "ec_correspendence": { "text": "電商對應" },
+      "ec_management": { "text": "電商管理" }
+    },
+    "product": {
+      "text": "商品",
+      "basic": { "text": "商品資料" },
+      "specification": { "text": "商品規格" },
+      "warehouse": { "text": "倉庫管理" }
+    },
+    "purchase": { "text": "採購" },
+    "datacenter": {
+      "text": "數據中心",
+      "shopee": { "text": "蝦皮" },
+      "performance": { "text": "我的表現" },
+      "scrapper": { "text": "爬蟲" }
+    },
+    "e-invoice": { "text": "電子發票" },
+    "team": {
+      "text": "團隊",
+      "member": { "text": "成員" },
+      "role": { "text": "角色" },
+      "activity": { "text": "表現數據" }
+    },
+    "account": {
+      "text": "設定",
+      "profile": { "text": "帳戶" },
+      "plan": { "text": "方案" }
+    },
+    "import": {
+      "text": "匯入"
+    },
+    "unnamed": "未命名"
+  },
+  "errors": {
+    "network": "好像出了網路問題，請檢查一下網路連線喔。",
+    "login": "為了安全考量，請重新登入喔。",
+    "google_use_password": "你之前使用 Google 登入喔，可能要使用 Google 登入才行喔。",
+    "email_not_exist": "這個電子郵件並沒有被註冊過喔。",
+    "unknown": "好像出了錯誤，可以等一下再試試喔。"
+  },
+  "common": {
+    "hi": "嗨，",
+    "logout": "登出",
+    "resend": "重新傳送"
+  },
+  "homepage": {
+    "title": "流程圖"
+  },
+  "order_page": {
+    "title": "訂單處理"
+  },
+  "item_page": {
+    "title": "商品管理"
+  },
+  "purchase_page": {
+    "title": "採購系統"
+  },
+  "datacenter_page": {
+    "title": "數據中心"
+  },
+  "e-invoice_page": {
+    "title": "電子發票"
+  },
+  "team_page": {
+    "title": "我的團隊"
+  },
+  "setting_page": {
+    "title": "帳戶與設定"
+  },
+  "import_page": {
+    "title": "外部資料匯入"
+  },
+  "forget_password_page": {
+    "title": "重設你的密碼:"
+  }
+}

@@ -32,7 +32,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/order',
     element: (
-      <PageWithHeader title='Order Manage Page'>
+      <PageWithHeader title='order_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -59,7 +59,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/item',
     element: (
-      <PageWithHeader title='Item Manage Page'>
+      <PageWithHeader title='item_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -75,7 +75,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/purchase',
     element: (
-      <PageWithHeader title='Purchase Manage Page'>
+      <PageWithHeader title='purchase_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -83,12 +83,12 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/datacenter',
     element: (
-      <PageWithHeader title='Data Center Page'>
+      <PageWithHeader title='datacenter_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
     children: [
-      { path: 'shoppee', element: <h1>Shoppee Tab</h1> },
+      { path: 'shopee', element: <h1>Shopee Tab</h1> },
       {
         path: 'performance',
         element: <h1>Performance Tab</h1>,
@@ -99,7 +99,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/e-invoice',
     element: (
-      <PageWithHeader title='E-invoice Page'>
+      <PageWithHeader title='e-invoice_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -107,7 +107,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/team',
     element: (
-      <PageWithHeader title='Member Page'>
+      <PageWithHeader title='team_page.title'>
         <Outlet />
       </PageWithHeader>
     ),
@@ -120,7 +120,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/account',
     element: (
-      <PageWithHeader title='Account Page' yScroll>
+      <PageWithHeader title='setting_page.title' yScroll>
         <Outlet />
       </PageWithHeader>
     ),
@@ -135,7 +135,7 @@ export const mainLayoutRoutes: RouteObject[] = [
   {
     path: '/import',
     element: (
-      <PageWithHeader title='Import Page'>
+      <PageWithHeader title='import_page.title'>
         <Outlet />
       </PageWithHeader>
     ),

@@ -4,5 +4,5 @@ import { PageWithHeader } from '../../layout/mainLayout/pageWithHeader/PageWithH
 export const HomePage = () => {
   // const constroller = useAbortController()
 
-  return <PageWithHeader title='Flow Chart'>HomePage</PageWithHeader>
+  return <PageWithHeader title='homepage.title'>HomePage</PageWithHeader>
 }

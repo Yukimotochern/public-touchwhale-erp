@@ -20,11 +20,12 @@ import { signOut } from '../../../api/userActions'
 import { authSlice } from '../../../redux/auth/authSlice'
 import { useAbortController } from '../../../hooks/useAbortController'
 import cln from 'classnames'
+import { useTranslation, TFuncKey } from 'react-i18next'
 
 const { Content } = Layout
 
 interface Props extends PageHeaderProps {
-  title: string
+  title: TFuncKey
   xScroll?: boolean
   yScroll?: boolean
 }
@@ -36,6 +37,7 @@ export const PageWithHeader: React.FC<Props> = ({
   yScroll,
   ...rest
 }) => {
+  const { t } = useTranslation()
   const abortController = useAbortController()
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
@@ -79,9 +81,16 @@ export const PageWithHeader: React.FC<Props> = ({
   }
   const userMenu = (
     <Menu className={styles['tw-page-with-header-user-menu']}>
-      <Menu.ItemGroup title={<div>Hi, {auth.user?.email}</div>}>
+      <Menu.ItemGroup
+        title={
+          <div>
+            {t('common.hi')}
+            {auth.user?.email}
+          </div>
+        }
+      >
         <Menu.Item key='log_out' onClick={onSignOut}>
-          Log out
+          {t('common.logout')}
         </Menu.Item>
       </Menu.ItemGroup>
     </Menu>
@@ -92,7 +101,7 @@ export const PageWithHeader: React.FC<Props> = ({
     <>
       <AntPageHeader
         {...rest}
-        title={<h1>{title}</h1>}
+        title={<h1>{t(title)}</h1>}
         onBack={() => dispatch(toggle())}
         backIcon={
           siderOpen ? null : (
@@ -114,7 +123,10 @@ export const PageWithHeader: React.FC<Props> = ({
               }}
             >
               {tabs.map((tab) => (
-                <TabPane tab={tab.text} key={tab.path} />
+                <TabPane
+                  tab={tab.text ? t(tab.text) : t('mainLink.unnamed')}
+                  key={tab.path}
+                />
               ))}
             </Tabs>
           ) : undefined

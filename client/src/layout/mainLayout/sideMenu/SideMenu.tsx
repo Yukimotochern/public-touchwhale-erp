@@ -3,6 +3,7 @@ import { Layout, Menu } from 'antd'
 import styles from './SideMenu.module.css'
 import { NavLink, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
@@ -11,6 +12,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons'
 const { Sider } = Layout
 
 export const SideMenu = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // Find active keys
@@ -36,11 +38,11 @@ export const SideMenu = () => {
           <img
             alt=''
             src='/logo128.png'
-            width='36'
-            height='36'
+            width='35'
+            height='35'
             className={styles['app-logo']}
           />{' '}
-          <span>TWhale ERP</span>
+          <span>TWhale {t('appIconText')}</span>
         </Link>
         <FontAwesomeIcon
           icon={faBars}
@@ -71,7 +73,7 @@ export const SideMenu = () => {
               }
             >
               <NavLink key={path} to={link.join('/')}>
-                {() => <div>{text}</div>}
+                {() => <div>{text ? t(text) : t('mainLink.unnamed')}</div>}
               </NavLink>
             </Menu.Item>
           )
