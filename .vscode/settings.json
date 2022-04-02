@@ -3,6 +3,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.exclude": {
     "**/node_modules/": true,
-    "**/.VSCodeCounter/": true
+    "**/.VSCodeCounter/": false
   }
 }
