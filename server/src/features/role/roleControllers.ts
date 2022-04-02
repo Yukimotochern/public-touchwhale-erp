@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { avjErrorWrapper } from '../../utils/ajv'
+import { avjErrorWrapper } from 'api/dist/utils/ajv'
 import CustomError from '../../utils/CustomError'
 import RoleModel from './roleModels'
 import {

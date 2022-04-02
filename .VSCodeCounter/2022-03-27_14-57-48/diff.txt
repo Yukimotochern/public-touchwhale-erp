@@ -1,0 +1,131 @@
+Date : 2022-03-27 14:57:48
+Directory : /Users/yukimoto/projects/touchwhale-erp
+Total : 66 files,  119 codes, -18 comments, -6 blanks, all 95 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| TypeScript React |         15 |        225 |          0 |         12 |        237 |
+| JavaScript       |         12 |        128 |         -9 |          3 |        122 |
+| CSS              |         11 |         23 |         -2 |          7 |         28 |
+| JSON             |          2 |        -33 |          0 |          0 |        -33 |
+| TypeScript       |         26 |       -224 |         -7 |        -28 |       -259 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                          | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                             |         66 |        119 |        -18 |         -6 |         95 |
+| api                                                                                                           |         21 |        322 |         16 |         22 |        360 |
+| api/dist                                                                                                      |         14 |        157 |          8 |          6 |        171 |
+| api/dist/role                                                                                                 |          4 |        200 |          0 |          4 |        204 |
+| api/dist/user                                                                                                 |          2 |         -5 |          0 |          0 |         -5 |
+| api/dist/utils                                                                                                |          6 |        -23 |          1 |          2 |        -20 |
+| api/src                                                                                                       |          7 |        165 |          8 |         16 |        189 |
+| api/src/role                                                                                                  |          2 |        186 |          0 |         11 |        197 |
+| api/src/user                                                                                                  |          1 |         -4 |          0 |          0 |         -4 |
+| api/src/utils                                                                                                 |          3 |         -4 |          1 |          4 |          1 |
+| client                                                                                                        |         31 |        231 |         -2 |         25 |        254 |
+| client/src                                                                                                    |         29 |        264 |         -2 |         25 |        287 |
+| client/src/api                                                                                                |          2 |         18 |          0 |          6 |         24 |
+| client/src/components                                                                                         |          3 |         17 |          0 |          4 |         21 |
+| client/src/components/loading                                                                                 |          2 |         11 |          0 |          4 |         15 |
+| client/src/components/private                                                                                 |          1 |          6 |          0 |          0 |          6 |
+| client/src/hooks                                                                                              |          1 |         12 |          0 |          4 |         16 |
+| client/src/layout                                                                                             |          6 |         11 |         -2 |          1 |         10 |
+| client/src/layout/fullLayout                                                                                  |          1 |          2 |          0 |          0 |          2 |
+| client/src/layout/mainLayout                                                                                  |          5 |          9 |         -2 |          1 |          8 |
+| client/src/layout/mainLayout/pageWithHeader                                                                   |          3 |         17 |          0 |          2 |         19 |
+| client/src/layout/mainLayout/sideMenu                                                                         |          2 |         -8 |         -2 |         -1 |        -11 |
+| client/src/pages                                                                                              |         13 |        198 |          0 |          7 |        205 |
+| client/src/pages/forgetPassword                                                                               |          1 |         56 |          0 |         -2 |         54 |
+| client/src/pages/profile                                                                                      |          7 |         19 |          0 |          1 |         20 |
+| client/src/pages/resetPassword                                                                                |          1 |        150 |          4 |          6 |        160 |
+| client/src/pages/signIn                                                                                       |          1 |          3 |          1 |          0 |          4 |
+| client/src/pages/signUp                                                                                       |          3 |        -30 |         -5 |          2 |        -33 |
+| client/src/routes                                                                                             |          2 |         -2 |          0 |         -1 |         -3 |
+| server                                                                                                        |         14 |       -434 |        -32 |        -53 |       -519 |
+| server/dist                                                                                                   |          5 |         21 |        -16 |          0 |          5 |
+| server/dist/features                                                                                          |          5 |         21 |        -16 |          0 |          5 |
+| server/dist/features/role                                                                                     |          2 |         10 |          0 |          0 |         10 |
+| server/dist/features/user                                                                                     |          2 |          9 |        -16 |          0 |         -7 |
+| server/src                                                                                                    |          9 |       -455 |        -16 |        -53 |       -524 |
+| server/src/features                                                                                           |          9 |       -455 |        -16 |        -53 |       -524 |
+| server/src/features/role                                                                                      |          4 |       -159 |          0 |        -13 |       -172 |
+| server/src/features/user                                                                                      |          4 |       -298 |        -16 |        -40 |       -354 |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                                      | language         | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/api.d.ts                                                     | TypeScript       |         -2 |          0 |          0 |         -2 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/api.js                                                       | JavaScript       |        -13 |          7 |          0 |         -6 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/role/roleApi.d.ts                                            | TypeScript       |         39 |          0 |          1 |         40 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/role/roleApi.js                                              | JavaScript       |        144 |          0 |          1 |        145 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/role/roleTypes.d.ts                                          | TypeScript       |         15 |          0 |          1 |         16 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/role/roleTypes.js                                            | JavaScript       |          2 |          0 |          1 |          3 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/user/userApi.d.ts                                            | TypeScript       |         -1 |          0 |          0 |         -1 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/user/userApi.js                                              | JavaScript       |         -4 |          0 |          0 |         -4 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ApiPromise.d.ts                                        | TypeScript       |        -11 |          0 |          0 |        -11 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/ApiPromise.js                                          | JavaScript       |        -33 |          0 |          0 |        -33 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/CustomError.d.ts                                       | TypeScript       |          8 |          1 |          0 |          9 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/CustomError.js                                         | JavaScript       |          1 |          0 |          0 |          1 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/errorTypeGuards.d.ts                                   | TypeScript       |          2 |          0 |          1 |          3 |
+| /Users/yukimoto/projects/touchwhale-erp/api/dist/utils/errorTypeGuards.js                                     | JavaScript       |         10 |          0 |          1 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/api.ts                                                        | TypeScript       |        -13 |          7 |          1 |         -5 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/role/roleApi.ts                                               | TypeScript       |        165 |          0 |          8 |        173 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/role/roleTypes.ts                                             | TypeScript       |         21 |          0 |          3 |         24 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/user/userApi.ts                                               | TypeScript       |         -4 |          0 |          0 |         -4 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/utils/ApiPromise.ts                                           | TypeScript       |        -19 |          0 |          0 |        -19 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/utils/CustomError.ts                                          | TypeScript       |          7 |          1 |          1 |          9 |
+| /Users/yukimoto/projects/touchwhale-erp/api/src/utils/errorTypeGuards.ts                                      | TypeScript       |          8 |          0 |          3 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/client/package-lock.json                                              | JSON             |        -34 |          0 |          0 |        -34 |
+| /Users/yukimoto/projects/touchwhale-erp/client/package.json                                                   | JSON             |          1 |          0 |          0 |          1 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/App.css                                                    | CSS              |         16 |          0 |          4 |         20 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/App.tsx                                                    | TypeScript React |         -6 |          0 |          0 |         -6 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/api/roleActions.ts                                         | TypeScript       |         23 |          0 |          6 |         29 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/api/userActions.ts                                         | TypeScript       |         -5 |          0 |          0 |         -5 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/components/loading/Loading.module.css                      | CSS              |          7 |          0 |          2 |          9 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/components/loading/Loading.tsx                             | TypeScript React |          4 |          0 |          2 |          6 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/components/private/PrivateOutlet.tsx                       | TypeScript React |          6 |          0 |          0 |          6 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/hooks/useIsMounted.tsx                                     | TypeScript React |         12 |          0 |          4 |         16 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/fullLayout/FullLayout.module.css                    | CSS              |          2 |          0 |          0 |          2 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.css        | CSS              |        -30 |          0 |         -6 |        -36 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.module.css | CSS              |         36 |          0 |          8 |         44 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/pageWithHeader/PageWithHeader.tsx        | TypeScript React |         11 |          0 |          0 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/sideMenu/SideMenu.css                    | CSS              |        -69 |         -2 |        -13 |        -84 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/layout/mainLayout/sideMenu/SideMenu.module.css             | CSS              |         61 |          0 |         12 |         73 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/forgetPassword/ForgetPasswordPage.tsx                | TypeScript React |         56 |          0 |         -2 |         54 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.css                             | CSS              |         -3 |          0 |         -1 |         -4 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.module.css                      | CSS              |          3 |          0 |          1 |          4 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/AvatarUpload.tsx                             | TypeScript React |          3 |          0 |          1 |          4 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ChangePassword.tsx                           | TypeScript React |         11 |          0 |          0 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfileBlock.css                             | CSS              |         -9 |         -4 |         -2 |        -15 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfileBlock.module.css                      | CSS              |          9 |          4 |          2 |         15 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/profile/ProfileBlock.tsx                             | TypeScript React |          5 |          0 |          0 |          5 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/resetPassword/ResetPasswordPage.tsx                  | TypeScript React |        150 |          4 |          6 |        160 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/signIn/SignInPage.tsx                                | TypeScript React |          3 |          1 |          0 |          4 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/EmailEnterForm.tsx                            | TypeScript React |         11 |          0 |          0 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/PasswordSetUpForm.tsx                         | TypeScript React |        -19 |         -1 |          0 |        -20 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/pages/signUp/VerifyEmailForm.tsx                           | TypeScript React |        -22 |         -4 |          2 |        -24 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/routes/AppRoutes.tsx                                       | TypeScript React |          0 |          0 |         -1 |         -1 |
+| /Users/yukimoto/projects/touchwhale-erp/client/src/routes/appLink.ts                                          | TypeScript       |         -2 |          0 |          0 |         -2 |
+| /Users/yukimoto/projects/touchwhale-erp/server/dist/features/apiRoutes.js                                     | JavaScript       |          2 |          0 |          0 |          2 |
+| /Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleControllers.js                          | JavaScript       |         -1 |          0 |          0 |         -1 |
+| /Users/yukimoto/projects/touchwhale-erp/server/dist/features/role/roleRoutes.js                               | JavaScript       |         11 |          0 |          0 |         11 |
+| /Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userControllers.js                          | JavaScript       |          6 |        -16 |          0 |        -10 |
+| /Users/yukimoto/projects/touchwhale-erp/server/dist/features/user/userRoutes.js                               | JavaScript       |          3 |          0 |          0 |          3 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/apiRoutes.ts                                      | TypeScript       |          2 |          0 |          0 |          2 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleControllers.ts                           | TypeScript       |          5 |          0 |         -1 |          4 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleHandlerIO.ts                             | TypeScript       |       -135 |          0 |         -8 |       -143 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleRoutes.ts                                | TypeScript       |         17 |          0 |          1 |         18 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/role/roleType.ts                                  | TypeScript       |        -46 |          0 |         -5 |        -51 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userControllers.ts                           | TypeScript       |         11 |        -16 |          0 |         -5 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userHandlerIO.ts                             | TypeScript       |       -198 |          0 |        -16 |       -214 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userRoutes.ts                                | TypeScript       |         10 |          0 |          0 |         10 |
+| /Users/yukimoto/projects/touchwhale-erp/server/src/features/user/userTypes.ts                                 | TypeScript       |       -121 |          0 |        -24 |       -145 |
+| Total                                                                                                         |                  |        119 |        -18 |         -6 |         95 |
++---------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

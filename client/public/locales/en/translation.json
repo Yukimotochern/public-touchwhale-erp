@@ -1,0 +1,89 @@
+{
+  "appIconText": "ERP",
+  "mainLink": {
+    "home": {
+      "text": "Home"
+    },
+    "order": {
+      "text": "Order",
+      "process": { "text": "Order Processing" },
+      "marketing_event": { "text": "Marking Event" },
+      "ec_order": { "text": "EC Order" },
+      "ec_correspendence": { "text": "EC Correspondence" },
+      "ec_management": { "text": "EC Management" }
+    },
+    "product": {
+      "text": "Product",
+      "basic": { "text": "Basic" },
+      "specification": { "text": "Specification" },
+      "warehouse": { "text": "Warehouse" }
+    },
+    "purchase": { "text": "Purchasing" },
+    "datacenter": {
+      "text": "Data Center",
+      "shopee": { "text": "Shopee" },
+      "performance": { "text": "Permormance" },
+      "scrapper": { "text": "Scrapper" }
+    },
+    "e-invoice": { "text": "E-invoice" },
+    "team": {
+      "text": "My Team",
+      "member": { "text": "Member" },
+      "role": { "text": "Role" },
+      "activity": { "text": "Activity" }
+    },
+    "account": {
+      "text": "Setting",
+      "profile": { "text": "Profile & Account" },
+      "plan": { "text": "Plan" }
+    },
+    "import": {
+      "text": "Import"
+    },
+    "unnamed": "Unnamed"
+  },
+  "errors": {
+    "network": "Please check your net work connection.",
+    "login": "Please login in again for the security consideration.",
+    "google_use_password": "You have been using the Google login. Please use google to login.",
+    "email_not_exist": "There is no user with that email.",
+    "unknown": "Something went wrong. Try again latter."
+  },
+  "common": {
+    "hi": "Hi,",
+    "logout": "Log out",
+    "resend": "Resend"
+  },
+  "homepage": {
+    "title": "Flow Chart"
+  },
+  "order_page": {
+    "title": "Order Manage"
+  },
+  "item_page": {
+    "title": "Item Manage"
+  },
+  "purchase_page": {
+    "title": "Purchage Manage"
+  },
+  "datacenter_page": {
+    "title": "Data Center"
+  },
+  "e-invoice_page": {
+    "title": "E-invoice"
+  },
+  "team_page": {
+    "title": "My Team"
+  },
+  "setting_page": {
+    "title": "Account and Settings"
+  },
+  "import_page": {
+    "title": "Import Data From Other Services"
+  },
+  "forget_password_page": {
+    "title": "Reset Your Password:",
+    "email_sent": "An email has been sent to {{email}}. Please click the link attached to reset your password.",
+    "not_reciving": "Don't receive the email ?"
+  }
+}

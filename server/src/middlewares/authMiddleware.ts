@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 import { JSONSchemaType } from 'ajv'
-import ajv from '../utils/ajv'
+import ajv from 'api/dist/utils/ajv'
 import CustomError from '../utils/CustomError'
 
 export interface AuthJWT {

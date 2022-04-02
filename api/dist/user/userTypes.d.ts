@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MongooseStatics } from '../utils/mongoTypes';
+import { MongooseStatics, MongooseStamps } from '../utils/mongoTypes';
 import { PermissionGroupNames } from '../permissionTypes';
 export interface Classifier {
     isOwner: boolean;
@@ -24,10 +24,6 @@ export interface Editable {
     company?: string;
     avatar?: string;
 }
-export interface Stamp {
-    createdAt: Date | string;
-    updatedAt: Date | string;
-}
 export interface Token {
     forgetPasswordToken?: string;
     forgetPasswordExpire?: Date | string;
@@ -37,7 +33,7 @@ export interface MongooseMethods {
     getForgetPasswordToken: () => string;
     getSignedJWTToken: () => string;
 }
-export interface PlainUser extends Classifier, Identity, Editable, Stamp, MongooseStatics, RolePermissions {
+export interface PlainUser extends Classifier, Identity, Editable, MongooseStamps, MongooseStatics, RolePermissions {
 }
-export interface Mongoose extends Classifier, Identity, Secret, Editable, Stamp, Token, MongooseMethods, MongooseStatics, RolePermissions {
+export interface Mongoose extends Classifier, Identity, Secret, Editable, MongooseStamps, Token, MongooseMethods, MongooseStatics, RolePermissions {
 }

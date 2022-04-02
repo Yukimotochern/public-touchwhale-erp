@@ -4,7 +4,6 @@ import CustomError, { ApiErrorDealtInternallyAndThrown } from './CustomError'
 /**
  * A promise that can catch errors with type-safe method.
  */
-Promise
 export class ApiPromise<T> extends Promise<T> {
   catched: boolean = false
   public onErrorsButCancelAndAuth<TF = never>(

@@ -1,5 +1,4 @@
 import React from 'react'
-import './PageWithHeader.css'
 import styles from './PageWithHeader.module.css'
 import {
   PageHeader as AntPageHeader,
@@ -20,18 +19,25 @@ import Avatar from 'antd/lib/avatar/avatar'
 import { signOut } from '../../../api/userActions'
 import { authSlice } from '../../../redux/auth/authSlice'
 import { useAbortController } from '../../../hooks/useAbortController'
+import cln from 'classnames'
+import { useTranslation, TFuncKey } from 'react-i18next'
 
 const { Content } = Layout
 
 interface Props extends PageHeaderProps {
-  title: string
+  title: TFuncKey
+  xScroll?: boolean
+  yScroll?: boolean
 }
 const { TabPane } = Tabs
 export const PageWithHeader: React.FC<Props> = ({
   children,
   title,
+  xScroll,
+  yScroll,
   ...rest
 }) => {
+  const { t } = useTranslation()
   const abortController = useAbortController()
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
@@ -51,7 +57,7 @@ export const PageWithHeader: React.FC<Props> = ({
   }
   const navigate = useNavigate()
   const firstLevelMatch = useAppSelector((s) => s.routeLink).find(
-    (route) => route.path === '/' + firstLevelRoute
+    (route) => route.path === firstLevelRoute
   )
   let tabs: RouteLink[] | undefined
   if (firstLevelMatch) {
@@ -74,10 +80,17 @@ export const PageWithHeader: React.FC<Props> = ({
     }
   }
   const userMenu = (
-    <Menu className='tw-page-with-header-user-menu '>
-      <Menu.ItemGroup title={<div>Hi, {auth.user?.email}</div>}>
+    <Menu className={styles['tw-page-with-header-user-menu']}>
+      <Menu.ItemGroup
+        title={
+          <div>
+            {t('common.hi')}
+            {auth.user?.email}
+          </div>
+        }
+      >
         <Menu.Item key='log_out' onClick={onSignOut}>
-          Log out
+          {t('common.logout')}
         </Menu.Item>
       </Menu.ItemGroup>
     </Menu>
@@ -88,18 +101,18 @@ export const PageWithHeader: React.FC<Props> = ({
     <>
       <AntPageHeader
         {...rest}
-        title={<h1>{title}</h1>}
+        title={<h1>{t(title)}</h1>}
         onBack={() => dispatch(toggle())}
         backIcon={
           siderOpen ? null : (
             <FontAwesomeIcon
               icon={faBars}
-              className='trigger'
+              className={styles.trigger}
               transform={{ y: -1 }}
             />
           )
         }
-        className='tw-page-with-header'
+        className={styles['tw-page-with-header']}
         footer={
           tabs ? (
             <Tabs
@@ -110,13 +123,16 @@ export const PageWithHeader: React.FC<Props> = ({
               }}
             >
               {tabs.map((tab) => (
-                <TabPane tab={tab.text} key={tab.path} />
+                <TabPane
+                  tab={tab.text ? t(tab.text) : t('mainLink.unnamed')}
+                  key={tab.path}
+                />
               ))}
             </Tabs>
           ) : undefined
         }
         extra={
-          <div className='user-icon'>
+          <div className={styles['user-icon']}>
             <Dropdown
               overlay={userMenu}
               trigger={['click']}
@@ -137,7 +153,14 @@ export const PageWithHeader: React.FC<Props> = ({
           </div>
         }
       />
-      <Content className='tw-page-with-header-content'>{children}</Content>
+      <Content
+        className={cln(styles['tw-page-with-header-content'], {
+          [styles['x-scroll']]: xScroll,
+          [styles['y-scroll']]: yScroll,
+        })}
+      >
+        {children}
+      </Content>
     </>
   )
 }

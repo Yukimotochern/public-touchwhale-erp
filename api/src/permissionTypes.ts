@@ -1,5 +1,9 @@
 import { UserPermissions, userPermissionSet } from './user/userPermissions'
 import { RolePermissions, rolePermissionSet } from './role/rolePermissions'
+import {
+  TwItemPermissions,
+  twItemPermissionSet,
+} from './twItem/twItemPermissions'
 
 /**
  * To add a permission for feature:
@@ -9,10 +13,11 @@ import { RolePermissions, rolePermissionSet } from './role/rolePermissions'
  */
 
 // ** First, include new feature if needed
-export type Permissions = UserPermissions | RolePermissions
+export type Permissions = UserPermissions | RolePermissions | TwItemPermissions
 export const permissionSet: Permissions[] = [
   ...userPermissionSet,
   ...rolePermissionSet,
+  ...twItemPermissionSet,
 ]
 // **
 
@@ -31,8 +36,12 @@ interface PermissionGroup {
 export const permissionGroupSet: PermissionGroup[] = [
   {
     name: 'admin',
-    permissions: [...userPermissionSet, ...rolePermissionSet],
-    description: 'Can perform some basic CRUD actions to the twItem',
+    permissions: [
+      ...userPermissionSet,
+      ...rolePermissionSet,
+      ...twItemPermissionSet,
+    ],
+    description: 'All permissions.',
   },
   {
     name: 'human resource',

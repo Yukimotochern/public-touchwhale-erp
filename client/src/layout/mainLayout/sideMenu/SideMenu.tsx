@@ -1,8 +1,9 @@
 import React from 'react'
 import { Layout, Menu } from 'antd'
-import './SideMenu.css'
+import styles from './SideMenu.module.css'
 import { NavLink, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useAppSelector } from '../../../redux/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { toggle } from '../mainLayout.slice'
@@ -11,6 +12,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons'
 const { Sider } = Layout
 
 export const SideMenu = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const siderOpen = useAppSelector((s) => s.layout.mainLayout.siderOpen)
   // Find active keys
@@ -27,24 +29,24 @@ export const SideMenu = () => {
       trigger={null}
       collapsedWidth='0'
       collapsible
-      className='main-layout-sider'
+      className={styles['main-layout-sider']}
       collapsed={!siderOpen}
       width={225}
     >
-      <div className='side-menu-top-bar'>
-        <Link to='/' className='mynavIcon'>
+      <div className={styles['side-menu-top-bar']}>
+        <Link to='/' className={styles['mynavIcon']}>
           <img
             alt=''
             src='/logo128.png'
-            width='36'
-            height='36'
-            className='app-logo'
+            width='35'
+            height='35'
+            className={styles['app-logo']}
           />{' '}
-          <span>TWhale ERP</span>
+          <span>TWhale {t('appIconText')}</span>
         </Link>
         <FontAwesomeIcon
           icon={faBars}
-          className='trigger'
+          className={styles['trigger']}
           onClick={() => dispatch(toggle())}
           transform={{ y: -1 }}
         />
@@ -53,7 +55,7 @@ export const SideMenu = () => {
         theme='dark'
         mode='inline'
         selectedKeys={selectedKeys}
-        className='main-layout-menu'
+        className={styles['main-layout-menu']}
       >
         {routeLink.map(({ path, text, icon, link }) => {
           return (
@@ -71,7 +73,7 @@ export const SideMenu = () => {
               }
             >
               <NavLink key={path} to={link.join('/')}>
-                {() => <div>{text}</div>}
+                {() => <div>{text ? t(text) : t('mainLink.unnamed')}</div>}
               </NavLink>
             </Menu.Item>
           )

@@ -14,3 +14,23 @@ body {
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:vertical {
+  width: 7px;
+}
+::-webkit-scrollbar:horizontal {
+  height: 7px;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #a8a7a773;
+}
+
+::-webkit-scrollbar-corner {
+  background: inherit;
+}

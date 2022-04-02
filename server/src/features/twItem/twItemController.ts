@@ -2,232 +2,339 @@
 import { TwItem } from './twItemModel'
 import { TwItemSetDetail } from './twItemModel'
 
-// Middlewares
-import { advancedResultResponse } from '../../middlewares/advancedResult'
-import { RequestHandler } from 'express'
+// advanced result
+import { AdvancedResultApi } from 'api/dist/advancedResult/advancedResultApi'
 
 // Utils modules
 import { uploadImage, deleteImage } from '../../utils/AWS/b2'
 import CustomError from '../../utils/CustomError'
+import { v4 as uuid } from 'uuid'
 
 // Type definition
-import { ItemSetDetailType } from './twItemType'
+import { TwItemSetDetailType, TwItemType } from 'api/dist/twItem/twItemTypes'
+import { RequestHandler } from 'express'
+import { Types as MongooseTypes } from 'mongoose'
 
-import { ItemIO } from './twItemHandlerIO'
-import { HandlerIO } from '../apiIO'
-import { avjErrorWrapper } from '../../utils/ajv'
-
-const { AddItem, UpdateItem, GetItem, GetImageUploadUrl } = ItemIO
+import {
+  CreateItem,
+  UpdateItem,
+  GetItem,
+  GetItemsWithDetail,
+  GetItems,
+  GetImageUploadUrl,
+} from 'api/dist/twItem/twItemApi'
+import { avjErrorWrapper } from 'api/dist/utils/ajv'
+import { api } from 'api/dist/api'
 
 const ItemImageKeyPrifix = 'TwItemImage'
 
-// @route    GET api/v1/twItem/
-// @desc     Get all items with specific user
-// @access   Private
-export const getItems: RequestHandler = async (
-  req,
-  res: advancedResultResponse,
-  next
-) => {
-  res.status(200).json(res.advancedResults)
+const API = new api()
+
+/**
+ * @route  GET api/v1/twItem/withDetail
+ * @desc   Get all items with specific owner, populate the virtual detail
+ * @access Private
+ */
+export const getItemsWithDetail: RequestHandler = async (req, res, next) => {
+  const advancedQuery = new AdvancedResultApi<TwItemType.TwItem>(req, TwItem)
+  const twItemWithDetail = await advancedQuery.query.populate<
+    Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+  >({
+    path: 'set_detail',
+    populate: {
+      path: 'members',
+      model: 'tw_item_set_detail',
+      populate: {
+        path: 'member',
+      },
+    },
+  })
+  const result = await advancedQuery.result(twItemWithDetail)
+  return GetItemsWithDetail.API.sendData(res, result)
 }
 
-// @route    POST api/v1/twItem/
-// @desc     Add a item and ref to user
-// @access   Private
-export const addItem: RequestHandler = async (req, res, next) => {
-  if (AddItem.bodyValidator(req.body) && req.userJWT?.id) {
-    const { name, unit, custom_id, count_stock, item_type, element } = req.body
-    const item_for_user = await TwItem.findOne({
-      user: req.userJWT.id,
-      name: name.trim(),
+/**
+ * @route  GET api/v1/twItem
+ * @desc   Get all items with specific owner
+ * @access Private
+ */
+export const getItems: RequestHandler = async (req, res, next) => {
+  const advancedQuery = new AdvancedResultApi<TwItemType.TwItem>(req, TwItem)
+  const twItem = await advancedQuery.query
+  const result = await advancedQuery.result(twItem)
+  return GetItems.API.sendData(res, result)
+}
+
+/**
+ * @route    POST api/v1/twItem/
+ * @desc     Create a TwItem
+ * @access   Private
+ */
+export const createItem: RequestHandler = async (req, res, next) => {
+  if (CreateItem.API.bodyValidator(req.body) && req.userJWT) {
+    const { twItem, members } = req.body
+    const { name, item_type } = twItem
+    const item_for_owner = await TwItem.findOne({
+      owner: req.userJWT.owner,
+      name: name && name.trim(),
     })
-    if (item_for_user) {
+    if (item_for_owner) {
       return next(
-        new CustomError(`You have a item with same name: \'${name}\' `)
+        new CustomError(`You have a item with same name: '${name}' `, 409)
       )
     }
-    if (item_type === 'element' && element) {
+    if (item_type === 'element' && members) {
       return next(new CustomError('You can not set element into single item.'))
+    }
+    if (item_type === 'set' && !members) {
+      return next(
+        new CustomError('You must provide set details for item of type set.')
+      )
     }
 
     const item = new TwItem({
-      owner: req.userJWT.id,
-      name,
-      unit,
-      custom_id,
-      count_stock,
-      item_type,
+      owner: req.userJWT.owner,
+      ...twItem,
     })
     await item.save()
 
     if (item_type === 'set') {
-      await item.save()
-
       const set = new TwItemSetDetail({
-        user: req.userJWT.id,
+        owner: req.userJWT.id,
         parentItem: item._id,
-        element,
+        members,
       })
       await set.save()
     }
-
-    return AddItem.sendData(res, item)
+    const populatedItem = await item.populate<
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
+    return CreateItem.API.sendData(res, populatedItem)
   } else {
-    return next(avjErrorWrapper(AddItem.bodyValidator.errors))
+    return next(avjErrorWrapper(CreateItem.API.bodyValidator.errors))
   }
 }
 
-// "element": [{"qty": 2, "id": "62241c8f7096ddea6783e41a"}, {"qty": 3, "id": "622392fbafbb949826bd2a07"}]
-
-// @route    GET api/v1/twItem/:id
-// @desc     Get single item by item's id
-// @access   Private
+/**
+ * @route    GET api/v1/twItem/:id
+ * @desc     Get single item by id, with member populated
+ * @access   Private
+ */
 export const getItem: RequestHandler = async (req, res, next) => {
-  const populate = req.query.populate
-  let query = TwItem.findOne({
-    owner: req.userJWT?.owner,
-    _id: req.params.id,
-  })
-  if (populate) {
-    query = query.populate('setOfElement', 'element')
+  if (req.userJWT) {
+    let item = await TwItem.findOne({
+      owner: req.userJWT.owner,
+      _id: req.params.id,
+    })
+    if (!item) {
+      return next(new CustomError('Item not found.', 404))
+    }
+    const populateItem = await item.populate<
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
+    return GetItem.API.sendData(res, populateItem)
   }
-  const item = await query
-
-  if (!item) {
-    return next(new CustomError('Item not found.', 404))
-  }
-  GetItem.sendData(res, item)
+  return next(new CustomError('This route should be private.'))
 }
 
-// @route    GET api/v1/twItem/uploadImage/:id
-// @desc     Get B2 url for frontend to make a put request
-// @access   Private
+/**
+ * @route    GET api/v1/twItem/uploadImage/:id
+ * @desc     Get B2 url for frontend to make a put request
+ * @access   Private
+ */
 export const getB2URL: RequestHandler = async (req, res, next) => {
-  const itemId = req.params.id
-  const item = await TwItem.findOne({
-    owner: req.userJWT?.owner,
-    _id: req.params.id,
-  })
-  if (!item) {
-    return next(new CustomError('Item not found.', 404))
+  if (req.userJWT) {
+    const itemId = req.params.id
+    const item = await TwItem.findOne({
+      owner: req.userJWT?.owner,
+      _id: req.params.id,
+    })
+    if (!item) {
+      return next(new CustomError('Item not found.', 404))
+    }
+    const { Key, url } = await uploadImage(
+      ItemImageKeyPrifix,
+      `${itemId}/${uuid()}`
+    )
+    let image = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
+    GetImageUploadUrl.API.sendData(res, { uploadUrl: url, image })
   }
-  const { Key, url } = await uploadImage(ItemImageKeyPrifix, itemId)
-  let image = `https://tw-user-data.s3.us-west-000.backblazeb2.com/${Key}`
-  item.image = image
-  await item.save()
-  // res.status(200).send({ msg: result })
-  GetImageUploadUrl.sendData(res, { uploadUrl: url, image })
+  return next(new CustomError('This route should be private.'))
 }
 
-// @route    DELETE api/v1/twItem/uploadImage/:id
-// @desc     Delete item's image
-// @access   Private
+/**
+ *  @route    DELETE api/v1/twItem/uploadImage/:key
+ *  @desc     Delete image
+ *  @access   Private
+ */
 export const deleteItemImage: RequestHandler = async (req, res, next) => {
-  const item = await TwItem.findOne({
-    owner: req.userJWT?.owner,
-    _id: req.params.id,
-  })
-
-  if (!item) {
-    return next(new CustomError('Item not found.', 404))
-  }
-  await deleteImage(ItemImageKeyPrifix, item.id)
-
-  item.image = ''
-  await item.save()
-  return HandlerIO.send(res, 200, { message: 'Image deleted.' })
+  await deleteImage(ItemImageKeyPrifix, req.params.key)
+  return API.send(res, 200, { message: 'Image deleted.' })
 }
 
-// @route    PUT api/v1/twItem/:id
-// @desc     Update item by item's id
-// @access   Private
+/**
+ * @route    PUT api/v1/twItem/:id
+ * @desc     Update item by id
+ * @access   Private
+ */
 export const updateItem: RequestHandler = async (req, res, next) => {
   if (!req.userJWT?.id) {
     return next(new CustomError('Invalid credentials.', 401))
   }
-  if (UpdateItem.bodyValidator(req.body)) {
+  if (UpdateItem.API.bodyValidator(req.body)) {
     let item = await TwItem.findOne({
-      owner: req.userJWT?.owner,
+      owner: req.userJWT.owner,
       _id: req.params.id,
     })
 
     if (!item) {
       return next(new CustomError('Item not found.', 404))
     }
-    // User want to change these fields
-    const { name, unit, custom_id, count_stock, item_type, element } = req.body
-
-    // Find if user has a item's name that same with req.body
-    const item_for_user = await TwItem.findOne({
-      user: req.userJWT.id,
-      name: name.trim(),
+    let populatedItem = await item.populate<
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
     })
+    // User want to change these fields
+    const { twItem, members } = req.body
 
-    // Check if that item not equal with item(/:id)
-    if (
-      item_for_user?.custom_id &&
-      item_for_user?.custom_id !== item.custom_id
-    ) {
-      return next(
-        new CustomError(`You have a item with same name: \'${name}\' `)
-      )
-    }
-
-    if (item_type === 'element' && element) {
-      return next(new CustomError('You can not set element into single intem.'))
-    }
-
-    item.name = name ? name : item.name
-    item.unit = unit ? unit : item.unit
-    item.custom_id = custom_id ? custom_id : item.custom_id
-    item.count_stock = count_stock ? count_stock : item.count_stock
-    item.item_type = item_type ? item_type : item.item_type
-    console.log(element)
-
-    try {
-      if (element) {
-        if (await check_no_loop(element, item.id)) {
-          let itemSetElement = await TwItemSetDetail.findOne({
-            owner: req.userJWT.owner,
-            parentItem: item.id,
-          })
-          if (itemSetElement) {
-            itemSetElement.element = element
-            await itemSetElement.save()
-          } else {
-            const set = new TwItemSetDetail({
-              owner: req.userJWT.id,
-              parentItem: item._id,
-              element,
-            })
-
-            await set.save()
-          }
-        } else {
-          return next(new CustomError('Items element has a loop. '))
+    // checks first
+    if (twItem) {
+      const { name, item_type } = twItem
+      if (name) {
+        const item_with_same_name_and_owner = await TwItem.findOne({
+          user: req.userJWT.owner,
+          name: name.trim(),
+        })
+        if (
+          item_with_same_name_and_owner &&
+          String(item_with_same_name_and_owner._id) !== req.params.id
+        ) {
+          return next(
+            new CustomError(
+              `You have another item with same name: '${name}' `,
+              409
+            )
+          )
         }
       }
-      await item.save()
-      // res.status(200).json({ data: item })
-      UpdateItem.sendData(res, item)
-    } catch (err) {
-      return next(
-        new CustomError(
-          'Something wrong. Maybe there has duplicate field in your items',
-          401,
-          err
-        )
-      )
+      if (item_type) {
+        populatedItem.item_type = item_type
+      }
     }
+    if (members) {
+      if (populatedItem.item_type === 'element') {
+        return next(
+          new CustomError(
+            'You cannot set members for item with element type.',
+            422
+          )
+        )
+      }
+      if (
+        !(await check_no_loop(
+          members,
+          populatedItem._id,
+          String(req.userJWT.owner)
+        ))
+      ) {
+        return next(
+          new CustomError('The updates to the member field will incur a loop.')
+        )
+      }
+    } else {
+      if (populatedItem.item_type === 'set' && !populatedItem.set_detail) {
+        return next(
+          new CustomError('You must set members for item of set type', 422)
+        )
+      }
+    }
+
+    if (twItem) {
+      /**
+       * ! noticed that the populatedItem will the be newer version and still populated
+       * ! after the below command but the populated data may not the be new version.
+       */
+      await populatedItem.updateOne(twItem, {
+        runValidators: true,
+        returnDocument: 'after',
+      })
+    }
+
+    if (members) {
+      await TwItemSetDetail.findOneAndUpdate(
+        { owner: req.userJWT.owner, parentItem: populatedItem._id },
+        { $set: { members } },
+        { upsert: true, runValidators: true }
+      )
+    } else if (
+      populatedItem.item_type === 'element' &&
+      populatedItem.set_detail
+    ) {
+      await TwItemSetDetail.deleteMany({
+        owner: req.userJWT.owner,
+        parentItem: populatedItem._id,
+      })
+    }
+
+    // things are updated, query again
+    let new_item = await TwItem.findOne({
+      owner: req.userJWT.owner,
+      _id: req.params.id,
+    })
+
+    if (!new_item) {
+      return next(new CustomError('Item not found.', 404))
+    }
+    let newItemWithSetDetailPopulated = await new_item.populate<
+      Pick<TwItemType.TwItemWithSetDetailPopulated, 'set_detail'>
+    >({
+      path: 'set_detail',
+      populate: {
+        path: 'members',
+        model: 'tw_item_set_detail',
+        populate: {
+          path: 'member',
+        },
+      },
+    })
+
+    return UpdateItem.API.sendData(res, newItemWithSetDetailPopulated)
   } else {
-    return next(avjErrorWrapper(UpdateItem.bodyValidator.errors))
+    return next(avjErrorWrapper(UpdateItem.API.bodyValidator.errors))
   }
 }
 
-// @route    DELETE api/v1/twItem/:id
-// @desc     Update item by item's id
-// @access   Private
+/**
+ * @route    DELETE api/v1/twItem/:id
+ * @desc     Update item by id
+ * @access   Private
+ */
 export const deleteItem: RequestHandler = async (req, res, next) => {
   const item = await TwItem.findOne({
     owner: req.userJWT?.owner,
@@ -236,58 +343,36 @@ export const deleteItem: RequestHandler = async (req, res, next) => {
   if (!item) {
     return next(new CustomError('Item not found.', 404))
   }
-  item.delete()
+  await item.delete()
 
-  return HandlerIO.send(res, 200, { message: 'Item deleted.' })
+  return API.send(res, 200, { message: 'Item deleted.' })
 }
 
-// Helper function
-// find max level element and return max level
-// const max_level = async (element: ElementObjectType[]) => {
-//   // push all element's id in array
-//   const elementId_array = new Array()
-//   element.map((ele) => {
-//     elementId_array.push(ele.id)
-//   })
-
-//   // find all document in element array
-//   const all_element = await TwItem.find().where('_id').in(elementId_array)
-
-//   // find max level document
-//   let max_level_element = all_element.reduce(function (pre, cur) {
-//     return pre.level > cur.level ? pre : cur
-//   })
-
-//   return max_level_element.level + 1
-// }
-
 const check_no_loop = async (
-  element: ItemSetDetailType.ElementObjectType[],
-  item_id: string
+  members: TwItemSetDetailType.SetMember[],
+  item_id_get: string | MongooseTypes.ObjectId,
+  owner: string
 ) => {
-  let elementId_array = new Array()
-  element.map((ele) => {
-    elementId_array.push(ele.id)
-  })
-  let searched = new Array()
-
-  while (elementId_array.length) {
-    const new_element = elementId_array.shift()
-
-    if (!searched.includes(new_element)) {
-      if (new_element === item_id) {
+  let item_id = String(item_id_get)
+  let membersIdArray = members.map((mem) => String(mem.member))
+  let searched: string[] = []
+  while (membersIdArray.length) {
+    const new_member = membersIdArray.pop() // pop is easier to do
+    if (!new_member) break
+    if (!searched.includes(new_member)) {
+      if (new_member === item_id) {
         return false
       } else {
         const new_child = await TwItemSetDetail.findOne({
-          parentItem: new_element,
+          owner,
+          parentItem: new_member,
         })
-
-        const new_array = new Array()
-        new_child?.element.map((obj) => {
-          new_array.push(obj.id)
-        })
-        elementId_array = elementId_array.concat(new_array)
-        searched.push(new_element)
+        if (new_child) {
+          membersIdArray = membersIdArray.concat(
+            new_child.members.map((mem) => String(mem.member))
+          )
+        }
+        searched.push(new_member)
       }
     }
   }

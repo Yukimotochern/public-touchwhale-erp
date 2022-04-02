@@ -1,5 +1,5 @@
 import { ResponseBody, ResponseBodyWithOutData } from './apiTypes';
-import { ValidateFunction, JSONSchemaType } from 'ajv';
+import { ValidateFunction, JSONSchemaType, AnySchema } from 'ajv';
 import { AnyValidateFunction } from 'ajv/dist/types/index';
 import { AxiosRequestConfig, Method } from 'axios';
 import { ApiPromise } from './utils/ApiPromise';
@@ -18,11 +18,12 @@ export default class api<ReqestBodyType, ResponseDataType> {
     onNetworkError?: Function;
     onUnknownError?: Function;
     constructor({ bodySchema, dataSchema, }?: Partial<SchemaOption<ReqestBodyType, ResponseDataType>>);
+    setDataValidator(dataSchema: AnySchema): this;
     /**
      * * Server Things
      */
     send(res: Response, statusCode?: number, extra?: ResponseBodyWithOutData): Response<any, Record<string, any>>;
-    sendData(res: Response, data: ResponseDataType, extra?: ResponseBodyWithOutData, statusCode?: number): Response<any, Record<string, any>> | CustomError;
+    sendData(res: Response, data: ResponseDataType, extra?: ResponseBodyWithOutData, statusCode?: number): CustomError | Response<any, Record<string, any>>;
     /**
      * * Client Things
      */

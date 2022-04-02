@@ -3,7 +3,7 @@ import {
   responseBodyWithAnyDataJSONSchema,
   ResponseBodyWithOutData,
 } from './apiTypes'
-import { ValidateFunction, JSONSchemaType, DefinedError } from 'ajv'
+import { ValidateFunction, JSONSchemaType, DefinedError, AnySchema } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/types/index'
 import ajv from './utils/ajv'
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios'
@@ -66,6 +66,19 @@ export default class api<ReqestBodyType, ResponseDataType> {
     }
   }
 
+  setDataValidator(dataSchema: AnySchema) {
+    this.dataValidator = ajv.compile<ResponseDataType>(dataSchema)
+    this.resValidator = ajv.compile<ResponseBody<ResponseDataType>>({
+      type: 'object',
+      properties: {
+        message: { type: 'string', nullable: true },
+        data: dataSchema,
+      },
+      additionalProperties: false,
+    })
+    return this
+  }
+
   /**
    * * Server Things
    */
@@ -76,6 +89,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
   ) {
     return res.status(statusCode).json(extra)
   }
+
   sendData(
     res: Response,
     data: ResponseDataType,
@@ -94,16 +108,16 @@ export default class api<ReqestBodyType, ResponseDataType> {
 
         // check owner
         const isObjectOwnByOther = (x: any): boolean =>
+          !!x &&
           typeof x === 'object' &&
           typeof x.owner === 'string' &&
           x.owner !== String(res.owner)
         const hasNestedObjectOwnByOthers = (ob: any): boolean => {
-          if (typeof ob === 'object' && !Array.isArray(ob)) {
+          if (!!ob && typeof ob === 'object' && !Array.isArray(ob)) {
             if (isObjectOwnByOther(ob)) {
               console.log(
                 'The following object is owned by others. Please check your code.'
               )
-              console.log(ob)
               return true
             } else {
               return Object.entries(ob).some(([name, value]) =>
@@ -214,6 +228,9 @@ export default class api<ReqestBodyType, ResponseDataType> {
     } else if (axios.isAxiosError(err)) {
       // server error
       if (err.response?.data) {
+        const deserializedError = deserializeError(err.response.data)
+        innerError.customError = err.response.data
+        innerError.deserializedError = deserializedError
         if (err.response.status === 401) {
           /**
            * Unauthorized, redirect if possible
@@ -224,7 +241,6 @@ export default class api<ReqestBodyType, ResponseDataType> {
           }
         } else {
           // deserialize error if possible
-          const deserializedError = deserializeError(err.response.data)
           /**
            * ! Uncomment the below to catch custom error
            */
@@ -235,8 +251,6 @@ export default class api<ReqestBodyType, ResponseDataType> {
           // console.log(
           //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
           // )
-          innerError.customError = err.response.data
-          innerError.deserializedError = deserializedError
         }
       } else {
         // some intrinsic error

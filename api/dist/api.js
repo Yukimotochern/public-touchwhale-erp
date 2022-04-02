@@ -113,6 +113,18 @@ class api {
             this.resValidator = ajv_1.default.compile(apiTypes_1.responseBodyWithAnyDataJSONSchema);
         }
     }
+    setDataValidator(dataSchema) {
+        this.dataValidator = ajv_1.default.compile(dataSchema);
+        this.resValidator = ajv_1.default.compile({
+            type: 'object',
+            properties: {
+                message: { type: 'string', nullable: true },
+                data: dataSchema,
+            },
+            additionalProperties: false,
+        });
+        return this;
+    }
     /**
      * * Server Things
      */
@@ -130,14 +142,14 @@ class api {
                 // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
                 let clientObtainedThing = JSON.parse(JSON.stringify(data));
                 // check owner
-                const isObjectOwnByOther = (x) => typeof x === 'object' &&
+                const isObjectOwnByOther = (x) => !!x &&
+                    typeof x === 'object' &&
                     typeof x.owner === 'string' &&
                     x.owner !== String(res.owner);
                 const hasNestedObjectOwnByOthers = (ob) => {
-                    if (typeof ob === 'object' && !Array.isArray(ob)) {
+                    if (!!ob && typeof ob === 'object' && !Array.isArray(ob)) {
                         if (isObjectOwnByOther(ob)) {
                             console.log('The following object is owned by others. Please check your code.');
-                            console.log(ob);
                             return true;
                         }
                         else {
@@ -182,6 +194,9 @@ class api {
         else if (axios_1.default.isAxiosError(err)) {
             // server error
             if (err.response?.data) {
+                const deserializedError = (0, serialize_error_1.deserializeError)(err.response.data);
+                innerError.customError = err.response.data;
+                innerError.deserializedError = deserializedError;
                 if (err.response.status === 401) {
                     /**
                      * Unauthorized, redirect if possible
@@ -193,7 +208,6 @@ class api {
                 }
                 else {
                     // deserialize error if possible
-                    const deserializedError = (0, serialize_error_1.deserializeError)(err.response.data);
                     /**
                      * ! Uncomment the below to catch custom error
                      */
@@ -204,8 +218,6 @@ class api {
                     // console.log(
                     //   `Your may catch it by name of ${deserializedError.name} and message of ${deserializedError.message}.`
                     // )
-                    innerError.customError = err.response.data;
-                    innerError.deserializedError = deserializedError;
                 }
             }
             else {

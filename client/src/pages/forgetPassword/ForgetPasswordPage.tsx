@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { forgetPassword } from '../../api/userActions'
 import { useAbortController } from '../../hooks/useAbortController'
 import useCountDown from 'react-countdown-hook'
+import { useTranslation } from 'react-i18next'
 const initialTime = 120 * 1000
 const interval = 1000
 
 export const ForgetPasswordPage = () => {
+  const { t } = useTranslation()
   // resend count down
   const [timeLeft, { start }] = useCountDown(initialTime, interval)
   const restart = useCallback(() => {
@@ -26,17 +28,15 @@ export const ForgetPasswordPage = () => {
       const email = sendEmailForm.getFieldValue('email')
       await forgetPassword(email, abortController)
         .onCustomCode(409, () => {
-          message.error(
-            'You have been using the Google login. Please use google to login. Please use that method.'
-          )
+          message.error(t('errors.google_use_password'))
           navigate('/signIn')
         })
         .onCustomCode(404, () => {
-          message.error('There is no user with that email.')
+          message.error(t('errors.email_not_exist'))
           sendEmailForm.setFields([
             {
               name: 'email',
-              errors: ['There is no user with that email.'],
+              errors: [t('errors.email_not_exist')],
             },
           ])
           setEmailFormLoading(false)
@@ -53,18 +53,21 @@ export const ForgetPasswordPage = () => {
 
   return (
     <>
-      <Typography.Title level={2}>Reset Your Password:</Typography.Title>
+      <Typography.Title level={2}>
+        {t('forget_password_page.title')}
+      </Typography.Title>
       {emailSent ? (
         <>
           <Row>
             <Typography.Text strong>
-              An email has been sent to {sendEmailForm.getFieldValue('email')}.
-              Please click the link attached to reset your password.
+              {t('forget_password_page.email_sent', {
+                email: sendEmailForm.getFieldValue('email'),
+              })}
             </Typography.Text>
           </Row>
           <Row>
             <Typography.Text>
-              Don't receive the email ?{' '}
+              {t('forget_password_page.not_reciving')}{' '}
               <Button
                 type='link'
                 htmlType='button'
@@ -74,7 +77,7 @@ export const ForgetPasswordPage = () => {
                 onClick={onResent}
                 disabled={timeLeft !== 0}
               >
-                Resend
+                {t('common.resend')}
               </Button>
               {timeLeft !== 0
                 ? ` in ${timeLeft / 1000} second${timeLeft !== 1 ? 's' : ''}.`

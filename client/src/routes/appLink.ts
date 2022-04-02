@@ -1,10 +1,11 @@
 import { RouteObject } from 'react-router-dom'
 import { IconLookup } from '@fortawesome/fontawesome-svg-core'
+import { TFuncKey } from 'react-i18next'
 
 export interface RouteObjectWithoutElementWithIconAndText
   extends Omit<RouteObject, 'element'> {
   icon?: IconLookup // possible other source but need solution
-  text?: string
+  text?: TFuncKey
   children?: RouteObjectWithoutElementWithIconAndText[]
 }
 
@@ -22,94 +23,94 @@ export interface RouteLink extends RouteRequirePath {
 export const mainLayoutRoutes: RouteObjectWithoutElementWithIconAndText[] = [
   {
     path: '/',
-    text: 'Home',
+    text: 'mainLink.home.text',
     icon: { prefix: 'fas', iconName: 'house-chimney' },
   },
   {
     path: '/order',
-    text: 'Order',
+    text: 'mainLink.order.text',
     icon: { prefix: 'fas', iconName: 'money-check-dollar' },
     children: [
       {
         path: 'process',
-        text: 'Order Processing',
+        text: 'mainLink.order.process.text',
       },
       {
         path: 'marketing_event',
-        text: 'Marking Event',
+        text: 'mainLink.order.marketing_event.text',
       },
-      { path: 'ec_order', text: 'EC Order' },
+      { path: 'ec_order', text: 'mainLink.order.ec_order.text' },
       {
         path: 'ec_correspendence',
-        text: 'EC Correspondence',
+        text: 'mainLink.order.ec_correspendence.text',
       },
       {
         path: 'ec_management',
-        text: 'EC Management',
+        text: 'mainLink.order.ec_management.text',
       },
     ],
   },
   {
     path: '/item',
-    text: 'Product',
+    text: 'mainLink.product.text',
     icon: { prefix: 'fas', iconName: 'gift' },
     children: [
-      { path: 'basic', text: 'Basic' },
+      { path: 'basic', text: 'mainLink.product.basic.text' },
       {
         path: 'specification',
-        text: 'Specification',
+        text: 'mainLink.product.specification.text',
       },
-      { path: 'warehouse', text: 'Warehouse' },
+      { path: 'warehouse', text: 'mainLink.product.warehouse.text' },
     ],
   },
   {
     path: '/purchase',
-    text: 'Purchasing',
+    text: 'mainLink.purchase.text',
     icon: { prefix: 'fas', iconName: 'cart-shopping' },
   },
   {
     path: '/datacenter',
     icon: { prefix: 'fas', iconName: 'database' },
-    text: 'Data Center',
+    text: 'mainLink.datacenter.text',
     children: [
-      { path: 'shoppee', text: 'Shopee' },
+      { path: 'shopee', text: 'mainLink.datacenter.shopee.text' },
       {
         path: 'performance',
-        text: 'Performance',
+        text: 'mainLink.datacenter.performance.text',
       },
-      { path: 'scrapper', text: 'Scrapper' },
+      { path: 'scrapper', text: 'mainLink.datacenter.scrapper.text' },
     ],
   },
   {
     path: '/e-invoice',
-    text: 'E-invoice',
+    text: 'mainLink.e-invoice.text',
     icon: { prefix: 'fas', iconName: 'receipt' },
   },
   {
     path: '/team',
     icon: { prefix: 'fas', iconName: 'users' },
-    text: 'My Team',
+    text: 'mainLink.team.text',
     children: [
-      { path: 'member', text: 'Member' },
-      { path: 'role', text: 'Role' },
-      { path: 'activity', text: 'Activity' },
+      { path: 'member', text: 'mainLink.team.member.text' },
+      { path: 'role', text: 'mainLink.team.role.text' },
+      { path: 'activity', text: 'mainLink.team.activity.text' },
     ],
   },
   {
     path: '/account',
-    text: 'Setting',
+    text: 'mainLink.account.text',
     icon: { prefix: 'fas', iconName: 'gear' },
     children: [
       {
         path: 'profile',
-        text: 'Profile & Account',
+        text: 'mainLink.account.profile.text',
       },
-      { path: 'plan', text: 'Plan' },
+      { path: 'plan', text: 'mainLink.account.plan.text' },
     ],
   },
   {
     path: '/import',
-    text: 'Import',
+    text: 'mainLink.import.text',
     icon: { prefix: 'fas', iconName: 'file-import' },
   },
 ]

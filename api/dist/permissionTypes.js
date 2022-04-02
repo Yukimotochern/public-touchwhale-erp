@@ -3,9 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultRoles = exports.permissionGroupSet = exports.permissionGroupNameSet = exports.permissionSet = void 0;
 const userPermissions_1 = require("./user/userPermissions");
 const rolePermissions_1 = require("./role/rolePermissions");
+const twItemPermissions_1 = require("./twItem/twItemPermissions");
 exports.permissionSet = [
     ...userPermissions_1.userPermissionSet,
     ...rolePermissions_1.rolePermissionSet,
+    ...twItemPermissions_1.twItemPermissionSet,
 ];
 // **
 // ** Then, ADD GROUP NAME HERE!!!
@@ -14,8 +16,12 @@ exports.permissionGroupNameSet = ['admin', 'human resource'];
 exports.permissionGroupSet = [
     {
         name: 'admin',
-        permissions: [...userPermissions_1.userPermissionSet, ...rolePermissions_1.rolePermissionSet],
-        description: 'Can perform some basic CRUD actions to the twItem',
+        permissions: [
+            ...userPermissions_1.userPermissionSet,
+            ...rolePermissions_1.rolePermissionSet,
+            ...twItemPermissions_1.twItemPermissionSet,
+        ],
+        description: 'All permissions.',
     },
     {
         name: 'human resource',
