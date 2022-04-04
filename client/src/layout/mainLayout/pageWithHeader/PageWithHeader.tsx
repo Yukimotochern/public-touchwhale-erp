@@ -90,7 +90,7 @@ export const PageWithHeader: React.FC<Props> = ({
         }
       >
         <Menu.Item key='log_out' onClick={onSignOut}>
-          {t('common.logout')}
+          {t('auth.logout_button')}
         </Menu.Item>
       </Menu.ItemGroup>
     </Menu>

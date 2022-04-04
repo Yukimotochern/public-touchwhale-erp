@@ -5,6 +5,7 @@ import { forgetPassword } from '../../api/userActions'
 import { useAbortController } from '../../hooks/useAbortController'
 import useCountDown from 'react-countdown-hook'
 import { useTranslation } from 'react-i18next'
+import i18n from '../../utils/i18n'
 const initialTime = 120 * 1000
 const interval = 1000
 
@@ -54,20 +55,25 @@ export const ForgetPasswordPage = () => {
   return (
     <>
       <Typography.Title level={2}>
-        {t('forget_password_page.title')}
+        {t('auth.reset_password_title')}
       </Typography.Title>
       {emailSent ? (
         <>
           <Row>
             <Typography.Text strong>
-              {t('forget_password_page.email_sent', {
+              {t('auth.email_sent', {
                 email: sendEmailForm.getFieldValue('email'),
               })}
             </Typography.Text>
           </Row>
           <Row>
             <Typography.Text>
-              {t('forget_password_page.not_reciving')}{' '}
+              {t('auth.not_reciving')}{' '}
+              {timeLeft !== 0 && i18n.language.includes('zh')
+                ? t('auth.resend_time_left', {
+                    count: Math.ceil(timeLeft / 1000),
+                  })
+                : null}
               <Button
                 type='link'
                 htmlType='button'
@@ -79,8 +85,10 @@ export const ForgetPasswordPage = () => {
               >
                 {t('common.resend')}
               </Button>
-              {timeLeft !== 0
-                ? ` in ${timeLeft / 1000} second${timeLeft !== 1 ? 's' : ''}.`
+              {timeLeft !== 0 && !i18n.language.includes('zh')
+                ? t('auth.resend_time_left', {
+                    count: Math.ceil(timeLeft / 1000),
+                  })
                 : null}
             </Typography.Text>
           </Row>
@@ -96,21 +104,20 @@ export const ForgetPasswordPage = () => {
             name='email'
             label={
               <Typography.Title style={{ margin: 0 }} level={5}>
-                Email Address
+                {t('auth.email_address')}
               </Typography.Title>
             }
             rules={[
-              { required: true, message: 'Email is required' },
+              { required: true, message: t('errors.email_required') },
               {
                 type: 'email',
-                message:
-                  'Not a valid email. If your logged in with username, please contact your business owner to reset password for you.',
+                message: t('errors.invalid_email'),
               },
             ]}
-            tooltip='Please enter the email address that you registered with.'
+            tooltip={t('auth.enter_email')}
           >
             <Input
-              placeholder='Please enter an email address.'
+              placeholder={t('auth.enter_email_short')}
               disabled={emailFormLoading}
             />
           </Form.Item>
@@ -121,12 +128,12 @@ export const ForgetPasswordPage = () => {
               block
               loading={emailFormLoading}
             >
-              Next
+              {t('common.next')}
             </Button>
           </Form.Item>
           <Form.Item>
             <Typography.Text>
-              Don't have an account ?{' '}
+              {t('auth.no_account')}{' '}
               <Button
                 type='link'
                 htmlType='button'
@@ -136,7 +143,7 @@ export const ForgetPasswordPage = () => {
                 disabled={emailFormLoading}
                 onClick={() => navigate('/signUp')}
               >
-                Sign Up
+                {t('auth.sign_up')}
               </Button>
             </Typography.Text>
           </Form.Item>

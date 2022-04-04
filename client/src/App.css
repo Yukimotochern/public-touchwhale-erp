@@ -34,3 +34,8 @@ body {
 ::-webkit-scrollbar-corner {
   background: inherit;
 }
+
+.ant-divider-horizontal.ant-divider-with-text:after,
+.ant-divider-horizontal.ant-divider-with-text:before {
+  top: unset;
+}

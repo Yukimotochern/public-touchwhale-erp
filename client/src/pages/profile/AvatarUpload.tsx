@@ -12,8 +12,10 @@ import { useDispatch } from 'react-redux'
 import { authSlice } from '../../redux/auth/authSlice'
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface'
 import { useIsMounted } from '../../hooks/useIsMounted'
+import { useTranslation } from 'react-i18next'
 
 export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const [avatarLoading, setAvatarLoading] = useState(false)
   const isMounted = useIsMounted()
@@ -73,7 +75,7 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
       <ImgCrop
         minZoom={0.1}
         maxZoom={10}
-        modalTitle='Edit Your Avatar'
+        modalTitle={t('auth.edit_avatar_title')}
         shape='round'
         rotate={true}
         cropperProps={{
@@ -91,7 +93,7 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
             icon={<FontAwesomeIcon icon={faPen} />}
             disabled={avatarLoading}
           >
-            Upload New Avatar
+            {t('auth.upload_new_avatar')}
           </Menu.Item>
         </Upload>
       </ImgCrop>
@@ -101,7 +103,7 @@ export const AvatarUpload = ({ avatar }: { avatar: string | undefined }) => {
         icon={<FontAwesomeIcon icon={faTrashCan} />}
         disabled={avatarLoading}
       >
-        Delete Current Avatar
+        {t('auth.delete_current_avatar')}
       </Menu.Item>
     </Menu>
   )

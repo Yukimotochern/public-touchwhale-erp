@@ -5,11 +5,12 @@ import { updateUser } from '../../api/userActions'
 import { authSlice } from '../../redux/auth/authSlice'
 import { useDispatch } from 'react-redux'
 import { useAbortController } from '../../hooks/useAbortController'
+import { useTranslation, TFuncKey } from 'react-i18next'
 interface ProfileBlockProps {
   fieldName: string
   type: 'plain' | 'edit'
   initialValue: any
-  title: string
+  title: TFuncKey
 }
 
 export const ProfileBlock: React.FC<ProfileBlockProps> = ({
@@ -19,6 +20,7 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
   children,
   title,
 }) => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const [value, setValue] = useState(initialValue)
   const [isEditting, setIsEditting] = useState(false)
@@ -53,7 +55,7 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
       className={styles['tw-profile-block']}
     >
       {/* Title */}
-      <Typography.Title level={5}>{title}</Typography.Title>
+      <Typography.Title level={5}>{t(title)}</Typography.Title>
       {type === 'plain' ? children : null}
       {type === 'edit' ? (
         <Form
@@ -83,14 +85,14 @@ export const ProfileBlock: React.FC<ProfileBlockProps> = ({
               }}
               loading={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type='primary'
               style={{ marginLeft: '10px' }}
               htmlType='submit'
             >
-              Save
+              {t('common.save')}
             </Button>
           </Form.Item>
         </Form>

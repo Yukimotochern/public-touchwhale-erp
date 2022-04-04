@@ -5,11 +5,13 @@ import { UseStateForSignUpPageProps } from './SignUpPage'
 import { signUp } from '../../api/userActions'
 import { useNavigate } from 'react-router-dom'
 import { useAbortController } from '../../hooks/useAbortController'
+import { useTranslation } from 'react-i18next'
 
 export const EmailEnterForm = ({
   signUpProcessState,
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const abortController = useAbortController()
@@ -27,7 +29,7 @@ export const EmailEnterForm = ({
           form.setFields([
             {
               name: 'email',
-              errors: ['This email has been registed. Please try another one.'],
+              errors: [t('errors.email_taken')],
             },
           ])
         })
@@ -57,9 +59,9 @@ export const EmailEnterForm = ({
           window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/googleOAuth`
         }}
       >
-        Sign up with Google
+        {t('auth.google_signup_button')}
       </Button>
-      <Divider plain>or</Divider>
+      <Divider plain>{t('common.or')}</Divider>
       <Form
         layout='vertical'
         form={form}
@@ -70,17 +72,17 @@ export const EmailEnterForm = ({
           name='email'
           label={
             <Typography.Title style={{ margin: 0 }} level={5}>
-              Email Address
+              {t('auth.email_address')}
             </Typography.Title>
           }
           rules={[
-            { required: true, message: 'Email is required' },
-            { type: 'email', message: 'Not a valid email' },
+            { required: true, message: t('auth.enter_email') },
+            { type: 'email', message: t('auth.sign_up_invalid_email') },
           ]}
-          tooltip='This will be used as the username when you log in.'
+          tooltip={t('auth.email_tooltip')}
         >
           <Input
-            placeholder='Please enter an email address.'
+            placeholder={t('auth.enter_email_sign_up')}
             disabled={signUpProcessState.loading}
           />
         </Form.Item>
@@ -91,7 +93,7 @@ export const EmailEnterForm = ({
             block
             loading={signUpProcessState.loading}
           >
-            Next
+            {t('common.next')}
           </Button>
         </Form.Item>
         <Form.Item>
@@ -100,7 +102,7 @@ export const EmailEnterForm = ({
               marginLeft: '10px',
             }}
           >
-            Already have an account ?{' '}
+            {t('auth.have_account')}{' '}
             <Button
               type='link'
               htmlType='button'
@@ -110,7 +112,7 @@ export const EmailEnterForm = ({
               disabled={signUpProcessState.loading}
               onClick={() => navigate('/signIn')}
             >
-              Log In
+              {t('auth.login_button')}
             </Button>
           </Typography.Text>
         </Form.Item>

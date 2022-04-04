@@ -340,7 +340,7 @@ const resetPassword = async (req, res, next) => {
             forgetPasswordExpire: { $gt: Date.now() },
         });
         if (!user) {
-            return next(new CustomError_1.default('Invalid token.', 400));
+            return next(new CustomError_1.default('Invalid token.', 401));
         }
         if (req.body.password) {
             user.password = req.body.password;

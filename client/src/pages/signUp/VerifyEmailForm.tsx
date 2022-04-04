@@ -12,6 +12,7 @@ import jwt_decode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
 import { isErrorButApiError, notApiError } from 'api/dist/utils/errorTypeGuards'
 import { useAbortController } from '../../hooks/useAbortController'
+import { useTranslation } from 'react-i18next'
 
 const initialTime = 120 * 1000
 const interval = 1000
@@ -20,6 +21,7 @@ export const VerifyEmailForm = ({
   signUpProcessState: { email },
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const abortController = useAbortController()
 
@@ -59,9 +61,9 @@ export const VerifyEmailForm = ({
     }))
     const onInvalidCredential = () => {
       form.setFields([
-        { name: 'verify', errors: ['Incorrect verification code'] },
+        { name: 'verify', errors: [t('errors.invalid_verification')] },
       ])
-      message.error('Incorrect credentials.')
+      message.error(t('errors.invalid_verification'))
       setSignUpProcessState((state) => ({
         ...state,
         loading: false,
@@ -79,7 +81,7 @@ export const VerifyEmailForm = ({
       )
         .onCustomCode(401, onInvalidCredential)
         .onCustomCode(409, () => {
-          message.error('Email has been registered. Please login.')
+          message.error(t('errors.email_taken'))
           navigate('/signIn')
         })
         .onErrorsButCancel(() => {
@@ -93,11 +95,11 @@ export const VerifyEmailForm = ({
       try {
         token = jwt_decode(tokenStr)
         if (!token.id) {
-          throw new Error('Invalid credentials.')
+          throw new Error(t('errors.invalid_verification'))
         }
       } catch (err) {
         console.error(err)
-        throw new Error('Invalid credentials.')
+        throw new Error(t('errors.invalid_verification'))
       }
       setSignUpProcessState((state) => ({
         ...state,
@@ -138,7 +140,7 @@ export const VerifyEmailForm = ({
         }
         size='large'
       >
-        Back
+        {t('common.back')}
       </Button>
       <Form
         layout='vertical'
@@ -152,23 +154,30 @@ export const VerifyEmailForm = ({
         <Form.Item
           name='verify'
           label={
-            <Typography.Title level={5}>Verification Code</Typography.Title>
+            <Typography.Title level={5}>
+              {t('auth.verification_code')}
+            </Typography.Title>
           }
           rules={[
-            { required: true, message: 'Please enter the verification code.' },
-            { min: 6, message: 'Please enter the verification code.' },
+            { required: true, message: t('auth.require_verification_code') },
+            { min: 6, message: t('errors.verification_code_length') },
           ]}
           // validateTrigger='onSubmit'
         >
           <VerificationInput />
         </Form.Item>
         <Form.Item>
-          <Typography.Text>The code has been sent to:</Typography.Text>
+          <Typography.Text>{t('auth.verification_code_sent')}</Typography.Text>
           <div style={{ marginLeft: 12 }}>
             <strong>{email}.</strong>
           </div>
           <Typography.Text>
-            Didn't receive the code?
+            {t('auth.not_receive_code')}{' '}
+            {timeLeft !== 0 && i18n.language.includes('zh')
+              ? t('auth.resend_time_left', {
+                  count: Math.ceil(timeLeft / 1000),
+                })
+              : null}
             <Button
               type='link'
               htmlType='button'
@@ -179,16 +188,18 @@ export const VerifyEmailForm = ({
               disabled={timeLeft !== 0}
               onClick={onResend}
             >
-              Resend
+              {t('common.resend')}
             </Button>
-            {timeLeft !== 0
-              ? ` in ${timeLeft / 1000} second${timeLeft !== 1 ? 's' : ''}.`
+            {timeLeft !== 0 && !i18n.language.includes('zh')
+              ? t('auth.resend_time_left', {
+                  count: Math.ceil(timeLeft / 1000),
+                })
               : null}
           </Typography.Text>
         </Form.Item>
         <Form.Item>
           <Button type='primary' htmlType='submit' block>
-            Next
+            {t('common.next')}
           </Button>
         </Form.Item>
       </Form>

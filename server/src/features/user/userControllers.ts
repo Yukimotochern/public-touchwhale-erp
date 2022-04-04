@@ -373,7 +373,7 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
     })
 
     if (!user) {
-      return next(new CustomError('Invalid token.', 400))
+      return next(new CustomError('Invalid token.', 401))
     }
     if (req.body.password) {
       user.password = req.body.password

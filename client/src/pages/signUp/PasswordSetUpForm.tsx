@@ -5,11 +5,13 @@ import styles from './PasswordSetUpForm.module.css'
 import { changePassword } from '../../api/userActions'
 import { useDispatch } from 'react-redux'
 import { getUserThunkAction } from '../../redux/auth/authSlice'
+import { useTranslation } from 'react-i18next'
 
 export const PasswordSetUpForm = ({
   signUpProcessState: { token, password, loading },
   setSignUpProcessState,
 }: UseStateForSignUpPageProps) => {
+  const { t } = useTranslation()
   const [form] = Form.useForm()
   const dispatch = useDispatch()
   const onFinish = async () => {
@@ -39,49 +41,53 @@ export const PasswordSetUpForm = ({
       >
         <Form.Item
           name='password'
-          label='Password'
+          label={t('profile.password')}
           rules={[
             {
               required: true,
-              message: 'Please input your password!',
+              message: t('auth.required_password'),
             },
             {
               min: 8,
-              message: 'Password should be between 8 and 60 characters.',
+              message: t('auth.password_length'),
             },
             {
               max: 60,
-              message: 'Password should be between 8 and 60 characters.',
+              message: t('auth.password_length'),
             },
           ]}
           hasFeedback
         >
-          <Input.Password disabled={loading} />
+          <Input.Password
+            disabled={loading}
+            placeholder={t('auth.enter_password')}
+          />
         </Form.Item>
 
         <Form.Item
           name='confirm'
-          label='Confirm Password'
+          label={t('auth.confirm_password')}
           dependencies={['password']}
           hasFeedback
           rules={[
             {
               required: true,
-              message: 'Please confirm your password!',
+              message: t('auth.require_confirm_password'),
             },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue('password') === value) {
                   return Promise.resolve()
                 }
-                return Promise.reject(
-                  new Error('The two passwords that you entered do not match!')
-                )
+                return Promise.reject(new Error(t('auth.password_mismatch')))
               },
             }),
           ]}
         >
-          <Input.Password disabled={loading} />
+          <Input.Password
+            disabled={loading}
+            placeholder={t('auth.enter_confirm_password')}
+          />
         </Form.Item>
         <Form.Item>
           <Button
@@ -91,7 +97,7 @@ export const PasswordSetUpForm = ({
             block
             loading={loading}
           >
-            Join NOW!
+            {t('auth.join_now')}
           </Button>
         </Form.Item>
       </Form>

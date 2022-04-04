@@ -6,8 +6,10 @@ import { signIn } from '../../api/userActions'
 import { useDispatch } from 'react-redux'
 import { getUserThunkAction } from '../../redux/auth/authSlice'
 import { useAbortController } from '../../hooks/useAbortController'
+import { useTranslation } from 'react-i18next'
 
 export const SignInPage = () => {
+  const { t } = useTranslation()
   const [form] = Form.useForm()
   const { hash: message } = useLocation()
   const abortController = useAbortController()
@@ -41,8 +43,8 @@ export const SignInPage = () => {
       )
         .onCustomCode(401, () => {
           form.setFields([
-            { name: 'password', errors: ['Incorrect email or password.'] },
-            { name: 'email', errors: ['Incorrect email or password.'] },
+            { name: 'password', errors: [t('errors.invalid_credentials')] },
+            { name: 'email', errors: [t('errors.invalid_credentials')] },
           ])
         })
         .onErrorsButCancel(() => {
@@ -56,7 +58,7 @@ export const SignInPage = () => {
   }
   return (
     <>
-      <Typography.Title level={2}>Log in your account:</Typography.Title>
+      <Typography.Title level={2}>{t('auth.login_title')}</Typography.Title>
       <Button
         className={styles['google-button']}
         type='default'
@@ -67,9 +69,9 @@ export const SignInPage = () => {
           window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/googleOAuth`
         }}
       >
-        Log in with Google
+        {t('auth.google_login_button')}
       </Button>
-      <Divider plain>or</Divider>
+      <Divider plain>{t('common.or')}</Divider>
       <Form
         layout='vertical'
         form={form}
@@ -80,15 +82,14 @@ export const SignInPage = () => {
           name='email'
           label={
             <Typography.Title style={{ margin: 0 }} level={5}>
-              Email Address or Username
+              {t('auth.email_or_username')}
             </Typography.Title>
           }
-          rules={[{ required: true, message: 'This field is required' }]}
-          tooltip='Please enter the registered email address or username'
+          rules={[{ required: true, message: t('common.required_field') }]}
           // hasFeedback
         >
           <Input
-            placeholder='Enter email address or username.'
+            placeholder={t('auth.enter_email_or_username')}
             disabled={loading}
           />
         </Form.Item>
@@ -96,29 +97,29 @@ export const SignInPage = () => {
           name='password'
           label={
             <Typography.Title style={{ margin: 0 }} level={5}>
-              Password
+              {t('profile.password')}
             </Typography.Title>
           }
           rules={[
             {
               required: true,
-              message: 'Please input your password!',
+              message: t('auth.required_password'),
             },
           ]}
         >
           <Input.Password
             disabled={loading}
-            placeholder='Enter your password'
+            placeholder={t('auth.enter_password')}
           />
         </Form.Item>
         <Form.Item>
           <Button type='primary' htmlType='submit' block loading={loading}>
-            Log In
+            {t('auth.login_button')}
           </Button>
         </Form.Item>
         <Form.Item>
           <Typography.Text>
-            Don't have an account ?{' '}
+            {t('auth.no_account')}{' '}
             <Button
               type='link'
               htmlType='button'
@@ -128,9 +129,10 @@ export const SignInPage = () => {
               disabled={loading}
               onClick={() => navigate('/signUp')}
             >
-              Sign Up
+              {t('auth.sign_up')}
             </Button>
-            . Forget your password ?{' '}
+            {t('common.sentense_connect')}
+            {t('auth.forget_your_password')}{' '}
             <Button
               type='link'
               htmlType='button'
@@ -140,7 +142,7 @@ export const SignInPage = () => {
               disabled={loading}
               onClick={() => navigate('/forgetPassword')}
             >
-              Reset Password
+              {t('auth.reset_password_button')}
             </Button>
           </Typography.Text>
         </Form.Item>

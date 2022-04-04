@@ -4,6 +4,7 @@ import { Typography } from 'antd'
 import { EmailEnterForm } from './EmailEnterForm'
 import { VerifyEmailForm } from './VerifyEmailForm'
 import { PasswordSetUpForm } from './PasswordSetUpForm'
+import { useTranslation } from 'react-i18next'
 
 export interface SignUpProcess {
   stage: 'email' | 'verify' | 'password'
@@ -30,6 +31,7 @@ const initialSignUpState: SignUpProcess = {
 }
 
 export const SignUpPage = () => {
+  const { t } = useTranslation()
   const [signUpProcessState, setSignUpProcessState] =
     useState<SignUpProcess>(initialSignUpState)
 
@@ -62,7 +64,9 @@ export const SignUpPage = () => {
   }
   return (
     <>
-      <Typography.Title level={2}>Create your account:</Typography.Title>
+      <Typography.Title level={2}>
+        {t('auth.create_account_title')}
+      </Typography.Title>
       {signUpFormView}
     </>
   )

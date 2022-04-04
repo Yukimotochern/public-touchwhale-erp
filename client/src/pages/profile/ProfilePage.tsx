@@ -3,11 +3,12 @@ import { Row, Col, Empty, Typography, Space } from 'antd'
 import { ProfileBlock } from './ProfileBlock'
 import { useAppSelector } from '../../redux/hooks'
 
-import moment from 'moment'
 import { ChangePassword } from './ChangePassword'
 import { AvatarUpload } from './AvatarUpload'
+import { useTranslation } from 'react-i18next'
 
 export const ProfilePage = () => {
+  const { t } = useTranslation()
   const user = useAppSelector((s) => s.auth.user)
   if (user) {
     const { username, avatar, email, company, createdAt, provider } = user
@@ -28,7 +29,7 @@ export const ProfilePage = () => {
                 }}
               >
                 <Typography.Title level={4} style={{ margin: 0 }}>
-                  {username || 'User'}
+                  {username || t('profile.user')}
                 </Typography.Title>{' '}
                 <Typography.Text type='secondary' style={{ fontSize: '16px' }}>
                   {email}
@@ -37,7 +38,7 @@ export const ProfilePage = () => {
             </Row>
             <Row>
               <Typography.Text style={{ marginLeft: 5 }}>
-                Member since {moment(createdAt, 'YYYYMMDD').format('ll')}
+                {t('profile.member_since', { date: createdAt })}
               </Typography.Text>
             </Row>
           </Col>
@@ -46,7 +47,7 @@ export const ProfilePage = () => {
           <ProfileBlock
             initialValue={-1}
             fieldName='none'
-            title='Sign In Method'
+            title='profile.sign_in_method'
             type='plain'
           >
             {provider === 'Google' ? (
@@ -68,9 +69,6 @@ export const ProfilePage = () => {
                   style={{
                     height: '20px',
                     position: 'relative',
-                    // top: '50%',
-                    // left: '5px',
-                    // transform: 'translate(-50%, -50%)',
                   }}
                 />
                 <Typography.Text strong>Touch Whale</Typography.Text>
@@ -81,7 +79,7 @@ export const ProfilePage = () => {
           <ProfileBlock
             initialValue={-1}
             fieldName='none'
-            title='Account Type'
+            title='profile.account_type'
             type='plain'
           >
             TODO: Owner or Employee
@@ -89,38 +87,30 @@ export const ProfilePage = () => {
           <ProfileBlock
             initialValue={username}
             fieldName='username'
-            title='Username'
+            title='profile.username'
             type='edit'
           />
           <ProfileBlock
             initialValue={company}
             fieldName='company'
-            title='Company Name'
+            title='profile.company_name'
             type='edit'
           />
           <ProfileBlock
             initialValue={-1}
             fieldName='password'
-            title='Password'
+            title='profile.password'
             type='plain'
           >
             <ChangePassword edittable={provider === 'TouchWhale'} />
           </ProfileBlock>
-          {/* <ProfileBlock
-            initialValue={-1}
-            fieldName='avatar'
-            title='Avatar'
-            type='plain'
-          >
-            <AvatarUpload />
-          </ProfileBlock> */}
         </Row>
       </>
     )
   } else {
     return (
       <Empty
-        description='It seems like you are not logging in.'
+        description={t('errors.not_login')}
         style={{ width: '100%', height: '100%' }}
       />
     )

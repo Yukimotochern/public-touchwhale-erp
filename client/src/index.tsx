@@ -13,7 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router history={history}>
-        <Suspense fallback={AppLoading}>
+        <Suspense fallback={<AppLoading />}>
           <App />
         </Suspense>
       </Router>

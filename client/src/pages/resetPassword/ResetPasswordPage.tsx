@@ -4,8 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { resetPassword } from '../../api/userActions'
 import { useAbortController } from '../../hooks/useAbortController'
 import { Loading } from '../../components/loading/Loading'
+import { useTranslation } from 'react-i18next'
 
 export const ResetPasswordPage = () => {
+  const { t } = useTranslation()
   const abortController = useAbortController()
 
   // password thing
@@ -20,8 +22,7 @@ export const ResetPasswordPage = () => {
     async function getSecondToken() {
       const notGetToken = () => {
         // didn't got token from server, try again latter
-        setSendingFirstToken(false)
-        message.error('Something went wrong. Try again latter.')
+        message.error(t('errors.unknown'))
         navigate('/forgetPassword')
       }
       try {
@@ -32,7 +33,12 @@ export const ResetPasswordPage = () => {
             token: firstToken,
           },
           abortController
-        ).onErrorsButCancel(notGetToken)
+        )
+          .onCustomCode(401, () => {
+            message.error(t('errors.invalid_reset_password_link'))
+            navigate('/forgetPassword')
+          })
+          .onErrorsButCancel(notGetToken)
         // stop loading
         if (data.token) {
           setSecondToken(data.token)
@@ -45,10 +51,10 @@ export const ResetPasswordPage = () => {
     if (firstToken) {
       getSecondToken()
     } else {
-      message.error('Invalid reset password link.')
+      message.error(t('errors.invalid_reset_password_link'))
       navigate('/forgetPassword')
     }
-  }, [firstToken, navigate, abortController])
+  }, [firstToken, navigate, abortController, t])
 
   const onSetPassword = async () => {
     const password = form.getFieldValue('password')
@@ -60,23 +66,26 @@ export const ResetPasswordPage = () => {
           password,
         },
         abortController
-      ).onErrorsButCancel(() => {
-        message.error(
-          'Something went wrong while setting new password. Please try again latter.'
-        )
-        setPasswordFormLoading(false)
-      })
-      setPasswordFormLoading(false)
-      message.success(
-        'The password has been reset succesfully. Please use the new password to login.'
       )
+        .onCustomCode(401, () => {
+          message.error(t('errors.invalid_reset_password_link'))
+          navigate('/forgetPassword')
+        })
+        .onErrorsButCancel(() => {
+          message.error(t('errors.unknown_error_when_reset_password'))
+          navigate('/forgetPassword')
+        })
+      setPasswordFormLoading(false)
+      message.success(t('auth.reset_password_success'))
       navigate('/signIn')
     } catch (err) {}
   }
 
   return (
     <>
-      <Typography.Title level={2}>Reset Your Password:</Typography.Title>
+      <Typography.Title level={2}>
+        {t('auth.reset_password_title')}
+      </Typography.Title>
       {sendingFirstToken ? (
         <Loading />
       ) : (
@@ -90,24 +99,24 @@ export const ResetPasswordPage = () => {
             name='password'
             label={
               <Typography.Title style={{ margin: 0 }} level={5}>
-                New Password
+                {t('auth.new_password')}
               </Typography.Title>
             }
             rules={[
-              { required: true, message: 'Please input your new password!' },
+              { required: true, message: t('auth.require_new_password') },
               {
                 min: 8,
-                message: 'Password should be between 8 and 60 characters.',
+                message: t('auth.password_length'),
               },
               {
                 max: 60,
-                message: 'Password should be between 8 and 60 characters.',
+                message: t('auth.password_length'),
               },
             ]}
             hasFeedback
           >
             <Input.Password
-              placeholder='Please enter your new password.'
+              placeholder={t('auth.enter_new_password')}
               disabled={passwordFormLoading}
             />
           </Form.Item>
@@ -115,7 +124,7 @@ export const ResetPasswordPage = () => {
             name='confirm'
             label={
               <Typography.Title style={{ margin: 0 }} level={5}>
-                Confirm Password
+                {t('auth.confirm_password')}
               </Typography.Title>
             }
             dependencies={['password']}
@@ -123,23 +132,22 @@ export const ResetPasswordPage = () => {
             rules={[
               {
                 required: true,
-                message: 'Please confirm your password!',
+                message: t('auth.require_confirm_password'),
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue('password') === value) {
                     return Promise.resolve()
                   }
-                  return Promise.reject(
-                    new Error(
-                      'The two passwords that you entered do not match!'
-                    )
-                  )
+                  return Promise.reject(new Error(t('auth.password_mismatch')))
                 },
               }),
             ]}
           >
-            <Input.Password disabled={passwordFormLoading} />
+            <Input.Password
+              disabled={passwordFormLoading}
+              placeholder={t('auth.enter_confirm_new_password')}
+            />
           </Form.Item>
 
           <Form.Item>
@@ -149,7 +157,7 @@ export const ResetPasswordPage = () => {
               block
               loading={passwordFormLoading}
             >
-              Reset Password
+              {t('auth.reset_password_button')}
             </Button>
           </Form.Item>
         </Form>
