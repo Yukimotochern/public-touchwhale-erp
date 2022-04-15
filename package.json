@@ -16,7 +16,8 @@
   "author": "Yukimoto",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.0.0",
+    "typescript-plugin-css-modules": "^3.4.0"
   },
   "private": true
 }

@@ -26,7 +26,6 @@ i18n
   })
 
 i18n.services.formatter?.add('DATE_YYYYMMDD_ll', (value, lng, options) => {
-  console.log(lng)
   return moment(value, 'YYYYMMDD')
     .locale(lng || 'en')
     .format('ll')

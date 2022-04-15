@@ -44,12 +44,12 @@ router
 router
     .route('/workers')
     .all(authMiddleware_1.default)
-    .post((0, permissionMiddleware_1.permission)(['user.create_worker']), userControllers_1.createWorker)
-    .get((0, permissionMiddleware_1.permission)(['user.get_workers']), userControllers_1.getWorkers);
+    .post((0, permissionMiddleware_1.permission)(['user.create_worker']), (0, errorCatcher_1.default)(userControllers_1.createWorker))
+    .get((0, permissionMiddleware_1.permission)(['user.get_workers']), (0, errorCatcher_1.default)(userControllers_1.getWorkers));
 router
     .route('/workers/:id')
     .all(authMiddleware_1.default)
-    .get((0, permissionMiddleware_1.permission)(['user.get_worker']), userControllers_1.getWorker)
-    .put((0, permissionMiddleware_1.permission)(['user.update_worker']), userControllers_1.updateWorker)
-    .delete((0, permissionMiddleware_1.permission)(['user.delete_worker']), userControllers_1.deleteWorker);
+    .get((0, permissionMiddleware_1.permission)(['user.get_worker']), (0, errorCatcher_1.default)(userControllers_1.getWorker))
+    .put((0, permissionMiddleware_1.permission)(['user.update_worker']), (0, errorCatcher_1.default)(userControllers_1.updateWorker))
+    .delete((0, permissionMiddleware_1.permission)(['user.delete_worker']), (0, errorCatcher_1.default)(userControllers_1.deleteWorker));
 exports.default = router;

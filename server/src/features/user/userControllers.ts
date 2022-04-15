@@ -223,6 +223,7 @@ export const getUser: RequestHandler = async (req, res, next) => {
 export const updateUser: RequestHandler = async (req, res, next) => {
   if (Update.API.bodyValidator(req.body)) {
     if (req.userJWT) {
+      console.log(req.user)
       const user = await UserModel.findByIdAndUpdate(req.userJWT.id, req.body, {
         new: true,
         runValidators: true,

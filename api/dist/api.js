@@ -28,7 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.api = void 0;
 const apiTypes_1 = require("./apiTypes");
-const ajv_1 = __importDefault(require("./utils/ajv"));
+const ajv_1 = __importStar(require("./utils/ajv"));
 const axios_1 = __importDefault(require("axios"));
 const ApiPromise_1 = require("./utils/ApiPromise");
 const CustomError_1 = __importStar(require("./utils/CustomError"));
@@ -181,6 +181,92 @@ class api {
             }
         }
         return res.status(statusCode).json(resBody);
+    }
+    createPrivateController(typedController) {
+        return [
+            // authMiddleware,
+            (req, res, next) => {
+                /**
+                 * * 1. make sure req.user is there
+                 * * 2. make sure the type of req.body is correct
+                 * * 3. attach modified res.json, res.send, res.sendData, next to:
+                 *     * make sure the response object is validate
+                 *     * make sure object owned by others is not sent accidentally
+                 * * 4. call the typedController
+                 */
+                // * enhanced next
+                const nextCustom = (...err) => {
+                    next(new CustomError_1.default(...err));
+                };
+                // * make sure req.user is there
+                const hasUser = (req) => !!req.user;
+                if (!hasUser(req)) {
+                    return nextCustom('Token is invalid.', 401);
+                }
+                // * make sure the type of req.body is correct
+                const hasBodyOfCorrectType = (req) => this.bodyValidator(req.body);
+                if (!hasBodyOfCorrectType(req)) {
+                    return next((0, ajv_1.avjErrorWrapper)(this.bodyValidator.errors));
+                }
+                // * create modified res.json, res.send
+                const originalSend = res.send;
+                const originalJson = res.json;
+                const checkOwner = (data) => {
+                    // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+                    let clientObtainedThing = JSON.parse(JSON.stringify(data));
+                    const isObjectOwnByOther = (x) => !!x &&
+                        typeof x === 'object' &&
+                        typeof x.owner === 'string' &&
+                        x.owner !== String(req.user.owner);
+                    const hasNestedObjectOwnByOthers = (ob) => {
+                        if (!!ob && typeof ob === 'object' && !Array.isArray(ob)) {
+                            if (isObjectOwnByOther(ob)) {
+                                console.log('The following object is owned by others. Please check your code.');
+                                return true;
+                            }
+                            else {
+                                return Object.entries(ob).some(([name, value]) => hasNestedObjectOwnByOthers(value));
+                            }
+                        }
+                        else if (Array.isArray(ob)) {
+                            return ob.some((inner) => hasNestedObjectOwnByOthers(inner));
+                        }
+                        else {
+                            return false;
+                        }
+                    };
+                    // * next line will be imaginably extremly slow ...
+                    if (hasNestedObjectOwnByOthers(clientObtainedThing)) {
+                        return next(new CustomError_1.default('Controller has returned something that is not owned by this user or the owner of this user.'));
+                    }
+                };
+                const api = this;
+                // function  (resBody?: ResponseBody<ResponseDataType>) {
+                //   if (api.resWithAnyDataValidator(resBody)) {
+                //   } else {
+                //   }
+                //   return this
+                // }
+                // const enhancedSend: Send<ResponseBody<ResponseDataType>, Response<ResponseBody<ResponseDataType>, Record<string, any>>> = function (resBody?: ResponseBody<ResponseDataType>) {
+                //   return this
+                // }
+                // const enhancedSendData: Send<ResponseDataType, this> = (
+                //   data?: ResponseDataType,
+                //   extra: ResponseBodyWithOutData = {}
+                // ) => {
+                //   return this
+                // }
+                // const enhancedJson: Send<ResponseBody<ResponseDataType>, this> = (
+                //   response?: ResponseBody<ResponseDataType>
+                // ) => {
+                //   return this
+                // }
+                // // * attach modified res.json, res.send
+                // res.send = enhancedSend
+                // * send the response with typedController
+                typedController(req, res, next);
+            },
+        ];
     }
     errorProcessor(innerError) {
         let err = innerError.thrown;

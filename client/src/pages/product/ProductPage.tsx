@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography } from 'antd'
+import { AgGridReact } from 'ag-grid-react'
 
 interface Item {
   key: string
@@ -164,24 +165,41 @@ export const ProductPageTable = () => {
       }),
     }
   })
+  const [rowData] = useState([
+    { make: 'Toyota', model: 'Celica', price: 35000 },
+    { make: 'Ford', model: 'Mondeo', price: 32000 },
+    { make: 'Porsche', model: 'Boxter', price: 72000 },
+  ])
+
+  const [columnDefs] = useState([
+    { field: 'make' },
+    { field: 'model' },
+    { field: 'price' },
+  ])
 
   return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        bordered
-        dataSource={data}
-        columns={mergedColumns}
-        rowClassName='editable-row'
-        pagination={{
-          onChange: cancel,
-        }}
-      />
-    </Form>
+    <>
+      <div className='ag-theme-alpine' style={{ height: 150, width: 400 }}>
+        <AgGridReact rowData={rowData} columnDefs={columnDefs} />
+      </div>
+
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={data}
+          columns={mergedColumns}
+          rowClassName='editable-row'
+          pagination={{
+            onChange: cancel,
+          }}
+        />
+      </Form>
+    </>
   )
 }
 

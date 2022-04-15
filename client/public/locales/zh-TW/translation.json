@@ -124,7 +124,7 @@
     "password_mismatch": "確認的密碼跟原本輸入的密碼不一致！",
     "change_password": "更改密碼",
     "reset_password_success": "密碼已經重設成功，請用新的密碼登入。",
-    "reset_password_button": "重設密碼",
+    "reset_password_button": "重設",
     "login_title": "登入帳戶：",
     "google_login_button": "使用 Google 登入",
     "google_signup_button": "使用 Google 登入",

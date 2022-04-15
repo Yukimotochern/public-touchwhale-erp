@@ -17,6 +17,8 @@
     "@types/react": "^16.14.23",
     "@types/react-dom": "^16.9.14",
     "@types/react-redux": "^7.1.22",
+    "ag-grid-community": "^27.1.0",
+    "ag-grid-react": "^27.1.0",
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
     "antd": "^4.19.2",
@@ -43,6 +45,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-first-history": "^5.0.8",
     "serialize-error": "8.1.0",
+    "source-map-explorer": "^2.5.2",
     "typescript": "^4.6.3",
     "typescript-plugin-css-modules": "^3.4.0"
   },
@@ -50,7 +53,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": "react-app"

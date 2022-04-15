@@ -2,10 +2,14 @@ import {
   ResponseBody,
   responseBodyWithAnyDataJSONSchema,
   ResponseBodyWithOutData,
+  TypedPrivateRequestHandler,
+  TypedPrivateRequest,
+  NextWithCustomError,
 } from './apiTypes'
+import { Send } from 'express-serve-static-core'
 import { ValidateFunction, JSONSchemaType, DefinedError, AnySchema } from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/types/index'
-import ajv from './utils/ajv'
+import ajv, { avjErrorWrapper } from './utils/ajv'
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios'
 import { ApiPromise } from './utils/ApiPromise'
 import CustomError, {
@@ -13,7 +17,7 @@ import CustomError, {
   ApiErrorDealtInternallyAndThrown,
 } from './utils/CustomError'
 import { deserializeError } from 'serialize-error'
-import { Response } from 'express'
+import { Request, NextFunction, RequestHandler, Response } from 'express'
 
 let config: AxiosRequestConfig = {
   timeout: process.env.REACT_APP_API_TIMEOUT
@@ -23,13 +27,13 @@ let config: AxiosRequestConfig = {
   headers: { 'content-type': 'application/json' },
 }
 
-interface SchemaOption<ReqestBodyType, ResponseDataType> {
-  bodySchema: JSONSchemaType<ReqestBodyType>
+interface SchemaOption<RequestBodyType, ResponseDataType> {
+  bodySchema: JSONSchemaType<RequestBodyType>
   dataSchema: JSONSchemaType<ResponseDataType>
 }
 
-export default class api<ReqestBodyType, ResponseDataType> {
-  public bodyValidator: ValidateFunction<ReqestBodyType>
+export default class api<RequestBodyType, ResponseDataType> {
+  public bodyValidator: ValidateFunction<RequestBodyType>
   public dataValidator: ValidateFunction<ResponseDataType>
   public resWithAnyDataValidator = ajv.compile<ResponseBody>(
     responseBodyWithAnyDataJSONSchema
@@ -42,7 +46,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
   constructor({
     bodySchema,
     dataSchema,
-  }: Partial<SchemaOption<ReqestBodyType, ResponseDataType>> = {}) {
+  }: Partial<SchemaOption<RequestBodyType, ResponseDataType>> = {}) {
     if (bodySchema) {
       this.bodyValidator = ajv.compile(bodySchema)
     } else {
@@ -152,15 +156,126 @@ export default class api<ReqestBodyType, ResponseDataType> {
     return res.status(statusCode).json(resBody)
   }
 
+  createPrivateController(
+    typedController: TypedPrivateRequestHandler<
+      RequestBodyType,
+      ResponseDataType
+    >
+  ): RequestHandler[] {
+    return [
+      // authMiddleware,
+      (req, res: Response<ResponseBody<ResponseDataType>>, next) => {
+        /**
+         * * 1. make sure req.user is there
+         * * 2. make sure the type of req.body is correct
+         * * 3. attach modified res.json, res.send, res.sendData, next to:
+         *     * make sure the response object is validate
+         *     * make sure object owned by others is not sent accidentally
+         * * 4. call the typedController
+         */
+
+        // * enhanced next
+        const nextCustom: NextWithCustomError = (
+          ...err: ConstructorParameters<typeof CustomError>
+        ) => {
+          next(new CustomError(...err))
+        }
+
+        // * make sure req.user is there
+        const hasUser = (
+          req: Request<{}, any, RequestBodyType>
+        ): req is TypedPrivateRequest<any> => !!req.user
+        if (!hasUser(req)) {
+          return nextCustom('Token is invalid.', 401)
+        }
+
+        // * make sure the type of req.body is correct
+        const hasBodyOfCorrectType = (
+          req: TypedPrivateRequest<any>
+        ): req is TypedPrivateRequest<RequestBodyType> =>
+          this.bodyValidator(req.body)
+        if (!hasBodyOfCorrectType(req)) {
+          return next(avjErrorWrapper(this.bodyValidator.errors))
+        }
+
+        // * create modified res.json, res.send
+        const originalSend = res.send
+        const originalJson = res.json
+        const checkOwner = (data: ResponseDataType) => {
+          // JSON.parce(JSON.stringfy(data)) is problematic for performance and will not be performed in production environment
+          let clientObtainedThing = JSON.parse(JSON.stringify(data))
+          const isObjectOwnByOther = (x: any): boolean =>
+            !!x &&
+            typeof x === 'object' &&
+            typeof x.owner === 'string' &&
+            x.owner !== String(req.user.owner)
+          const hasNestedObjectOwnByOthers = (ob: any): boolean => {
+            if (!!ob && typeof ob === 'object' && !Array.isArray(ob)) {
+              if (isObjectOwnByOther(ob)) {
+                console.log(
+                  'The following object is owned by others. Please check your code.'
+                )
+                return true
+              } else {
+                return Object.entries(ob).some(([name, value]) =>
+                  hasNestedObjectOwnByOthers(value)
+                )
+              }
+            } else if (Array.isArray(ob)) {
+              return ob.some((inner) => hasNestedObjectOwnByOthers(inner))
+            } else {
+              return false
+            }
+          }
+          // * next line will be imaginably extremly slow ...
+          if (hasNestedObjectOwnByOthers(clientObtainedThing)) {
+            return next(
+              new CustomError(
+                'Controller has returned something that is not owned by this user or the owner of this user.'
+              )
+            )
+          }
+        }
+        const api = this
+
+        // function  (resBody?: ResponseBody<ResponseDataType>) {
+        //   if (api.resWithAnyDataValidator(resBody)) {
+        //   } else {
+        //   }
+        //   return this
+        // }
+        // const enhancedSend: Send<ResponseBody<ResponseDataType>, Response<ResponseBody<ResponseDataType>, Record<string, any>>> = function (resBody?: ResponseBody<ResponseDataType>) {
+        //   return this
+        // }
+        // const enhancedSendData: Send<ResponseDataType, this> = (
+        //   data?: ResponseDataType,
+        //   extra: ResponseBodyWithOutData = {}
+        // ) => {
+        //   return this
+        // }
+        // const enhancedJson: Send<ResponseBody<ResponseDataType>, this> = (
+        //   response?: ResponseBody<ResponseDataType>
+        // ) => {
+        //   return this
+        // }
+        // // * attach modified res.json, res.send
+        // res.send = enhancedSend
+
+        // * send the response with typedController
+        typedController(req, res, next)
+      },
+    ]
+  }
+
   /**
    * * Client Things
    */
   request = (
     url: string,
     method: Method,
-    data: ReqestBodyType | undefined,
+    data: RequestBodyType | undefined,
     abortController?: AbortController,
-    cof: AxiosRequestConfig<ReqestBodyType> = {}
+    cof: AxiosRequestConfig<RequestBodyType> = {}
   ) =>
     new ApiPromise<ResponseDataType>((resolve, reject) => {
       const processAndReject = (err: any) => {
@@ -187,7 +302,7 @@ export default class api<ReqestBodyType, ResponseDataType> {
         .request<
           Required<ResponseBody<ResponseDataType>>,
           AxiosResponse<Required<ResponseBody<ResponseDataType>>>,
-          ReqestBodyType
+          RequestBodyType
         >({
           url: `/api/v${process.env.REACT_APP_API_VERSION || 1}${url}`,
           method,
@@ -307,21 +422,21 @@ export default class api<ReqestBodyType, ResponseDataType> {
 
   post = (
     url: string,
-    data: ReqestBodyType,
+    data: RequestBodyType,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
   ) => this.request(url, 'POST', data, abortController, cof)
 
   put = (
     url: string,
-    data: ReqestBodyType,
+    data: RequestBodyType,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
   ) => this.request(url, 'PUT', data, abortController, cof)
 
   delete = (
     url: string,
-    data: ReqestBodyType | undefined,
+    data: RequestBodyType | undefined,
     abortController?: AbortController,
     cof: AxiosRequestConfig = {}
   ) => this.request(url, 'DELETE', data, abortController, cof)

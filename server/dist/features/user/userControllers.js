@@ -196,6 +196,7 @@ exports.getUser = getUser;
 const updateUser = async (req, res, next) => {
     if (userApi_1.Update.API.bodyValidator(req.body)) {
         if (req.userJWT) {
+            console.log(req.user);
             const user = await userModel_1.default.findByIdAndUpdate(req.userJWT.id, req.body, {
                 new: true,
                 runValidators: true,

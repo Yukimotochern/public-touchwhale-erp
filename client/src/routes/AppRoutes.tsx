@@ -12,6 +12,7 @@ import { ProfilePage } from '../pages/profile/ProfilePage'
 import { ForgetPasswordPage } from '../pages/forgetPassword/ForgetPasswordPage'
 import { ResetPasswordPage } from '../pages/resetPassword/ResetPasswordPage'
 import { ProductPageTable } from '../pages/product/ProductPage'
+import { Table } from '../components/interviewHomework/Table'
 
 // ! make sure applink is sync with this one
 import _ from 'lodash'
@@ -39,7 +40,7 @@ export const mainLayoutRoutes: RouteObject[] = [
     children: [
       {
         path: 'process',
-        element: <h1>Process Tab</h1>,
+        element: <Table />,
       },
       {
         path: 'marketing_event',

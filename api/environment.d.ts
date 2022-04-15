@@ -36,8 +36,10 @@ export interface AuthJWT {
 
 declare global {
   namespace Express {
+    // interface User extends AuthJWT {}
     interface Request {
       userJWT?: AuthJWT
+      user?: AuthJWT
     }
     interface Response {
       owner: string

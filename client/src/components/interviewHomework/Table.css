@@ -1,0 +1,34 @@
+thead {
+  background-color: #d0ddee;
+  color: #063773;
+}
+th,
+td {
+  padding: 3px 5px 3px 5px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #e8e9ec;
+  border-collapse: collapse;
+}
+
+th.text {
+  text-align: left;
+}
+
+input,
+input:hover {
+  border: 3px solid #e8e9ec;
+}
+td {
+  color: #898989;
+}
+
+tbody tr:nth-child(odd) {
+  background: #d9e5ef;
+}
+.separate {
+  width: 15px;
+}

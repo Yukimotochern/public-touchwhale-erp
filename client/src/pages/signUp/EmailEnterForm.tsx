@@ -22,7 +22,6 @@ export const EmailEnterForm = ({
       loading: true,
       email,
     }))
-
     try {
       await signUp(email, abortController)
         .onCustomCode(409, () => {
@@ -45,7 +44,9 @@ export const EmailEnterForm = ({
         stage: 'verify',
         loading: false,
       }))
-    } catch {}
+    } catch {
+      // catch non api error
+    }
   }
   return (
     <>

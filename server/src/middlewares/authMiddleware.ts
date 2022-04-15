@@ -14,6 +14,7 @@ export interface AuthJWT {
 
 declare global {
   namespace Express {
+    interface User extends AuthJWT {}
     interface Request {
       userJWT?: AuthJWT
     }
@@ -51,6 +52,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
     const decode = jwt.verify(token, process.env.JWTSECRET)
     if (tokenValidator(decode)) {
       req.userJWT = decode
+      req.user = decode as any
       // used to check owner when sending data
       res.owner = decode.owner
       return next()

@@ -81,14 +81,14 @@ router
 router
   .route('/workers')
   .all(auth)
-  .post(permission(['user.create_worker']), createWorker)
-  .get(permission(['user.get_workers']), getWorkers)
+  .post(permission(['user.create_worker']), errorCatcher(createWorker))
+  .get(permission(['user.get_workers']), errorCatcher(getWorkers))
 
 router
   .route('/workers/:id')
   .all(auth)
-  .get(permission(['user.get_worker']), getWorker)
-  .put(permission(['user.update_worker']), updateWorker)
-  .delete(permission(['user.delete_worker']), deleteWorker)
+  .get(permission(['user.get_worker']), errorCatcher(getWorker))
+  .put(permission(['user.update_worker']), errorCatcher(updateWorker))
+  .delete(permission(['user.delete_worker']), errorCatcher(deleteWorker))
 
 export default router

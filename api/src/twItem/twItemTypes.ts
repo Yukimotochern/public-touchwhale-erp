@@ -1,5 +1,4 @@
 import { Types } from 'mongoose'
-import { MongooseStatics, MongooseStamps } from '../utils/mongoTypes'
 import { Common } from '../utils/commonJSON'
 
 /**
